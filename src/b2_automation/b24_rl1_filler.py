@@ -1,4 +1,8 @@
-"""Manifest-driven B24_RL1 DOCX filler with review-gated, formatting-safe writes."""
+"""Legacy python-docx B24_RL1 filler.
+
+Production-path DOCX writes should use ``b2_automation.ooxml_writer`` so
+``word/document.xml`` is patched without full Word reserialization.
+"""
 
 from __future__ import annotations
 
@@ -95,6 +99,33 @@ def _review_text(fid: str, reason: str) -> str:
 
 
 def fill_b24_rl1_partial(
+    template_path: Path,
+    manifest: dict[str, Any],
+    field_values: dict[str, str],
+    output_path: Path,
+    *,
+    legacy_only: bool = False,
+    field_confidences: Mapping[str, float | None] | None = None,
+    required_field_ids: set[str] | None = None,
+    low_confidence_threshold: float = DEFAULT_LOW_CONFIDENCE_THRESHOLD,
+) -> Path:
+    if not legacy_only:
+        raise RuntimeError(
+            "fill_b24_rl1_partial is legacy-only. Production DOCX writes must use "
+            "b2_automation.ooxml_writer.patch_docx_cells with structure guard reporting."
+        )
+    return fill_b24_rl1_partial_legacy(
+        template_path,
+        manifest,
+        field_values,
+        output_path,
+        field_confidences=field_confidences,
+        required_field_ids=required_field_ids,
+        low_confidence_threshold=low_confidence_threshold,
+    )
+
+
+def fill_b24_rl1_partial_legacy(
     template_path: Path,
     manifest: dict[str, Any],
     field_values: dict[str, str],

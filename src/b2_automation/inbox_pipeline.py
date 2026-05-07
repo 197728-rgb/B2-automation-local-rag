@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Any
 
 from b2_automation.b24_normalizer import normalize_docupipe_payload_for_b24_rl1
-from b2_automation.b24_rl1_filler import REVIEW_REQUIRED_TEXT, fill_b24_rl1_partial, load_manifest
+from b2_automation.b24_rl1_filler import REVIEW_REQUIRED_TEXT, load_manifest
 from b2_automation.cell_evidence import decide_cell
 from b2_automation.docupipe_client import process_pdf
 from b2_automation.local_extraction import (
@@ -26,6 +26,7 @@ from b2_automation.local_extraction import (
     utc_now,
     write_local_artifacts,
 )
+from b2_automation.ooxml_writer import patch_docx_cells
 
 DEFAULT_REQUIRED_FIELDS = ("tco_name", "pitp_id", "car_type")
 DEFAULT_LOW_CONFIDENCE_THRESHOLD = 0.70
@@ -512,16 +513,23 @@ def run_inbox_pipeline(
     filled_docx: Path | None = None
     if records:
         template = root / "templates" / "B24_RL1.docx"
-        filled_docx = filled_dir / "B24_RL1_filled.docx"
-        fill_b24_rl1_partial(
+        candidate_filled_docx = filled_dir / "B24_RL1_filled.docx"
+        structure_guard_report = run_dir / "structure_guard_report.json"
+        patch_outcome = patch_docx_cells(
             template,
             manifest,
             merged_values,
-            filled_docx,
+            candidate_filled_docx,
             field_confidences=merged_confidences,
             required_field_ids=set(active_required_fields),
             low_confidence_threshold=low_confidence_threshold,
+            structure_guard_report_path=structure_guard_report,
         )
+        if patch_outcome.structure_guard_passed:
+            filled_docx = patch_outcome.output_docx
+        else:
+            filled_docx = None
+            status = "review_required"
 
     review = {
         "generated_at": _utc_now(),
@@ -534,6 +542,7 @@ def run_inbox_pipeline(
         "missing_required_fields": missing,
         "low_confidence_fields": low_confidence,
         "filled_docx": str(filled_docx) if filled_docx else None,
+        "structure_guard_report": str(run_dir / "structure_guard_report.json") if records else None,
     }
     review_json = review_dir / "B24_RL1_review.json"
     review_md = review_dir / "B24_RL1_review.md"
@@ -550,6 +559,8 @@ def run_inbox_pipeline(
         "required_fields": list(active_required_fields),
         "missing_required_fields": missing,
         "cell_inventory_summary": review["cell_inventory_summary"],
+        "filled_docx": str(filled_docx) if filled_docx else None,
+        "structure_guard_report": review["structure_guard_report"],
     }
     manifest_path.write_text(json.dumps(run_manifest, indent=2, sort_keys=True), encoding="utf-8")
 

@@ -17,7 +17,11 @@ from pathlib import Path
 from typing import Any, Iterable
 
 DEFAULT_REVIEW_FORMS = ("B24_RL2", "B81", "B89", "B90", "Cover_Page")
+LEGACY_REVIEW_FORMS = ("B24_RL1",)
+ALLOWED_REVIEW_FORMS = DEFAULT_REVIEW_FORMS + LEGACY_REVIEW_FORMS
 LOCAL_EVIDENCE_EXTENSIONS = (".pdf", ".txt", ".md", ".markdown", ".json", ".csv")
+DEFAULT_REQUIRED_SUGGESTION_FIELDS = ("facility_name", "date")
+DEFAULT_LOW_CONFIDENCE_THRESHOLD = 0.70
 
 FORM_KEYWORDS: dict[str, tuple[str, ...]] = {
     "B24_RL2": ("b24", "b-24", "rl2", "repair level 2", "objective evidence"),
@@ -61,6 +65,12 @@ def normalize_review_forms(forms: Iterable[str] | None) -> tuple[str, ...]:
         "B24": "B24_RL2",
         "B24-RL2": "B24_RL2",
         "B24_RL2": "B24_RL2",
+        "B24RL2": "B24_RL2",
+        "B24 RL2": "B24_RL2",
+        "B24_RL1": "B24_RL1",
+        "B24-RL1": "B24_RL1",
+        "B24RL1": "B24_RL1",
+        "B24 RL1": "B24_RL1",
         "B81": "B81",
         "B89": "B89",
         "B90": "B90",
@@ -71,8 +81,12 @@ def normalize_review_forms(forms: Iterable[str] | None) -> tuple[str, ...]:
     }
     normalized: list[str] = []
     for item in forms:
-        key = str(item).strip().replace("-", "_")
+        original = str(item).strip()
+        key = original.replace("-", "_")
         form = aliases.get(key.upper(), key)
+        if form not in ALLOWED_REVIEW_FORMS:
+            allowed = ", ".join(ALLOWED_REVIEW_FORMS)
+            raise ValueError(f"Unknown review form {original!r}. Allowed values: {allowed}")
         if form not in normalized:
             normalized.append(form)
     return tuple(normalized or DEFAULT_REVIEW_FORMS)
@@ -170,16 +184,18 @@ def build_form_packets(
     packets: dict[str, dict[str, Any]] = {}
     for form in review_forms:
         retrieved = _retrieve_for_form(form, documents, chunks_by_source)
+        suggestions = _field_suggestions(retrieved)
+        review_lists = _derive_review_lists(suggestions)
         packets[form] = {
             "form_id": form,
             "default_status": "first_class" if form in DEFAULT_REVIEW_FORMS else "requested",
             "b24_rl1_legacy_only": form == "B24_RL1",
             "source_files": [doc.source_file for doc in documents],
             "retrieved_context": retrieved,
-            "field_suggestions": _field_suggestions(retrieved),
-            "missing_fields": [],
-            "conflicts": [],
-            "low_confidence_fields": [],
+            "field_suggestions": suggestions,
+            "missing_fields": review_lists["missing_fields"],
+            "conflicts": review_lists["conflicts"],
+            "low_confidence_fields": review_lists["low_confidence_fields"],
             "write_authority": "none; exact approval_map.json is required before DOCX patching",
         }
     return packets
@@ -234,13 +250,53 @@ def _field_suggestions(retrieved: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 {
                     "field_id": field,
                     "candidate_value": value,
-                    "confidence": 0.55,
+                    "confidence": _deterministic_confidence(field, value, int(item.get("score") or 0)),
                     "source_file": item["source_file"],
                     "chunk_id": item["chunk_id"],
                     "review_required": True,
                 }
             )
     return suggestions
+
+
+def _deterministic_confidence(field: str, value: str, retrieval_score: int) -> float:
+    base = 0.58 + min(retrieval_score, 5) * 0.04
+    if field in {"facility_name", "car_number"} and len(value.strip()) >= 8:
+        base += 0.08
+    if field == "date" and re.search(r"[0-9]{4}[-/][0-9]{1,2}[-/][0-9]{1,2}", value):
+        base += 0.08
+    return round(min(base, 0.95), 2)
+
+
+def _derive_review_lists(suggestions: list[dict[str, Any]]) -> dict[str, list[dict[str, Any]] | list[str]]:
+    by_field: dict[str, list[dict[str, Any]]] = {}
+    for item in suggestions:
+        by_field.setdefault(str(item["field_id"]), []).append(item)
+
+    missing = [field for field in DEFAULT_REQUIRED_SUGGESTION_FIELDS if not by_field.get(field)]
+    conflicts: list[dict[str, Any]] = []
+    low_confidence: list[dict[str, Any]] = []
+    for field, items in sorted(by_field.items()):
+        values = sorted({str(item.get("candidate_value") or "").strip() for item in items if str(item.get("candidate_value") or "").strip()})
+        if len(values) > 1:
+            conflicts.append({"field_id": field, "candidate_values": values, "count": len(values)})
+        for item in items:
+            confidence = float(item.get("confidence") or 0.0)
+            if confidence < DEFAULT_LOW_CONFIDENCE_THRESHOLD:
+                low_confidence.append(
+                    {
+                        "field_id": field,
+                        "candidate_value": item.get("candidate_value"),
+                        "confidence": confidence,
+                        "source_file": item.get("source_file"),
+                        "chunk_id": item.get("chunk_id"),
+                    }
+                )
+    return {
+        "missing_fields": missing,
+        "conflicts": conflicts,
+        "low_confidence_fields": low_confidence,
+    }
 
 
 def _preview(text: str, limit: int = 600) -> str:
@@ -338,6 +394,26 @@ def _write_packet_md(path: Path, packet: dict[str, Any]) -> None:
     if suggestions:
         for item in suggestions:
             lines.append(f"- {item['field_id']}: {item['candidate_value']} ({item['source_file']} chunk {item['chunk_id']})")
+    else:
+        lines.append("- None")
+    lines.extend(["", "## Missing fields"])
+    missing = packet.get("missing_fields", [])
+    if missing:
+        lines.extend(f"- {field}" for field in missing)
+    else:
+        lines.append("- None")
+    lines.extend(["", "## Conflicts"])
+    conflicts = packet.get("conflicts", [])
+    if conflicts:
+        for item in conflicts:
+            lines.append(f"- {item['field_id']}: {', '.join(item['candidate_values'])}")
+    else:
+        lines.append("- None")
+    lines.extend(["", "## Low confidence fields"])
+    low_confidence = packet.get("low_confidence_fields", [])
+    if low_confidence:
+        for item in low_confidence:
+            lines.append(f"- {item['field_id']}: {item['candidate_value']} ({item['confidence']})")
     else:
         lines.append("- None")
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")

@@ -1,0 +1,323 @@
+"""Raw OOXML DOCX cell patching with structure guard checks.
+
+This writer updates ``word/document.xml`` inside a DOCX package without using a
+Word writer or reserializing the full XML tree. It is intentionally narrow:
+manifest cell references identify table/row/visual-column cells and only
+existing ``w:t`` text nodes inside those cells are patched.
+"""
+
+from __future__ import annotations
+
+import html
+import json
+import re
+import zipfile
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, Mapping
+
+from b2_automation.cell_evidence import decide_cell
+
+REVIEW_REQUIRED_TEXT = "REVIEW_REQUIRED"
+DEFAULT_LOW_CONFIDENCE_THRESHOLD = 0.70
+
+
+@dataclass(frozen=True)
+class PatchOutcome:
+    output_docx: Path
+    structure_guard_report: Path | None
+    structure_guard_passed: bool
+    patched_fields: tuple[str, ...]
+    errors: tuple[str, ...]
+
+
+def patch_docx_cells(
+    template_path: Path,
+    manifest: Mapping[str, Any],
+    field_values: Mapping[str, str],
+    output_path: Path,
+    *,
+    field_confidences: Mapping[str, float | None] | None = None,
+    required_field_ids: set[str] | None = None,
+    low_confidence_threshold: float = DEFAULT_LOW_CONFIDENCE_THRESHOLD,
+    structure_guard_report_path: Path | None = None,
+) -> PatchOutcome:
+    """Patch approved manifest cells in a DOCX package.
+
+    Missing optional values preserve the existing cell. Missing required values
+    are written as review markers. Existing OOXML package parts are copied
+    unchanged except for ``word/document.xml``.
+    """
+
+    template_path = Path(template_path)
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    structure_guard_report_path = (
+        Path(structure_guard_report_path)
+        if structure_guard_report_path is not None
+        else output_path.parent / "structure_guard_report.json"
+    )
+
+    before_counts = count_docx_structure(template_path)
+    confidences = dict(field_confidences or {})
+    required_ids = set(required_field_ids or set())
+    patches: list[tuple[int, int, str, str]] = []
+    errors: list[str] = []
+    intentional_text_node_creations = 0
+
+    with zipfile.ZipFile(template_path, "r") as zin:
+        document_xml = zin.read("word/document.xml").decode("utf-8")
+
+    tables = _find_elements(document_xml, "w:tbl")
+    for spec in manifest.get("cells", []):
+        fid = str(spec["field_id"])
+        value_present = fid in field_values
+        value = field_values.get(fid)
+        required = _required_for_spec(spec, required_ids)
+        role = _cell_role(spec)
+
+        if not value_present and not required:
+            continue
+
+        write_value = _value_for_write(
+            fid,
+            value,
+            value_present=value_present,
+            role=role,
+            required=required,
+            confidence=confidences.get(fid),
+            low_confidence_threshold=low_confidence_threshold,
+        )
+        if write_value is None:
+            continue
+
+        try:
+            cell_start, cell_end = _cell_range_for_spec(document_xml, tables, spec)
+            text_ranges = _text_ranges(document_xml, cell_start, cell_end)
+        except (IndexError, ValueError) as exc:
+            if isinstance(exc, ValueError):
+                try:
+                    insert_at = _paragraph_text_insert_at(document_xml, cell_start, cell_end)
+                except ValueError as insert_exc:
+                    errors.append(f"{fid}: {insert_exc}")
+                    continue
+                patches.append((insert_at, insert_at, f"<w:r><w:t>{_xml_text(write_value)}</w:t></w:r>", fid))
+                intentional_text_node_creations += 1
+                continue
+            errors.append(f"{fid}: {exc}")
+            continue
+        else:
+            for idx, (text_start, text_end) in enumerate(text_ranges):
+                patches.append((text_start, text_end, _xml_text(write_value) if idx == 0 else "", fid))
+
+    patched_xml = document_xml
+    patched_fields: list[str] = []
+    for start, end, replacement, fid in sorted(patches, key=lambda item: item[0], reverse=True):
+        patched_xml = patched_xml[:start] + replacement + patched_xml[end:]
+        patched_fields.append(fid)
+
+    with zipfile.ZipFile(template_path, "r") as zin, zipfile.ZipFile(
+        output_path,
+        "w",
+        compression=zipfile.ZIP_DEFLATED,
+    ) as zout:
+        for info in zin.infolist():
+            data = patched_xml.encode("utf-8") if info.filename == "word/document.xml" else zin.read(info.filename)
+            zout.writestr(info, data)
+
+    after_counts = count_docx_structure(output_path)
+    guard = build_structure_guard(before_counts, after_counts, errors, intentional_text_node_creations)
+    structure_guard_report_path.write_text(json.dumps(guard, indent=2, sort_keys=True), encoding="utf-8")
+    return PatchOutcome(
+        output_docx=output_path.resolve(),
+        structure_guard_report=structure_guard_report_path.resolve(),
+        structure_guard_passed=bool(guard["pass"]),
+        patched_fields=tuple(reversed(patched_fields)),
+        errors=tuple(errors),
+    )
+
+
+def count_docx_structure(docx_path: Path) -> dict[str, int]:
+    with zipfile.ZipFile(docx_path, "r") as z:
+        document_xml = z.read("word/document.xml").decode("utf-8")
+        names = z.namelist()
+    return {
+        "tables": len(re.findall(r"<w:tbl(?:\s|>)", document_xml)),
+        "rows": len(re.findall(r"<w:tr(?:\s|>)", document_xml)),
+        "cells": len(re.findall(r"<w:tc(?:\s|>)", document_xml)),
+        "gridSpan": len(re.findall(r"<w:gridSpan(?:\s|/?>)", document_xml)),
+        "vMerge": len(re.findall(r"<w:vMerge(?:\s|/?>)", document_xml)),
+        "text_nodes": len(re.findall(r"<w:t(?:\s[^>]*)?>", document_xml)),
+        "relationships": len([name for name in names if name.endswith(".rels")]),
+        "styles": len([name for name in names if name == "word/styles.xml"]),
+        "headers": len([name for name in names if name.startswith("word/header")]),
+        "footers": len([name for name in names if name.startswith("word/footer")]),
+    }
+
+
+def build_structure_guard(
+    before_counts: Mapping[str, int],
+    after_counts: Mapping[str, int],
+    errors: list[str],
+    expected_text_node_delta: int = 0,
+) -> dict[str, Any]:
+    deltas = {key: int(after_counts.get(key, 0)) - int(before_counts.get(key, 0)) for key in before_counts}
+    stable_keys = ("tables", "rows", "cells", "gridSpan", "vMerge", "relationships", "styles", "headers", "footers")
+    stable = all(deltas.get(key, 0) == 0 for key in stable_keys)
+    text_nodes_delta_matches_expected = deltas.get("text_nodes", 0) == expected_text_node_delta
+    return {
+        "pass": stable and text_nodes_delta_matches_expected and not errors,
+        "before": dict(before_counts),
+        "after": dict(after_counts),
+        "deltas": deltas,
+        "intentional_text_node_creations": expected_text_node_delta,
+        "text_nodes_delta_expected": expected_text_node_delta,
+        "text_nodes_delta_actual": deltas.get("text_nodes", 0),
+        "text_nodes_delta_matches_expected": text_nodes_delta_matches_expected,
+        "errors": list(errors),
+    }
+
+
+def _value_for_write(
+    fid: str,
+    value: str | None,
+    *,
+    value_present: bool,
+    role: str,
+    required: bool,
+    confidence: float | None,
+    low_confidence_threshold: float,
+) -> str | None:
+    if role == "notes":
+        if value_present and value is not None and str(value).strip():
+            return str(value)
+        if required:
+            return _review_text(fid, "missing required notes")
+        return None
+    if not value_present:
+        return _review_text(fid, "missing required value") if required else None
+    decision = decide_cell(
+        value,
+        confidence=confidence,
+        threshold=low_confidence_threshold,
+        required=required,
+        conflict_detected=str(value).startswith(REVIEW_REQUIRED_TEXT),
+        cell_role="target",
+    )
+    if decision == "blank":
+        return ""
+    if decision == "review":
+        reason = "requires review"
+        if value is None or str(value).strip() == "":
+            reason = "missing required value"
+        elif confidence is not None and confidence < low_confidence_threshold:
+            reason = f"low confidence {confidence:.2f}"
+        elif str(value).startswith(REVIEW_REQUIRED_TEXT):
+            reason = str(value)
+        return _review_text(fid, reason)
+    return str(value)
+
+
+def _find_elements(xml: str, tag: str) -> list[tuple[int, int]]:
+    open_pat = re.compile(rf"<{re.escape(tag)}(?:\s[^>]*)?>")
+    close_pat = re.compile(rf"</{re.escape(tag)}>")
+    token_pat = re.compile(rf"<{re.escape(tag)}(?:\s[^>]*)?>|</{re.escape(tag)}>")
+    ranges: list[tuple[int, int]] = []
+    stack: list[int] = []
+    for match in token_pat.finditer(xml):
+        token = match.group(0)
+        if open_pat.fullmatch(token):
+            stack.append(match.start())
+        elif close_pat.fullmatch(token) and stack:
+            start = stack.pop()
+            if not stack:
+                ranges.append((start, match.end()))
+    return ranges
+
+
+def _cell_range_for_spec(xml: str, tables: list[tuple[int, int]], spec: Mapping[str, Any]) -> tuple[int, int]:
+    table_index = int(spec["table_index"])
+    row_index = int(spec["row"])
+    visual_col = int(spec["col"])
+    try:
+        table_start, table_end = tables[table_index]
+    except IndexError as exc:
+        raise IndexError(f"table_index {table_index} not found") from exc
+    rows = _find_elements(xml[table_start:table_end], "w:tr")
+    try:
+        row_start_rel, row_end_rel = rows[row_index]
+    except IndexError as exc:
+        raise IndexError(f"row {row_index} not found in table {table_index}") from exc
+    row_start = table_start + row_start_rel
+    row_end = table_start + row_end_rel
+    cells = _find_elements(xml[row_start:row_end], "w:tc")
+    col = 0
+    for cell_start_rel, cell_end_rel in cells:
+        cell_start = row_start + cell_start_rel
+        cell_end = row_start + cell_end_rel
+        span = _grid_span(xml[cell_start:cell_end])
+        if col <= visual_col < col + span:
+            return cell_start, cell_end
+        col += span
+    raise IndexError(f"visual col {visual_col} not found in table {table_index} row {row_index}")
+
+
+def _grid_span(cell_xml: str) -> int:
+    match = re.search(r"<w:gridSpan\b[^>]*\bw:val=\"([0-9]+)\"", cell_xml)
+    if not match:
+        return 1
+    return max(1, int(match.group(1)))
+
+
+def _text_ranges(xml: str, cell_start: int, cell_end: int) -> list[tuple[int, int]]:
+    cell_xml = xml[cell_start:cell_end]
+    matches = list(re.finditer(r"<w:t(?:\s[^>]*)?>(.*?)</w:t>", cell_xml, flags=re.DOTALL))
+    if not matches:
+        raise ValueError("target cell has no existing w:t text node")
+    return [(cell_start + match.start(1), cell_start + match.end(1)) for match in matches]
+
+
+def _paragraph_text_insert_at(xml: str, cell_start: int, cell_end: int) -> int:
+    cell_xml = xml[cell_start:cell_end]
+    paragraph = re.search(r"<w:p(?:\s[^>]*)?>", cell_xml)
+    if not paragraph:
+        raise ValueError("target cell has no paragraph for minimal w:t creation")
+    close = re.search(r"</w:p>", cell_xml[paragraph.end() :])
+    if not close:
+        raise ValueError("target cell has no paragraph close for minimal w:t creation")
+    return cell_start + paragraph.end() + close.start()
+
+
+def _xml_text(value: str) -> str:
+    return html.escape(str(value), quote=False)
+
+
+def _bool_from_spec(value: Any, default: bool = False) -> bool:
+    if value is None:
+        return default
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        return bool(value)
+    return str(value).strip().lower() in {"1", "true", "yes", "y", "required"}
+
+
+def _cell_role(spec: Mapping[str, Any]) -> str:
+    fid = str(spec.get("field_id", ""))
+    role = str(spec.get("cell_role") or spec.get("role") or "target").strip().lower()
+    if fid == "evidence_notes" or "note" in role:
+        return "notes"
+    return role or "target"
+
+
+def _required_for_spec(spec: Mapping[str, Any], required_field_ids: set[str]) -> bool:
+    fid = str(spec.get("field_id", ""))
+    if fid in required_field_ids:
+        return True
+    if "required" in spec:
+        return _bool_from_spec(spec.get("required"), default=False)
+    return False
+
+
+def _review_text(fid: str, reason: str) -> str:
+    return f"{REVIEW_REQUIRED_TEXT}: {fid} {reason}".strip()

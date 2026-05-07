@@ -12,7 +12,7 @@ from b2_automation.b24_rl1_filler import fill_b24_rl1_partial, load_manifest
 from b2_automation.demo import run_demo
 from b2_automation.discover import run_discovery
 from b2_automation.inbox_pipeline import run_inbox_pipeline
-from b2_automation.local_extraction import DEFAULT_REVIEW_FORMS
+from b2_automation.local_extraction import ALLOWED_REVIEW_FORMS, DEFAULT_REVIEW_FORMS
 from b2_automation.paths import resolve_project_root
 from b2_automation.sample_pipeline import run_sample_pipeline
 
@@ -77,7 +77,7 @@ def _cmd_fill_b24_rl1_sample(args: argparse.Namespace) -> int:
             "Confidence: TCO 0.91, car mark 0.88, PITP ID 0.85."
         ),
     }
-    fill_b24_rl1_partial(template, manifest, fields, out)
+    fill_b24_rl1_partial(template, manifest, fields, out, legacy_only=True)
     print(f"Wrote {out}")
     return 0
 
@@ -111,6 +111,11 @@ def _cmd_inbox(args: argparse.Namespace) -> int:
             legacy_docupipe=bool(args.legacy_docupipe),
             review_forms=tuple(args.review_forms),
         )
+    except ValueError as exc:
+        valid = ", ".join(ALLOWED_REVIEW_FORMS)
+        print(f"error: inbox pipeline failed: {exc}", file=sys.stderr)
+        print(f"hint: valid --review-forms choices are: {valid}", file=sys.stderr)
+        return 2
     except Exception as exc:  # noqa: BLE001 - CLI must return clean error
         print(f"error: inbox pipeline failed: {exc}", file=sys.stderr)
         return 2
@@ -145,7 +150,7 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--out", type=str, default=None, help="Output DOCX path")
     sp.set_defaults(func=_cmd_sample_pipeline)
 
-    fb = sub.add_parser("fill-b24-rl1-sample", help="Fill sample cells in B24_RL1.docx")
+    fb = sub.add_parser("fill-b24-rl1-sample", help="Legacy-only sample fill for B24_RL1.docx")
     fb.add_argument("--root", type=str, default=None, help="Project root (default: auto-detect)")
     fb.add_argument("--out", type=str, default=None, help="Output DOCX")
     fb.set_defaults(func=_cmd_fill_b24_rl1_sample)

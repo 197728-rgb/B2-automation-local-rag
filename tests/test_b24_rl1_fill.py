@@ -68,7 +68,7 @@ def test_b24_rl1_partial_fill_writes_expected_content(b24_paths, tmp_path: Path)
         ),
     }
     out = tmp_path / "B24_RL1_filled.docx"
-    fill_b24_rl1_partial(template, manifest, fields, out)
+    fill_b24_rl1_partial(template, manifest, fields, out, legacy_only=True)
     assert out.is_file()
     assert out.stat().st_size > 10_000
     doc = Document(out)
@@ -88,6 +88,15 @@ def test_b24_rl1_partial_fill_writes_expected_content(b24_paths, tmp_path: Path)
     assert "source" in blob.lower()
 
 
+def test_b24_rl1_partial_fill_rejects_non_legacy_use(b24_paths, tmp_path: Path) -> None:
+    _root, template, manifest_path = b24_paths
+    if not template.is_file():
+        pytest.skip(f"missing template: {template}")
+    manifest = load_manifest(manifest_path)
+    with pytest.raises(RuntimeError, match="legacy-only"):
+        fill_b24_rl1_partial(template, manifest, {"tco_name": "unsafe production call"}, tmp_path / "out.docx")
+
+
 def test_partial_fill_omitted_keys_preserve_template_cells(b24_paths, tmp_path: Path) -> None:
     """Regression: do not write empty strings into cells for missing field_ids."""
     _root, template, manifest_path = b24_paths
@@ -103,6 +112,7 @@ def test_partial_fill_omitted_keys_preserve_template_cells(b24_paths, tmp_path: 
         manifest,
         {"tco_name": "MINIMAL_PARTIAL_TCO_ONLY"},
         out,
+        legacy_only=True,
     )
     filled = Document(out)
     assert _cell_text_for_field(filled, manifest, "tco_name") == "MINIMAL_PARTIAL_TCO_ONLY"
@@ -122,6 +132,7 @@ def test_partial_fill_empty_string_key_clears_cell(b24_paths, tmp_path: Path) ->
         manifest,
         {"tco_name": "SEED_FOR_CLEAR_TEST"},
         seeded,
+        legacy_only=True,
     )
     mid_doc = Document(seeded)
     assert _cell_text_for_field(mid_doc, manifest, "tco_name") == "SEED_FOR_CLEAR_TEST"
@@ -132,6 +143,7 @@ def test_partial_fill_empty_string_key_clears_cell(b24_paths, tmp_path: Path) ->
         manifest,
         {"tco_name": ""},
         cleared,
+        legacy_only=True,
     )
     out_doc = Document(cleared)
     assert _cell_text_for_field(out_doc, manifest, "tco_name") == ""

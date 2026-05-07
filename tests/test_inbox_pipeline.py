@@ -73,8 +73,14 @@ def test_inbox_pipeline_local_default_generates_all_form_packets(tmp_path: Path,
     assert set(review["forms"]) == set(DEFAULT_REVIEW_FORMS)
     assert review["legacy_sample_forms"] == ["B24_RL1"]
     for form in DEFAULT_REVIEW_FORMS:
-        assert (run_dir / "review" / f"{form}_evidence_packet.json").is_file()
+        packet_path = run_dir / "review" / f"{form}_evidence_packet.json"
+        assert packet_path.is_file()
         assert (run_dir / "review" / f"{form}_review.md").is_file()
+        packet = json.loads(packet_path.read_text(encoding="utf-8"))
+        assert "missing_fields" in packet
+        assert "conflicts" in packet
+        assert "low_confidence_fields" in packet
+        assert packet["field_suggestions"]
 
 
 def test_inbox_pipeline_legacy_docupipe_stub_generates_traceable_outputs(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -98,6 +104,7 @@ def test_inbox_pipeline_legacy_docupipe_stub_generates_traceable_outputs(tmp_pat
     assert result.review_json_path.is_file()
     assert result.review_md_path.is_file()
     assert result.filled_docx_path is not None and result.filled_docx_path.is_file()
+    assert (tmp_path / "run" / "structure_guard_report.json").is_file()
 
     raw_files = sorted((tmp_path / "run" / "raw").glob("*.docupipe.json"))
     metadata_files = sorted((tmp_path / "run" / "raw").glob("*.metadata.json"))
@@ -108,6 +115,7 @@ def test_inbox_pipeline_legacy_docupipe_stub_generates_traceable_outputs(tmp_pat
     manifest = json.loads(result.manifest_path.read_text(encoding="utf-8"))
     assert manifest["mode"] == "legacy_docupipe_b24_rl1"
     assert manifest["legacy_adapter_used"] is True
+    assert manifest["structure_guard_report"]
     assert len(review["inputs"]) == 2
     assert review["missing_required_fields"] == []
     assert review["low_confidence_fields"] == []
