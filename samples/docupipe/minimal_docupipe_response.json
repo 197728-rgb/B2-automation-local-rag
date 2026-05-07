@@ -1,0 +1,22 @@
+{
+  "schema_id": "qdlhfq5G",
+  "status": "complete",
+  "document_id": "sample-audit-001",
+  "fields": {
+    "organization": {
+      "value": "ACME Tank Services",
+      "confidence": 0.91,
+      "sources": [{"page": 1, "note": "cover sheet"}]
+    },
+    "audit_date": {
+      "value": "2026-05-04",
+      "confidence": 0.88,
+      "sources": [{"page": 1}]
+    },
+    "auditor": {
+      "value": "J. Auditor",
+      "confidence": 0.72,
+      "sources": [{"page": 2}]
+    }
+  }
+}

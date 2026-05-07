@@ -1,0 +1,43 @@
+﻿# Python
+__pycache__/
+.pytest_cache/
+.pytest_tmp/
+.pytest_tmp_*/
+.pytest_tmp_root/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+*.py[cod]
+*$py.class
+*.pyc
+*.pyo
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets / local
+.env
+.env.*
+
+# Project outputs (keep out of git)
+outputs/
+inputs/
+
+# Build / packaging
+dist/
+*.egg-info/
+
+# Generic local clutter
+uploads/
+logs/
+
+# Accidental nested copy of this repo (do not track)
+/B2-automation/

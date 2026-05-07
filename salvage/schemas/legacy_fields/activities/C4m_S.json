@@ -1,0 +1,269 @@
+{
+  "activity_code": "C4m(S)",
+  "include_templates": [
+    "schemas/fields/templates/common.json"
+  ],
+  "fields": [
+    {
+      "key": "detect_c4m_s",
+      "aliases": [
+        "C4m(S)",
+        "C4m",
+        "MANUFACTURE AND QUALIFICATION OF TANK CAR SERVICE EQUIPMENT",
+        "Safety Relief Devices"
+      ],
+      "search": {
+        "mode": "text.contains"
+      }
+    },
+    {
+      "key": "service_equipment_category",
+      "aliases": [
+        "S - Safety Relief Devices",
+        "Observed Service Equipment Category"
+      ],
+      "search": {
+        "mode": "text.contains"
+      }
+    },
+    {
+      "key": "engineering_drawing_number",
+      "aliases": [
+        "Engineering Drawing Number Traceable to PITP"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "drawing_approved_date",
+      "aliases": [
+        "Approved Date"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "aar_form",
+      "aliases": [
+        "AAR Form"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "aar_approval_number",
+      "aliases": [
+        "AAR Approval #"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "aar_service_equipment_form",
+      "aliases": [
+        "AAR Service Equipment Form"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "description_of_service_equipment",
+      "aliases": [
+        "Description of Service Equipment"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "date_approved_by_tcc",
+      "aliases": [
+        "Date Approved by TCC"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "material_specification",
+      "aliases": [
+        "Material Specification"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "status_indicator",
+      "aliases": [
+        "Status Indicator"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "manufacturing_process",
+      "aliases": [
+        "Manufacturing Process(es)"
+      ],
+      "search": {
+        "mode": "text.contains"
+      }
+    },
+    {
+      "key": "personnel_id",
+      "search": {
+        "mode": "table.header_cell",
+        "header_aliases": {
+          "Personnel ID": [
+            "Personnel ID"
+          ]
+        },
+        "target_header": "Personnel ID",
+        "row_index": 0
+      }
+    },
+    {
+      "key": "function_performed",
+      "search": {
+        "mode": "table.header_cell",
+        "header_aliases": {
+          "Function Performed": [
+            "Function Performed"
+          ]
+        },
+        "target_header": "Function Performed",
+        "row_index": 0
+      }
+    },
+    {
+      "key": "function_specific_training_date",
+      "search": {
+        "mode": "table.header_cell",
+        "header_aliases": {
+          "Date Received Function Specific Training": [
+            "Date Received Function Specific Training"
+          ]
+        },
+        "target_header": "Date Received Function Specific Training",
+        "row_index": 0
+      }
+    },
+    {
+      "key": "pitp_document_name",
+      "aliases": [
+        "PITP Document Name"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "pitp_id",
+      "aliases": [
+        "PITP ID",
+        "PITP"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "manufacturing_procedure_id",
+      "aliases": [
+        "Safety Relief Device Manufacturing Procedure"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "measure_test_equipment",
+      "aliases": [
+        "Measure and Test Equipment"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "equipment_id",
+      "aliases": [
+        "Equipment ID"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "calibration_date",
+      "aliases": [
+        "Calibration Date"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "calibration_due",
+      "aliases": [
+        "Calibration Due",
+        "Cal. Due"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "equipment_type",
+      "aliases": [
+        "Equipment Type"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "pm_completion_date",
+      "aliases": [
+        "Completion Date for Preventive Maintenance"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "location_manufacturing_observed",
+      "aliases": [
+        "Location in facility where Manufacturing of Safety Relief Devices was observed"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "welding_special_process",
+      "aliases": [
+        "Special Process of Welding"
+      ],
+      "search": {
+        "mode": "text.contains"
+      }
+    },
+    {
+      "key": "ndt_inprocess",
+      "aliases": [
+        "NDT Methods"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    }
+  ]
+}

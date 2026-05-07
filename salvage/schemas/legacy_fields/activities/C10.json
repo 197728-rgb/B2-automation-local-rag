@@ -1,0 +1,35 @@
+{
+  "activity_code": "C10",
+  "include_templates": [
+    "schemas/fields/templates/common.json"
+  ],
+  "fields": [
+    {
+      "key": "detect_c10",
+      "aliases": [
+        "C10"
+      ],
+      "search": {
+        "mode": "text.contains"
+      }
+    },
+    {
+      "key": "coating_or_lining_type",
+      "aliases": [
+        "Coating or Lining Type"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "manufacturer",
+      "aliases": [
+        "Manufacturer"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    }
+  ]
+}

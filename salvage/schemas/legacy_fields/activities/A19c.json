@@ -1,0 +1,221 @@
+{
+  "activity_code": "A19c",
+  "include_templates": [
+    "schemas/fields/templates/common.json"
+  ],
+  "fields": [
+    {
+      "key": "detect_a19c",
+      "aliases": [
+        "A19c",
+        "CONSTRUCTION OF CRYOGENIC TANK CARS BY MANUFACTURING"
+      ],
+      "search": {
+        "mode": "text.contains"
+      }
+    },
+    {
+      "key": "aar_4_2_no",
+      "aliases": [
+        "AAR 4-2 AAR No."
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "tank_design_specification",
+      "aliases": [
+        "Tank Design Specification"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "tank_stencil_specification",
+      "aliases": [
+        "Tank Stencil Specification"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "date_approved_by_tcc",
+      "aliases": [
+        "Date Approved by TCC"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "drawing_type_4_2",
+      "aliases": [
+        "4-2 Drawing Type"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "drawing_number",
+      "aliases": [
+        "Drawing Number"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "pitp_document_name",
+      "aliases": [
+        "PITP Document Name"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "pitp_id",
+      "aliases": [
+        "PITP ID",
+        "PITP"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "engineering_drawing_number_traceable_to_pitp",
+      "aliases": [
+        "Engineering Drawing Number Traceable to PITP"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "corresponding_drawing_rev_on_4_2",
+      "aliases": [
+        "Corresponding Drawing and Rev Listed on AAR Form 4-2"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "asme_engineering_drawing_number",
+      "aliases": [
+        "(ASME or Other) Engineering Drawing Number Traceable to PITP"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "personnel_id",
+      "search": {
+        "mode": "table.header_cell",
+        "header_aliases": {
+          "Personnel ID": [
+            "Personnel ID"
+          ]
+        },
+        "target_header": "Personnel ID",
+        "row_index": 0
+      }
+    },
+    {
+      "key": "function_performed",
+      "search": {
+        "mode": "table.header_cell",
+        "header_aliases": {
+          "Function Performed": [
+            "Function Performed"
+          ]
+        },
+        "target_header": "Function Performed",
+        "row_index": 0
+      }
+    },
+    {
+      "key": "function_specific_training_date",
+      "search": {
+        "mode": "table.header_cell",
+        "header_aliases": {
+          "Date Received Function Specific Training": [
+            "Date Received Function Specific Training"
+          ]
+        },
+        "target_header": "Date Received Function Specific Training",
+        "row_index": 0
+      }
+    },
+    {
+      "key": "volumetric_inspection_type",
+      "aliases": [
+        "Volumetric Inspection(s) that will be performed"
+      ],
+      "search": {
+        "mode": "text.contains"
+      }
+    },
+    {
+      "key": "lot_number_wo_project",
+      "aliases": [
+        "Lot Number/W.O./Project Number"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "ndt_ut_procedure_id",
+      "aliases": [
+        "NDT UT Procedure"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "ndt_rt_procedure_id",
+      "aliases": [
+        "NDT RT Procedure"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "ndt_level_iii_approver",
+      "aliases": [
+        "NDT Level III Approver"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "calibration_date",
+      "aliases": [
+        "Calibration Date"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "calibration_due",
+      "aliases": [
+        "Calibration Due",
+        "Cal. Due"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "activity_code": "B90",
+  "include_templates": [
+    "schemas/fields/templates/common.json"
+  ],
+  "fields": [
+    {
+      "key": "detect_b90",
+      "aliases": [
+        "B90"
+      ],
+      "search": {
+        "mode": "text.contains"
+      }
+    },
+    {
+      "key": "tee_joint_width",
+      "aliases": [
+        "Tee Joint Width"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "welder_position",
+      "aliases": [
+        "Welder Position"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "station_stencil",
+      "aliases": [
+        "Station Stencil"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    }
+  ]
+}

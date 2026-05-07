@@ -1,0 +1,131 @@
+{
+  "document_id": "dp-job-88421",
+  "schema_id": "qdlhfq5G",
+  "status": "completed",
+  "completed_at": "2026-05-04T18:00:00Z",
+  "result": {
+    "field_extractions": [
+      {
+        "field_key": "TankCarOwnerName",
+        "normalized_key": "tank_car_owner",
+        "value": "Midwest Tank Rail Inc",
+        "confidence": 0.94,
+        "provenance": [
+          { "page_index": 0, "region": "cover_header" }
+        ]
+      },
+      {
+        "field_key": "PermissionInstructionDate",
+        "normalized_key": "tco_permission_received",
+        "value": "2025-11-20",
+        "confidence": 0.89,
+        "provenance": [{ "page_index": 0, "region": "cover_header" }]
+      },
+      {
+        "field_key": "PITPDocumentTitle",
+        "normalized_key": "pitp_title",
+        "value": "PITP MC-2024-77 Rev C",
+        "confidence": 0.87,
+        "provenance": [{ "page_index": 0 }]
+      },
+      {
+        "field_key": "CarMarking",
+        "normalized_key": "car_mark_number",
+        "value": "UTLX 556891",
+        "confidence": 0.92,
+        "provenance": [{ "page_index": 1, "region": "stencil_block" }]
+      },
+      {
+        "field_key": "TCOWrittenInstructions",
+        "normalized_key": "tco_written_instructions",
+        "value": "RL1 repair authorized per email 2025-11-18.",
+        "confidence": 0.81,
+        "provenance": [{ "page_index": 0, "region": "tco_permission_block" }]
+      },
+      {
+        "field_key": "PITPIdentifier",
+        "normalized_key": "pitp_id",
+        "value": "MC-2024-77",
+        "confidence": 0.9,
+        "provenance": [{ "page_index": 0, "region": "pitp_header" }]
+      },
+      {
+        "field_key": "PITPApprovedBy",
+        "normalized_key": "pitp_approved_by",
+        "value": "J. Ortega",
+        "confidence": 0.84,
+        "provenance": [{ "page_index": 0 }]
+      },
+      {
+        "field_key": "PITPApprovalDate",
+        "normalized_key": "pitp_approval_date",
+        "value": "2024-09-12",
+        "confidence": 0.86,
+        "provenance": [{ "page_index": 0 }]
+      },
+      {
+        "field_key": "PITPRevision",
+        "normalized_key": "pitp_rev",
+        "value": "C",
+        "confidence": 0.79,
+        "provenance": [{ "page_index": 0 }]
+      },
+      {
+        "field_key": "TankDesignSpec",
+        "normalized_key": "tank_design_spec",
+        "value": "Spec 112A / Stencil PKG-09",
+        "confidence": 0.83,
+        "provenance": [{ "page_index": 2, "region": "design_control" }]
+      },
+      {
+        "field_key": "CarType",
+        "normalized_key": "car_type",
+        "value": "DOT-117J100W",
+        "confidence": 0.88,
+        "provenance": [{ "page_index": 2 }]
+      },
+      {
+        "field_key": "AARForm42Number",
+        "normalized_key": "aar_form_42",
+        "value": "AAR-42-778812",
+        "confidence": 0.8,
+        "provenance": [{ "page_index": 2 }]
+      },
+      {
+        "field_key": "DrawingNumber42",
+        "normalized_key": "four_two_drawing_number",
+        "value": "DWG-UTLX-4419",
+        "confidence": 0.77,
+        "provenance": [{ "page_index": 3, "region": "drawing_index" }]
+      },
+      {
+        "field_key": "DrawingRevision42",
+        "normalized_key": "four_two_drawing_revision",
+        "value": "Rev 4",
+        "confidence": 0.75,
+        "provenance": [{ "page_index": 3 }]
+      },
+      {
+        "field_key": "TestPlateTankMaterial",
+        "normalized_key": "test_plate_tank_material",
+        "value": "TC-128 Grade B normalized plate",
+        "confidence": 0.72,
+        "provenance": [{ "page_index": 4, "region": "mtr_bundle" }]
+      },
+      {
+        "field_key": "TestPlateTankMTR",
+        "normalized_key": "test_plate_mtr_number",
+        "value": "MTR-99821-A",
+        "confidence": 0.74,
+        "provenance": [{ "page_index": 4 }]
+      },
+      {
+        "field_key": "AttachmentMaterial",
+        "normalized_key": "attachment_material_description",
+        "value": "A516-70 pad per dwg A-12",
+        "confidence": 0.7,
+        "provenance": [{ "page_index": 4 }]
+      }
+    ]
+  }
+}

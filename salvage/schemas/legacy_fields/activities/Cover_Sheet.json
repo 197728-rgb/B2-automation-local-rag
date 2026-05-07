@@ -1,0 +1,273 @@
+{
+  "activity_code": "Cover_Sheet",
+  "include_templates": [
+    "schemas/fields/templates/common.json"
+  ],
+  "fields": [
+    {
+      "key": "detect_cover_sheet",
+      "aliases": [
+        "Cover Sheet",
+        "PART 1",
+        "General INFORMATiON"
+      ],
+      "search": {
+        "mode": "text.contains"
+      }
+    },
+    {
+      "key": "station_stencil_qa_code",
+      "aliases": [
+        "Station Stencil/QA Code"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "audit_type",
+      "aliases": [
+        "Audit Type"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "facility_workforce_size",
+      "aliases": [
+        "Facility Workforce Size"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "open_meeting_date",
+      "aliases": [
+        "Open Meeting Date"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "closing_meeting_date",
+      "aliases": [
+        "Closing Meeting Date"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "boe_lead_auditor",
+      "aliases": [
+        "BOE Lead Auditor"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "aar_audit_team_size",
+      "aliases": [
+        "AAR Audit Team Size"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "m1002_total_findings",
+      "aliases": [
+        "M-1002 Total # Findings"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "m1003_total_findings",
+      "aliases": [
+        "M-1003 Total # of Findings"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "total_findings",
+      "aliases": [
+        "Total # Findings"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "auditor_assigned",
+      "search": {
+        "mode": "table.header_cell",
+        "header_aliases": {
+          "Auditor Assigned": [
+            "Auditor Assigned"
+          ]
+        },
+        "target_header": "Auditor Assigned",
+        "row_index": 0
+      }
+    },
+    {
+      "key": "findings_by_activity_code",
+      "search": {
+        "mode": "table.header_cell",
+        "header_aliases": {
+          "# of Findings by Activity Code": [
+            "# of Findings by Activity Code"
+          ]
+        },
+        "target_header": "# of Findings by Activity Code",
+        "row_index": 0
+      }
+    },
+    {
+      "key": "attendee_name",
+      "search": {
+        "mode": "table.header_cell",
+        "header_aliases": {
+          "Name": [
+            "Name"
+          ]
+        },
+        "target_header": "Name",
+        "row_index": 0
+      }
+    },
+    {
+      "key": "attendee_title",
+      "search": {
+        "mode": "table.header_cell",
+        "header_aliases": {
+          "Title": [
+            "Title"
+          ]
+        },
+        "target_header": "Title",
+        "row_index": 0
+      }
+    },
+    {
+      "key": "attendee_company",
+      "search": {
+        "mode": "table.header_cell",
+        "header_aliases": {
+          "Company": [
+            "Company"
+          ]
+        },
+        "target_header": "Company",
+        "row_index": 0
+      }
+    },
+    {
+      "key": "qa_procedure_id",
+      "aliases": [
+        "Procedure ID"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "qa_approved_by",
+      "aliases": [
+        "Approved By"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "mobile_unit_id",
+      "aliases": [
+        "Mobile Unit ID"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "mobile_activity_codes",
+      "aliases": [
+        "Activity Code(s) Performed"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "mobile_assigned_facility",
+      "aliases": [
+        "Assigned Facility"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "subcontracted_product_service",
+      "aliases": [
+        "Subcontracted Product, Service, and/or Equipment"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "exhibit_b1_company_name",
+      "aliases": [
+        "Exhibit B-1 Company Name"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "lead_auditor_name",
+      "aliases": [
+        "Name of Lead Auditor"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "lead_auditor_signature",
+      "aliases": [
+        "Signature"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "lead_auditor_title",
+      "aliases": [
+        "Title of Lead Auditor"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "signature_date",
+      "aliases": [
+        "Signature Date"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    }
+  ]
+}

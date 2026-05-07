@@ -1,0 +1,57 @@
+{
+  "activity_code": "B81",
+  "include_templates": [
+    "schemas/fields/templates/common.json"
+  ],
+  "fields": [
+    {
+      "key": "detect_b81",
+      "aliases": [
+        "B81"
+      ],
+      "search": {
+        "mode": "text.contains"
+      }
+    },
+    {
+      "key": "pitp_id",
+      "aliases": [
+        "PITP"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "inspection_type",
+      "aliases": [
+        "Inspection Type",
+        "Visual Inspection",
+        "Structural Integrity Inspection",
+        "Thickness Test",
+        "Safety System Inspection"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "ndt_methods",
+      "aliases": [
+        "NDT Methods"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "stencil_station",
+      "aliases": [
+        "Station Stencil"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    }
+  ]
+}

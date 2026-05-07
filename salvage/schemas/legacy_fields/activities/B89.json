@@ -1,0 +1,53 @@
+{
+  "activity_code": "B89",
+  "include_templates": [
+    "schemas/fields/templates/common.json"
+  ],
+  "fields": [
+    {
+      "key": "detect_b89",
+      "aliases": [
+        "B89"
+      ],
+      "search": {
+        "mode": "text.contains"
+      }
+    },
+    {
+      "key": "patch_plate_size",
+      "aliases": [
+        "Patch Plate Size"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "observed_fillet_weld_size",
+      "aliases": [
+        "Observed Fillet Weld Size"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "observed_weld_length",
+      "aliases": [
+        "Observed Weld Length"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "protective_coating_type_date",
+      "aliases": [
+        "Protective Coating Type/Date"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    }
+  ]
+}

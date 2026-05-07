@@ -1,0 +1,85 @@
+{
+  "activity_code": "B24",
+  "include_templates": [
+    "schemas/fields/templates/common.json"
+  ],
+  "fields": [
+    {
+      "key": "detect_b24",
+      "aliases": [
+        "Form B24",
+        "B24"
+      ],
+      "search": {
+        "mode": "text.contains"
+      }
+    },
+    {
+      "key": "repair_level",
+      "aliases": [
+        "RL1",
+        "RL2"
+      ],
+      "search": {
+        "mode": "text.contains"
+      }
+    },
+    {
+      "key": "wps_number",
+      "aliases": [
+        "WPS Traceable to"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "rl1_hydrotest_pressure",
+      "aliases": [
+        "Hydrostatic Test Pressure"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "rl2_leak_test",
+      "aliases": [
+        "Leak Test Result"
+      ],
+      "search": {
+        "mode": "table.label_right"
+      }
+    },
+    {
+      "key": "welder_id",
+      "search": {
+        "mode": "table.header_cell",
+        "header_aliases": {
+          "Welder ID": [
+            "Welder ID",
+            "Welder No.",
+            "ID del soldador"
+          ]
+        },
+        "target_header": "Welder ID",
+        "row_index": 0
+      }
+    },
+    {
+      "key": "calibration_due",
+      "search": {
+        "mode": "table.header_cell",
+        "header_aliases": {
+          "Calibration Due": [
+            "Calibration Due",
+            "Cal. Due",
+            "Fecha de calibración"
+          ]
+        },
+        "target_header": "Calibration Due",
+        "row_index": 0
+      }
+    }
+  ]
+}
