@@ -41,11 +41,7 @@ def patch_docx_cells(
     required_field_ids: set[str] | None = None,
     low_confidence_threshold: float = DEFAULT_LOW_CONFIDENCE_THRESHOLD,
     structure_guard_report_path: Path | None = None,
-<<<<<<< HEAD
-    approval_map: Mapping[str, Mapping[str, int]] | None = None,
-=======
     approval_map: Mapping[str, Any] | None = None,
->>>>>>> b2490eb (Stage 6/7 hardening: maps, guardrails, semantic retrieval, evidence outputs)
 ) -> PatchOutcome:
     """Patch approved manifest cells in a DOCX package.
 
@@ -74,25 +70,9 @@ def patch_docx_cells(
         document_xml = zin.read("word/document.xml").decode("utf-8")
 
     tables = _find_elements(document_xml, "w:tbl")
-<<<<<<< HEAD
-    approved = dict(approval_map or {})
-    for spec in manifest.get("cells", []):
-=======
     specs = _approved_manifest_cells(manifest, approval_map, errors)
     for spec in specs:
->>>>>>> b2490eb (Stage 6/7 hardening: maps, guardrails, semantic retrieval, evidence outputs)
         fid = str(spec["field_id"])
-        if approved:
-            exact = approved.get(fid)
-            if exact is None:
-                continue
-            if (
-                int(spec["table_index"]) != int(exact["table_index"])
-                or int(spec["row"]) != int(exact["row"])
-                or int(spec["col"]) != int(exact["col"])
-            ):
-                errors.append(f"{fid}: manifest cell does not match exact approval map")
-                continue
         value_present = fid in field_values
         value = field_values.get(fid)
         required = _required_for_spec(spec, required_ids)
@@ -233,11 +213,7 @@ def _value_for_write(
     )
     if decision == DecisionState.BLANK:
         return ""
-<<<<<<< HEAD
-    if decision != DecisionState.FILL:
-=======
     if decision in {DecisionState.REVIEW_REQUIRED, DecisionState.MISSING, DecisionState.CONFLICT, DecisionState.LOW_CONFIDENCE}:
->>>>>>> b2490eb (Stage 6/7 hardening: maps, guardrails, semantic retrieval, evidence outputs)
         reason = "requires review"
         if value is None or str(value).strip() == "":
             reason = "missing required value"
