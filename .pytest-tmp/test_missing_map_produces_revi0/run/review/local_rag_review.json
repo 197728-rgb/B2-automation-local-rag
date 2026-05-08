@@ -1,0 +1,592 @@
+{
+  "approval_map_and_fill_errors": [
+    {
+      "errors": [
+        "No approval map found for B24_RL2"
+      ],
+      "form_id": "B24_RL2"
+    },
+    {
+      "errors": [
+        "No approval map found for B81"
+      ],
+      "form_id": "B81"
+    },
+    {
+      "errors": [
+        "No approval map found for B89"
+      ],
+      "form_id": "B89"
+    },
+    {
+      "errors": [
+        "No approval map found for B90"
+      ],
+      "form_id": "B90"
+    },
+    {
+      "errors": [
+        "No approval map found for Cover_Page"
+      ],
+      "form_id": "Cover_Page"
+    }
+  ],
+  "canonical_evidence": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_missing_map_produces_revi0\\run\\canonical_evidence.json",
+  "decision_summary_by_form": {
+    "B24_RL2": {
+      "counts_by_state": {
+        "FILL": 2
+      },
+      "fill_eligible_field_ids": [
+        "date",
+        "facility_name"
+      ]
+    },
+    "B81": {
+      "counts_by_state": {
+        "FILL": 2
+      },
+      "fill_eligible_field_ids": [
+        "date",
+        "facility_name"
+      ]
+    },
+    "B89": {
+      "counts_by_state": {
+        "MISSING": 2
+      },
+      "fill_eligible_field_ids": []
+    },
+    "B90": {
+      "counts_by_state": {
+        "MISSING": 2
+      },
+      "fill_eligible_field_ids": []
+    },
+    "Cover_Page": {
+      "counts_by_state": {
+        "FILL": 2
+      },
+      "fill_eligible_field_ids": [
+        "date",
+        "facility_name"
+      ]
+    }
+  },
+  "docupipe_used": false,
+  "docx_generation": [
+    {
+      "approval_map": null,
+      "attempted": false,
+      "errors": [
+        "No approval map found for B24_RL2"
+      ],
+      "filled_docx": null,
+      "form_id": "B24_RL2",
+      "patched_fields": [],
+      "status": "skipped_missing_exact_approval_map",
+      "structure_guard_passed": false,
+      "structure_guard_report": null,
+      "template": null
+    },
+    {
+      "approval_map": null,
+      "attempted": false,
+      "errors": [
+        "No approval map found for B81"
+      ],
+      "filled_docx": null,
+      "form_id": "B81",
+      "patched_fields": [],
+      "status": "skipped_missing_exact_approval_map",
+      "structure_guard_passed": false,
+      "structure_guard_report": null,
+      "template": null
+    },
+    {
+      "approval_map": null,
+      "attempted": false,
+      "errors": [
+        "No approval map found for B89"
+      ],
+      "filled_docx": null,
+      "form_id": "B89",
+      "patched_fields": [],
+      "status": "skipped_no_fill_decisions",
+      "structure_guard_passed": false,
+      "structure_guard_report": null,
+      "template": null
+    },
+    {
+      "approval_map": null,
+      "attempted": false,
+      "errors": [
+        "No approval map found for B90"
+      ],
+      "filled_docx": null,
+      "form_id": "B90",
+      "patched_fields": [],
+      "status": "skipped_no_fill_decisions",
+      "structure_guard_passed": false,
+      "structure_guard_report": null,
+      "template": null
+    },
+    {
+      "approval_map": null,
+      "attempted": false,
+      "errors": [
+        "No approval map found for Cover_Page"
+      ],
+      "filled_docx": null,
+      "form_id": "Cover_Page",
+      "patched_fields": [],
+      "status": "skipped_missing_exact_approval_map",
+      "structure_guard_passed": false,
+      "structure_guard_report": null,
+      "template": null
+    }
+  ],
+  "field_traceability": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_missing_map_produces_revi0\\run\\field_traceability.json",
+  "form_packets": {
+    "B24_RL2": {
+      "conflicts": [],
+      "decision_summary": {
+        "counts_by_state": {
+          "FILL": 2
+        },
+        "fill_eligible_field_ids": [
+          "date",
+          "facility_name"
+        ]
+      },
+      "default_status": "first_class",
+      "field_decisions": [
+        {
+          "candidates": [
+            {
+              "candidate_value": "2026-01-01",
+              "chunk_excerpt": "B24 RL2 evidence Facility: Midwest Date: 2026-01-01",
+              "chunk_hash": "a18ea40d6268fca7429d28cbc294496e03769ad1ba225af44370c562d2756439",
+              "chunk_id": 1,
+              "confidence": 0.95,
+              "field_id": "date",
+              "retrieval_score": 363,
+              "review_required": true,
+              "semantic_score": 0.350788,
+              "source_file": "evidence.txt"
+            }
+          ],
+          "confidence": 0.95,
+          "field_id": "date",
+          "reason": "selected highest-confidence local evidence",
+          "selected_value": "2026-01-01",
+          "state": "FILL"
+        },
+        {
+          "candidates": [
+            {
+              "candidate_value": "Midwest Date: 2026-01-01",
+              "chunk_excerpt": "B24 RL2 evidence Facility: Midwest Date: 2026-01-01",
+              "chunk_hash": "a18ea40d6268fca7429d28cbc294496e03769ad1ba225af44370c562d2756439",
+              "chunk_id": 1,
+              "confidence": 0.95,
+              "field_id": "facility_name",
+              "retrieval_score": 363,
+              "review_required": true,
+              "semantic_score": 0.350788,
+              "source_file": "evidence.txt"
+            }
+          ],
+          "confidence": 0.95,
+          "field_id": "facility_name",
+          "reason": "selected highest-confidence local evidence",
+          "selected_value": "Midwest Date: 2026-01-01",
+          "state": "FILL"
+        }
+      ],
+      "field_suggestions": [
+        {
+          "candidate_value": "Midwest Date: 2026-01-01",
+          "chunk_excerpt": "B24 RL2 evidence Facility: Midwest Date: 2026-01-01",
+          "chunk_hash": "a18ea40d6268fca7429d28cbc294496e03769ad1ba225af44370c562d2756439",
+          "chunk_id": 1,
+          "confidence": 0.95,
+          "field_id": "facility_name",
+          "retrieval_score": 363,
+          "review_required": true,
+          "semantic_score": 0.350788,
+          "source_file": "evidence.txt"
+        },
+        {
+          "candidate_value": "2026-01-01",
+          "chunk_excerpt": "B24 RL2 evidence Facility: Midwest Date: 2026-01-01",
+          "chunk_hash": "a18ea40d6268fca7429d28cbc294496e03769ad1ba225af44370c562d2756439",
+          "chunk_id": 1,
+          "confidence": 0.95,
+          "field_id": "date",
+          "retrieval_score": 363,
+          "review_required": true,
+          "semantic_score": 0.350788,
+          "source_file": "evidence.txt"
+        }
+      ],
+      "form_id": "B24_RL2",
+      "low_confidence_fields": [],
+      "missing_fields": [],
+      "production_scope": true,
+      "retrieval_method": "local_tfidf_cosine",
+      "retrieved_context": [
+        {
+          "chunk_excerpt": "B24 RL2 evidence Facility: Midwest Date: 2026-01-01",
+          "chunk_hash": "a18ea40d6268fca7429d28cbc294496e03769ad1ba225af44370c562d2756439",
+          "chunk_id": 1,
+          "keyword_score": 6,
+          "retrieval_method": "local_tfidf_cosine",
+          "retrieval_score": 363,
+          "score": 363,
+          "semantic_score": 0.350788,
+          "source_file": "evidence.txt",
+          "text": "B24 RL2 evidence Facility: Midwest Date: 2026-01-01"
+        }
+      ],
+      "review_required_fields": [],
+      "source_files": [
+        "evidence.txt"
+      ],
+      "write_authority": "none; exact approval_map.json is required before DOCX patching"
+    },
+    "B81": {
+      "conflicts": [],
+      "decision_summary": {
+        "counts_by_state": {
+          "FILL": 2
+        },
+        "fill_eligible_field_ids": [
+          "date",
+          "facility_name"
+        ]
+      },
+      "default_status": "first_class",
+      "field_decisions": [
+        {
+          "candidates": [
+            {
+              "candidate_value": "2026-01-01",
+              "chunk_excerpt": "B24 RL2 evidence Facility: Midwest Date: 2026-01-01",
+              "chunk_hash": "a18ea40d6268fca7429d28cbc294496e03769ad1ba225af44370c562d2756439",
+              "chunk_id": 1,
+              "confidence": 0.95,
+              "field_id": "date",
+              "retrieval_score": 39,
+              "review_required": true,
+              "semantic_score": 0.038541,
+              "source_file": "evidence.txt"
+            }
+          ],
+          "confidence": 0.95,
+          "field_id": "date",
+          "reason": "selected highest-confidence local evidence",
+          "selected_value": "2026-01-01",
+          "state": "FILL"
+        },
+        {
+          "candidates": [
+            {
+              "candidate_value": "Midwest Date: 2026-01-01",
+              "chunk_excerpt": "B24 RL2 evidence Facility: Midwest Date: 2026-01-01",
+              "chunk_hash": "a18ea40d6268fca7429d28cbc294496e03769ad1ba225af44370c562d2756439",
+              "chunk_id": 1,
+              "confidence": 0.95,
+              "field_id": "facility_name",
+              "retrieval_score": 39,
+              "review_required": true,
+              "semantic_score": 0.038541,
+              "source_file": "evidence.txt"
+            }
+          ],
+          "confidence": 0.95,
+          "field_id": "facility_name",
+          "reason": "selected highest-confidence local evidence",
+          "selected_value": "Midwest Date: 2026-01-01",
+          "state": "FILL"
+        }
+      ],
+      "field_suggestions": [
+        {
+          "candidate_value": "Midwest Date: 2026-01-01",
+          "chunk_excerpt": "B24 RL2 evidence Facility: Midwest Date: 2026-01-01",
+          "chunk_hash": "a18ea40d6268fca7429d28cbc294496e03769ad1ba225af44370c562d2756439",
+          "chunk_id": 1,
+          "confidence": 0.95,
+          "field_id": "facility_name",
+          "retrieval_score": 39,
+          "review_required": true,
+          "semantic_score": 0.038541,
+          "source_file": "evidence.txt"
+        },
+        {
+          "candidate_value": "2026-01-01",
+          "chunk_excerpt": "B24 RL2 evidence Facility: Midwest Date: 2026-01-01",
+          "chunk_hash": "a18ea40d6268fca7429d28cbc294496e03769ad1ba225af44370c562d2756439",
+          "chunk_id": 1,
+          "confidence": 0.95,
+          "field_id": "date",
+          "retrieval_score": 39,
+          "review_required": true,
+          "semantic_score": 0.038541,
+          "source_file": "evidence.txt"
+        }
+      ],
+      "form_id": "B81",
+      "low_confidence_fields": [],
+      "missing_fields": [],
+      "production_scope": true,
+      "retrieval_method": "local_tfidf_cosine",
+      "retrieved_context": [
+        {
+          "chunk_excerpt": "B24 RL2 evidence Facility: Midwest Date: 2026-01-01",
+          "chunk_hash": "a18ea40d6268fca7429d28cbc294496e03769ad1ba225af44370c562d2756439",
+          "chunk_id": 1,
+          "keyword_score": 0,
+          "retrieval_method": "local_tfidf_cosine",
+          "retrieval_score": 39,
+          "score": 39,
+          "semantic_score": 0.038541,
+          "source_file": "evidence.txt",
+          "text": "B24 RL2 evidence Facility: Midwest Date: 2026-01-01"
+        }
+      ],
+      "review_required_fields": [],
+      "source_files": [
+        "evidence.txt"
+      ],
+      "write_authority": "none; exact approval_map.json is required before DOCX patching"
+    },
+    "B89": {
+      "conflicts": [],
+      "decision_summary": {
+        "counts_by_state": {
+          "MISSING": 2
+        },
+        "fill_eligible_field_ids": []
+      },
+      "default_status": "first_class",
+      "field_decisions": [
+        {
+          "candidates": [],
+          "confidence": null,
+          "field_id": "date",
+          "reason": "no retrieved evidence candidate",
+          "selected_value": null,
+          "state": "MISSING"
+        },
+        {
+          "candidates": [],
+          "confidence": null,
+          "field_id": "facility_name",
+          "reason": "no retrieved evidence candidate",
+          "selected_value": null,
+          "state": "MISSING"
+        }
+      ],
+      "field_suggestions": [],
+      "form_id": "B89",
+      "low_confidence_fields": [],
+      "missing_fields": [
+        "date",
+        "facility_name"
+      ],
+      "production_scope": true,
+      "retrieval_method": "keyword_fallback",
+      "retrieved_context": [],
+      "review_required_fields": [],
+      "source_files": [
+        "evidence.txt"
+      ],
+      "write_authority": "none; exact approval_map.json is required before DOCX patching"
+    },
+    "B90": {
+      "conflicts": [],
+      "decision_summary": {
+        "counts_by_state": {
+          "MISSING": 2
+        },
+        "fill_eligible_field_ids": []
+      },
+      "default_status": "first_class",
+      "field_decisions": [
+        {
+          "candidates": [],
+          "confidence": null,
+          "field_id": "date",
+          "reason": "no retrieved evidence candidate",
+          "selected_value": null,
+          "state": "MISSING"
+        },
+        {
+          "candidates": [],
+          "confidence": null,
+          "field_id": "facility_name",
+          "reason": "no retrieved evidence candidate",
+          "selected_value": null,
+          "state": "MISSING"
+        }
+      ],
+      "field_suggestions": [],
+      "form_id": "B90",
+      "low_confidence_fields": [],
+      "missing_fields": [
+        "date",
+        "facility_name"
+      ],
+      "production_scope": true,
+      "retrieval_method": "keyword_fallback",
+      "retrieved_context": [],
+      "review_required_fields": [],
+      "source_files": [
+        "evidence.txt"
+      ],
+      "write_authority": "none; exact approval_map.json is required before DOCX patching"
+    },
+    "Cover_Page": {
+      "conflicts": [],
+      "decision_summary": {
+        "counts_by_state": {
+          "FILL": 2
+        },
+        "fill_eligible_field_ids": [
+          "date",
+          "facility_name"
+        ]
+      },
+      "default_status": "first_class",
+      "field_decisions": [
+        {
+          "candidates": [
+            {
+              "candidate_value": "2026-01-01",
+              "chunk_excerpt": "B24 RL2 evidence Facility: Midwest Date: 2026-01-01",
+              "chunk_hash": "a18ea40d6268fca7429d28cbc294496e03769ad1ba225af44370c562d2756439",
+              "chunk_id": 1,
+              "confidence": 0.95,
+              "field_id": "date",
+              "retrieval_score": 37,
+              "review_required": true,
+              "semantic_score": 0.033446,
+              "source_file": "evidence.txt"
+            }
+          ],
+          "confidence": 0.95,
+          "field_id": "date",
+          "reason": "selected highest-confidence local evidence",
+          "selected_value": "2026-01-01",
+          "state": "FILL"
+        },
+        {
+          "candidates": [
+            {
+              "candidate_value": "Midwest Date: 2026-01-01",
+              "chunk_excerpt": "B24 RL2 evidence Facility: Midwest Date: 2026-01-01",
+              "chunk_hash": "a18ea40d6268fca7429d28cbc294496e03769ad1ba225af44370c562d2756439",
+              "chunk_id": 1,
+              "confidence": 0.95,
+              "field_id": "facility_name",
+              "retrieval_score": 37,
+              "review_required": true,
+              "semantic_score": 0.033446,
+              "source_file": "evidence.txt"
+            }
+          ],
+          "confidence": 0.95,
+          "field_id": "facility_name",
+          "reason": "selected highest-confidence local evidence",
+          "selected_value": "Midwest Date: 2026-01-01",
+          "state": "FILL"
+        }
+      ],
+      "field_suggestions": [
+        {
+          "candidate_value": "Midwest Date: 2026-01-01",
+          "chunk_excerpt": "B24 RL2 evidence Facility: Midwest Date: 2026-01-01",
+          "chunk_hash": "a18ea40d6268fca7429d28cbc294496e03769ad1ba225af44370c562d2756439",
+          "chunk_id": 1,
+          "confidence": 0.95,
+          "field_id": "facility_name",
+          "retrieval_score": 37,
+          "review_required": true,
+          "semantic_score": 0.033446,
+          "source_file": "evidence.txt"
+        },
+        {
+          "candidate_value": "2026-01-01",
+          "chunk_excerpt": "B24 RL2 evidence Facility: Midwest Date: 2026-01-01",
+          "chunk_hash": "a18ea40d6268fca7429d28cbc294496e03769ad1ba225af44370c562d2756439",
+          "chunk_id": 1,
+          "confidence": 0.95,
+          "field_id": "date",
+          "retrieval_score": 37,
+          "review_required": true,
+          "semantic_score": 0.033446,
+          "source_file": "evidence.txt"
+        }
+      ],
+      "form_id": "Cover_Page",
+      "low_confidence_fields": [],
+      "missing_fields": [],
+      "production_scope": true,
+      "retrieval_method": "local_tfidf_cosine",
+      "retrieved_context": [
+        {
+          "chunk_excerpt": "B24 RL2 evidence Facility: Midwest Date: 2026-01-01",
+          "chunk_hash": "a18ea40d6268fca7429d28cbc294496e03769ad1ba225af44370c562d2756439",
+          "chunk_id": 1,
+          "keyword_score": 2,
+          "retrieval_method": "local_tfidf_cosine",
+          "retrieval_score": 37,
+          "score": 37,
+          "semantic_score": 0.033446,
+          "source_file": "evidence.txt",
+          "text": "B24 RL2 evidence Facility: Midwest Date: 2026-01-01"
+        }
+      ],
+      "review_required_fields": [],
+      "source_files": [
+        "evidence.txt"
+      ],
+      "write_authority": "none; exact approval_map.json is required before DOCX patching"
+    }
+  },
+  "forms": [
+    "B24_RL2",
+    "B81",
+    "B89",
+    "B90",
+    "Cover_Page"
+  ],
+  "generated_at": "2026-05-08T02:12:52+00:00",
+  "inputs": [
+    {
+      "extraction_method": "local_text",
+      "sha256": "a18ea40d6268fca7429d28cbc294496e03769ad1ba225af44370c562d2756439",
+      "source_file": "evidence.txt",
+      "status": "extracted"
+    }
+  ],
+  "legacy_adapter_used": false,
+  "missing_context_forms": [
+    "B89",
+    "B90"
+  ],
+  "mode": "local_rag_extraction",
+  "production_scope_forms": [
+    "B24_RL2",
+    "B81",
+    "B89",
+    "B90",
+    "Cover_Page"
+  ],
+  "status": "review_required",
+  "structure_guard_discard_detail": [],
+  "structure_guard_failed_forms": [],
+  "write_authority": "exact approval maps required; only FILL decisions are passed to DOCX patching"
+}

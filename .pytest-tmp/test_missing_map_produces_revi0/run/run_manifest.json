@@ -1,0 +1,129 @@
+{
+  "artifacts": {
+    "aggregate_review_path": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_missing_map_produces_revi0\\run\\review\\form_evidence_packets.json",
+    "per_form_reviews": {
+      "B24_RL2": {
+        "json": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_missing_map_produces_revi0\\run\\review\\B24_RL2_evidence_packet.json",
+        "markdown": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_missing_map_produces_revi0\\run\\review\\B24_RL2_review.md"
+      },
+      "B81": {
+        "json": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_missing_map_produces_revi0\\run\\review\\B81_evidence_packet.json",
+        "markdown": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_missing_map_produces_revi0\\run\\review\\B81_review.md"
+      },
+      "B89": {
+        "json": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_missing_map_produces_revi0\\run\\review\\B89_evidence_packet.json",
+        "markdown": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_missing_map_produces_revi0\\run\\review\\B89_review.md"
+      },
+      "B90": {
+        "json": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_missing_map_produces_revi0\\run\\review\\B90_evidence_packet.json",
+        "markdown": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_missing_map_produces_revi0\\run\\review\\B90_review.md"
+      },
+      "Cover_Page": {
+        "json": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_missing_map_produces_revi0\\run\\review\\Cover_Page_evidence_packet.json",
+        "markdown": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_missing_map_produces_revi0\\run\\review\\Cover_Page_review.md"
+      }
+    },
+    "retrieval_path": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_missing_map_produces_revi0\\run\\raw\\local_rag_retrieval.json"
+  },
+  "docupipe_used": false,
+  "docx_generation": [
+    {
+      "approval_map": null,
+      "attempted": false,
+      "errors": [
+        "No approval map found for B24_RL2"
+      ],
+      "filled_docx": null,
+      "form_id": "B24_RL2",
+      "patched_fields": [],
+      "status": "skipped_missing_exact_approval_map",
+      "structure_guard_passed": false,
+      "structure_guard_report": null,
+      "template": null
+    },
+    {
+      "approval_map": null,
+      "attempted": false,
+      "errors": [
+        "No approval map found for B81"
+      ],
+      "filled_docx": null,
+      "form_id": "B81",
+      "patched_fields": [],
+      "status": "skipped_missing_exact_approval_map",
+      "structure_guard_passed": false,
+      "structure_guard_report": null,
+      "template": null
+    },
+    {
+      "approval_map": null,
+      "attempted": false,
+      "errors": [
+        "No approval map found for B89"
+      ],
+      "filled_docx": null,
+      "form_id": "B89",
+      "patched_fields": [],
+      "status": "skipped_no_fill_decisions",
+      "structure_guard_passed": false,
+      "structure_guard_report": null,
+      "template": null
+    },
+    {
+      "approval_map": null,
+      "attempted": false,
+      "errors": [
+        "No approval map found for B90"
+      ],
+      "filled_docx": null,
+      "form_id": "B90",
+      "patched_fields": [],
+      "status": "skipped_no_fill_decisions",
+      "structure_guard_passed": false,
+      "structure_guard_report": null,
+      "template": null
+    },
+    {
+      "approval_map": null,
+      "attempted": false,
+      "errors": [
+        "No approval map found for Cover_Page"
+      ],
+      "filled_docx": null,
+      "form_id": "Cover_Page",
+      "patched_fields": [],
+      "status": "skipped_missing_exact_approval_map",
+      "structure_guard_passed": false,
+      "structure_guard_report": null,
+      "template": null
+    }
+  ],
+  "embedding_model": "local semantic ranking: keyword_fallback, local_tfidf_cosine (evidence-only; does not authorize writes)",
+  "forms": [
+    "B24_RL2",
+    "B81",
+    "B89",
+    "B90",
+    "Cover_Page"
+  ],
+  "legacy_adapter_used": false,
+  "llm_runner": "not required for deterministic local review",
+  "mode": "local_rag_extraction",
+  "ocr_engine": "local text/PDF extraction; OCR hooks only",
+  "outputs": [
+    "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_missing_map_produces_revi0\\run\\canonical_evidence.json",
+    "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_missing_map_produces_revi0\\run\\field_traceability.json",
+    "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_missing_map_produces_revi0\\run\\review\\local_rag_review.json",
+    "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_missing_map_produces_revi0\\run\\review\\local_rag_review.md",
+    "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_missing_map_produces_revi0\\run\\rag_selection_report.json",
+    "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_missing_map_produces_revi0\\run\\review\\form_evidence_packets.json"
+  ],
+  "rag_selection_report": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_missing_map_produces_revi0\\run\\rag_selection_report.json",
+  "review_json": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_missing_map_produces_revi0\\run\\review\\local_rag_review.json",
+  "review_markdown": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_missing_map_produces_revi0\\run\\review\\local_rag_review.md",
+  "status": "review_required",
+  "structure_guard_failed_forms": [],
+  "structure_guard_passed": true,
+  "structure_guard_report": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_missing_map_produces_revi0\\run\\structure_guard_report.json",
+  "vector_db": "none; local TF-IDF / keyword (no cloud index)"
+}

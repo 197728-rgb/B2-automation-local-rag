@@ -3,10 +3,37 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
+<<<<<<< HEAD
 from enum import StrEnum
 from typing import Literal
+=======
+from enum import Enum
+from typing import Any, Literal
+>>>>>>> b2490eb (Stage 6/7 hardening: maps, guardrails, semantic retrieval, evidence outputs)
 
-Decision = Literal["fill", "blank", "review"]
+class DecisionState(str, Enum):
+    FILL = "FILL"
+    BLANK = "BLANK"
+    REVIEW_REQUIRED = "REVIEW_REQUIRED"
+    MISSING = "MISSING"
+    CONFLICT = "CONFLICT"
+    LOW_CONFIDENCE = "LOW_CONFIDENCE"
+
+
+def parse_decision_state(raw: str | None) -> DecisionState | None:
+    """Parse a serialized decision state string (strict; no fuzzy matching)."""
+    if raw is None:
+        return None
+    s = str(raw).strip()
+    if not s:
+        return None
+    try:
+        return DecisionState(s)
+    except ValueError:
+        return None
+
+
+Decision = DecisionState
 CellRole = Literal[
     "target",
     "label",
@@ -43,7 +70,7 @@ class EvidenceCell:
     confidence: float | None = None
     source_document: str | None = None
     source_page: int | None = None
-    decision: Decision = "blank"
+    decision: Decision = DecisionState.BLANK
     is_target: bool = False
     cell_role: CellRole = "unknown"
     required: bool = False
@@ -52,7 +79,29 @@ class EvidenceCell:
     notes: str = ""
 
     def to_dict(self) -> dict[str, object]:
-        return asdict(self)
+        data = asdict(self)
+        data["decision"] = self.decision.value
+        return data
+
+
+@dataclass(frozen=True)
+class FieldDecision:
+    field_id: str
+    state: DecisionState
+    selected_value: str | None = None
+    confidence: float | None = None
+    reason: str = ""
+    candidates: tuple[dict[str, Any], ...] = ()
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "field_id": self.field_id,
+            "state": self.state.value,
+            "selected_value": self.selected_value,
+            "confidence": self.confidence,
+            "reason": self.reason,
+            "candidates": list(self.candidates),
+        }
 
 
 def decide_cell(
@@ -67,12 +116,12 @@ def decide_cell(
     """Return the allowed decision for a mapped evidence cell.
 
     Rules:
-    - required + missing => review
-    - optional + missing => blank
-    - conflict => review
-    - low confidence => review
+    - required + missing => MISSING
+    - optional + missing => BLANK
+    - conflict => CONFLICT
+    - low confidence => LOW_CONFIDENCE
     - notes cells are reviewed unless explicitly supported by upstream aggregation
-    - otherwise => fill
+    - otherwise => FILL
     """
 
     missing = value is None or str(value).strip() == ""
@@ -85,6 +134,7 @@ def decide_cell(
     if cell_role == "notes":
         return DecisionState.REVIEW_REQUIRED
     return DecisionState.FILL
+<<<<<<< HEAD
 class DecisionState(StrEnum):
     FILL = "FILL"
     BLANK = "BLANK"
@@ -100,3 +150,5 @@ def state_to_decision(state: DecisionState) -> Decision:
     if state == DecisionState.BLANK:
         return "blank"
     return "review"
+=======
+>>>>>>> b2490eb (Stage 6/7 hardening: maps, guardrails, semantic retrieval, evidence outputs)

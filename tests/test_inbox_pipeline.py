@@ -52,14 +52,15 @@ def test_inbox_pipeline_local_default_generates_all_form_packets(tmp_path: Path,
 
     result = run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run")
 
-    template = root / "templates" / "B24_RL1.docx"
+    sample_tpl = root / "templates" / "B24_RL2.docx"
     run_manifest_data = json.loads(result.manifest_path.read_text(encoding="utf-8"))
     assert result.status in {"success", "review_required"}
-    if template.is_file():
+    if sample_tpl.is_file():
         guard = json.loads((tmp_path / "run" / "structure_guard_report.json").read_text(encoding="utf-8"))
         assert guard["pass"] is True
         assert run_manifest_data.get("structure_guard_passed") is True
         assert result.filled_docx_path is not None and result.filled_docx_path.is_file()
+        assert result.filled_docx_path.name.endswith("_filled.docx")
         assert run_manifest_data.get("structure_guard_failed_forms") == []
     else:
         assert result.filled_docx_path is None
@@ -81,12 +82,14 @@ def test_inbox_pipeline_local_default_generates_all_form_packets(tmp_path: Path,
     assert manifest["docupipe_used"] is False
     assert manifest["legacy_adapter_used"] is False
     assert set(review["forms"]) == set(DEFAULT_REVIEW_FORMS)
-    assert review["legacy_sample_forms"] == ["B24_RL1"]
+    assert review["production_scope_forms"] == list(DEFAULT_REVIEW_FORMS)
     for form in DEFAULT_REVIEW_FORMS:
         packet_path = run_dir / "review" / f"{form}_evidence_packet.json"
         assert packet_path.is_file()
         assert (run_dir / "review" / f"{form}_review.md").is_file()
         packet = json.loads(packet_path.read_text(encoding="utf-8"))
+        assert packet.get("production_scope") is True
+        assert "b24_rl1_legacy_only" not in packet
         assert "missing_fields" in packet
         assert "conflicts" in packet
         assert "low_confidence_fields" in packet
@@ -104,6 +107,7 @@ def test_inbox_pipeline_local_default_generates_all_form_packets(tmp_path: Path,
         assert packet["field_suggestions"]
 
 
+@pytest.mark.legacy_rl1
 def test_inbox_pipeline_legacy_docupipe_stub_generates_traceable_outputs(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     root = _repo_root()
     template = root / "templates" / "B24_RL1.docx"
@@ -150,6 +154,33 @@ def test_inbox_pipeline_legacy_docupipe_stub_generates_traceable_outputs(tmp_pat
     assert "confidence=" in blob.lower()
 
 
+def test_inbox_pipeline_local_rejects_b24_rl1_review_forms(tmp_path: Path) -> None:
+    root = _repo_root()
+    inbox = tmp_path / "inbox"
+    inbox.mkdir()
+    (inbox / "evidence.txt").write_text("local evidence", encoding="utf-8")
+    with pytest.raises(ValueError, match="legacy/sample-only"):
+        run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run", review_forms=("B24_RL1",))
+
+
+def test_default_local_inbox_does_not_load_b24_rl1_manifest(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    root = _repo_root()
+    inbox = tmp_path / "inbox"
+    inbox.mkdir()
+    (inbox / "packet_one.txt").write_text("Cover Page Facility: Midwest\nB24 RL2 evidence\n", encoding="utf-8")
+
+    def _load_manifest_forbidden(_path: object) -> dict:
+        raise AssertionError("load_manifest must not be used on the default local inbox path")
+
+    monkeypatch.setattr("b2_automation.inbox_pipeline.load_manifest", _load_manifest_forbidden)
+
+    def _blocked_docupipe(_pdf: Path):
+        raise AssertionError("DocuPipe must not be called by default local inbox")
+
+    monkeypatch.setattr("b2_automation.inbox_pipeline.process_pdf", _blocked_docupipe)
+    run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run")
+
+
 def test_inbox_pipeline_missing_pdf_folder_content_fails_clearly(tmp_path: Path) -> None:
     root = _repo_root()
     inbox = tmp_path / "empty_inbox"
@@ -167,6 +198,7 @@ def test_docupipe_live_mode_missing_credentials_fails(monkeypatch: pytest.Monkey
     with pytest.raises(DocuPipeConfigError, match="DOCUPIPE_API_KEY"):
         process_pdf(pdf)
 
+@pytest.mark.legacy_rl1
 def test_inbox_pipeline_uses_selected_confidence_for_low_confidence_flags(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     root = _repo_root()
     template = root / "templates" / "B24_RL1.docx"
@@ -215,6 +247,7 @@ def test_inbox_pipeline_uses_selected_confidence_for_low_confidence_flags(tmp_pa
     assert review["low_confidence_fields"] == []
 
 
+@pytest.mark.legacy_rl1
 def test_inbox_pipeline_required_field_from_manifest_enforced(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     root = _repo_root()
     template = root / "templates" / "B24_RL1.docx"

@@ -18,23 +18,18 @@ from typing import Any, Iterable
 
 from b2_automation.cell_evidence import DecisionState, FieldDecision
 from b2_automation.decision_engine import decide_fields_for_local_packet, summarize_decisions
+from b2_automation.local_retrieval_constants import FORM_KEYWORDS
+from b2_automation.local_semantic_retrieval import retrieve_chunks_for_form
 from b2_automation.paths import resolve_project_root
 
 DEFAULT_REVIEW_FORMS = ("B24_RL2", "B81", "B89", "B90", "Cover_Page")
-LEGACY_REVIEW_FORMS = ("B24_RL1",)
-ALLOWED_REVIEW_FORMS = DEFAULT_REVIEW_FORMS + LEGACY_REVIEW_FORMS
+# B24_RL1 is legacy/sample only; not a valid `b2 inbox --review-forms` value (use legacy commands
+# or `b2 inbox --legacy-docupipe` for the DocuPipe adapter).
+LEGACY_SAMPLE_FORM_IDS = ("B24_RL1",)
+ALLOWED_REVIEW_FORMS = DEFAULT_REVIEW_FORMS
 LOCAL_EVIDENCE_EXTENSIONS = (".pdf", ".txt", ".md", ".markdown", ".json", ".csv")
 DEFAULT_REQUIRED_SUGGESTION_FIELDS = ("facility_name", "date")
 DEFAULT_LOW_CONFIDENCE_THRESHOLD = 0.70
-
-FORM_KEYWORDS: dict[str, tuple[str, ...]] = {
-    "B24_RL2": ("b24", "b-24", "rl2", "repair level 2", "objective evidence"),
-    "B81": ("b81", "b-81", "b81/b24", "stub sill", "only"),
-    "B89": ("b89", "b-89", "insulation", "test plate"),
-    "B90": ("b90", "b-90", "rls", "release", "return to service"),
-    "Cover_Page": ("cover", "cover page", "aar", "audit", "facility", "company"),
-}
-
 
 @dataclass(frozen=True)
 class LocalEvidenceDocument:
@@ -88,6 +83,12 @@ def normalize_review_forms(forms: Iterable[str] | None) -> tuple[str, ...]:
         original = str(item).strip()
         key = original.replace("-", "_")
         form = aliases.get(key.upper(), key)
+        if form == "B24_RL1":
+            raise ValueError(
+                "B24_RL1 is legacy/sample-only and cannot be selected via local inbox --review-forms. "
+                "Use `b2 inbox --legacy-docupipe` with a PDF inbox for the DocuPipe/B24_RL1 adapter, "
+                "or legacy commands `b2 fill-b24-rl1-sample` / `b2 fill-b24-rl1-from-docupipe`."
+            )
         if form not in ALLOWED_REVIEW_FORMS:
             allowed = ", ".join(ALLOWED_REVIEW_FORMS)
             raise ValueError(f"Unknown review form {original!r}. Allowed values: {allowed}")
@@ -189,7 +190,7 @@ def build_form_packets(
 ) -> dict[str, dict[str, Any]]:
     packets: dict[str, dict[str, Any]] = {}
     for form in review_forms:
-        retrieved = _retrieve_for_form(form, documents, chunks_by_source)
+        retrieved, retrieval_method = retrieve_chunks_for_form(form, documents, chunks_by_source)
         suggestions = _field_suggestions(retrieved, form)
         decisions = decide_fields_for_local_packet(
             retrieved=retrieved,
@@ -201,9 +202,10 @@ def build_form_packets(
         packets[form] = {
             "form_id": form,
             "default_status": "first_class" if form in DEFAULT_REVIEW_FORMS else "requested",
-            "b24_rl1_legacy_only": form == "B24_RL1",
+            "production_scope": form in DEFAULT_REVIEW_FORMS,
             "source_files": [doc.source_file for doc in documents],
             "retrieved_context": retrieved,
+            "retrieval_method": retrieval_method,
             "field_suggestions": suggestions,
             "field_decisions": [decision.to_dict() for decision in decisions],
             "decision_summary": summarize_decisions(decisions),
@@ -214,31 +216,6 @@ def build_form_packets(
             "write_authority": "none; exact approval_map.json is required before DOCX patching",
         }
     return packets
-
-
-def _retrieve_for_form(
-    form: str,
-    documents: list[LocalEvidenceDocument],
-    chunks_by_source: dict[str, list[dict[str, Any]]],
-) -> list[dict[str, Any]]:
-    keywords = FORM_KEYWORDS.get(form, (form.lower(),))
-    scored: list[dict[str, Any]] = []
-    for doc in documents:
-        for chunk in chunks_by_source.get(doc.source_file, []):
-            lower = str(chunk["text"]).lower()
-            score = sum(2 if phrase in lower else 0 for phrase in keywords)
-            score += sum(1 for token in re.findall(r"[a-z0-9]+", form.lower()) if token and token in lower)
-            if score > 0:
-                scored.append(
-                    {
-                        "source_file": doc.source_file,
-                        "chunk_id": chunk["chunk_id"],
-                        "score": score,
-                        "text": _preview(str(chunk["text"])),
-                    }
-                )
-    scored.sort(key=lambda item: (-int(item["score"]), str(item["source_file"]), int(item["chunk_id"])))
-    return scored[:8]
 
 
 def _field_suggestions(retrieved: list[dict[str, Any]], form: str = "") -> list[dict[str, Any]]:
@@ -273,7 +250,10 @@ def _field_suggestions(retrieved: list[dict[str, Any]], form: str = "") -> list[
                     "confidence": _deterministic_confidence(field, value, int(item.get("score") or 0)),
                     "source_file": item["source_file"],
                     "chunk_id": item["chunk_id"],
-                    "retrieval_score": item.get("score"),
+                    "chunk_hash": item.get("chunk_hash"),
+                    "chunk_excerpt": item.get("chunk_excerpt") or item.get("text"),
+                    "retrieval_score": item.get("retrieval_score") if item.get("retrieval_score") is not None else item.get("score"),
+                    "semantic_score": item.get("semantic_score"),
                     "review_required": True,
                 }
             )

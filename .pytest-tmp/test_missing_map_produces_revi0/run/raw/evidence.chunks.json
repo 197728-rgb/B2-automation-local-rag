@@ -1,0 +1,11 @@
+{
+  "chunks": [
+    {
+      "chunk_id": 1,
+      "end": 51,
+      "start": 0,
+      "text": "B24 RL2 evidence Facility: Midwest Date: 2026-01-01"
+    }
+  ],
+  "source_file": "evidence.txt"
+}

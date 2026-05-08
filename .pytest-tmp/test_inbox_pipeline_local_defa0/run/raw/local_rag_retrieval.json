@@ -1,0 +1,877 @@
+{
+  "B24_RL2": {
+    "conflicts": [],
+    "decision_summary": {
+      "counts_by_state": {
+        "FILL": 4
+      },
+      "fill_eligible_field_ids": [
+        "auditor",
+        "car_number",
+        "date",
+        "facility_name"
+      ]
+    },
+    "default_status": "first_class",
+    "field_decisions": [
+      {
+        "candidates": [
+          {
+            "candidate_value": "Casey",
+            "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+            "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+            "chunk_id": 1,
+            "confidence": 0.87,
+            "field_id": "auditor",
+            "retrieval_score": 290,
+            "review_required": true,
+            "semantic_score": 0.273831,
+            "source_file": "packet_one.txt"
+          }
+        ],
+        "confidence": 0.87,
+        "field_id": "auditor",
+        "reason": "selected highest-confidence local evidence",
+        "selected_value": "Casey",
+        "state": "FILL"
+      },
+      {
+        "candidates": [
+          {
+            "candidate_value": "DOTX 123456",
+            "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+            "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+            "chunk_id": 1,
+            "confidence": 0.95,
+            "field_id": "car_number",
+            "retrieval_score": 290,
+            "review_required": true,
+            "semantic_score": 0.273831,
+            "source_file": "packet_one.txt"
+          }
+        ],
+        "confidence": 0.95,
+        "field_id": "car_number",
+        "reason": "selected highest-confidence local evidence",
+        "selected_value": "DOTX 123456",
+        "state": "FILL"
+      },
+      {
+        "candidates": [
+          {
+            "candidate_value": "2026-05-07",
+            "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+            "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+            "chunk_id": 1,
+            "confidence": 0.95,
+            "field_id": "date",
+            "retrieval_score": 290,
+            "review_required": true,
+            "semantic_score": 0.273831,
+            "source_file": "packet_one.txt"
+          }
+        ],
+        "confidence": 0.95,
+        "field_id": "date",
+        "reason": "selected highest-confidence local evidence",
+        "selected_value": "2026-05-07",
+        "state": "FILL"
+      },
+      {
+        "candidates": [
+          {
+            "candidate_value": "Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill",
+            "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+            "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+            "chunk_id": 1,
+            "confidence": 0.95,
+            "field_id": "facility_name",
+            "retrieval_score": 290,
+            "review_required": true,
+            "semantic_score": 0.273831,
+            "source_file": "packet_one.txt"
+          }
+        ],
+        "confidence": 0.95,
+        "field_id": "facility_name",
+        "reason": "selected highest-confidence local evidence",
+        "selected_value": "Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill",
+        "state": "FILL"
+      }
+    ],
+    "field_suggestions": [
+      {
+        "candidate_value": "Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill",
+        "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+        "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+        "chunk_id": 1,
+        "confidence": 0.95,
+        "field_id": "facility_name",
+        "retrieval_score": 290,
+        "review_required": true,
+        "semantic_score": 0.273831,
+        "source_file": "packet_one.txt"
+      },
+      {
+        "candidate_value": "Casey",
+        "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+        "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+        "chunk_id": 1,
+        "confidence": 0.87,
+        "field_id": "auditor",
+        "retrieval_score": 290,
+        "review_required": true,
+        "semantic_score": 0.273831,
+        "source_file": "packet_one.txt"
+      },
+      {
+        "candidate_value": "2026-05-07",
+        "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+        "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+        "chunk_id": 1,
+        "confidence": 0.95,
+        "field_id": "date",
+        "retrieval_score": 290,
+        "review_required": true,
+        "semantic_score": 0.273831,
+        "source_file": "packet_one.txt"
+      },
+      {
+        "candidate_value": "DOTX 123456",
+        "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+        "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+        "chunk_id": 1,
+        "confidence": 0.95,
+        "field_id": "car_number",
+        "retrieval_score": 290,
+        "review_required": true,
+        "semantic_score": 0.273831,
+        "source_file": "packet_one.txt"
+      }
+    ],
+    "form_id": "B24_RL2",
+    "low_confidence_fields": [],
+    "missing_fields": [],
+    "production_scope": true,
+    "retrieval_method": "local_tfidf_cosine",
+    "retrieved_context": [
+      {
+        "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+        "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+        "chunk_id": 1,
+        "keyword_score": 8,
+        "retrieval_method": "local_tfidf_cosine",
+        "retrieval_score": 290,
+        "score": 290,
+        "semantic_score": 0.273831,
+        "source_file": "packet_one.txt",
+        "text": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey"
+      }
+    ],
+    "review_required_fields": [],
+    "source_files": [
+      "packet_one.txt"
+    ],
+    "write_authority": "none; exact approval_map.json is required before DOCX patching"
+  },
+  "B81": {
+    "conflicts": [],
+    "decision_summary": {
+      "counts_by_state": {
+        "FILL": 4
+      },
+      "fill_eligible_field_ids": [
+        "auditor",
+        "car_number",
+        "date",
+        "facility_name"
+      ]
+    },
+    "default_status": "first_class",
+    "field_decisions": [
+      {
+        "candidates": [
+          {
+            "candidate_value": "Casey",
+            "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+            "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+            "chunk_id": 1,
+            "confidence": 0.87,
+            "field_id": "auditor",
+            "retrieval_score": 204,
+            "review_required": true,
+            "semantic_score": 0.194354,
+            "source_file": "packet_one.txt"
+          }
+        ],
+        "confidence": 0.87,
+        "field_id": "auditor",
+        "reason": "selected highest-confidence local evidence",
+        "selected_value": "Casey",
+        "state": "FILL"
+      },
+      {
+        "candidates": [
+          {
+            "candidate_value": "DOTX 123456",
+            "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+            "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+            "chunk_id": 1,
+            "confidence": 0.95,
+            "field_id": "car_number",
+            "retrieval_score": 204,
+            "review_required": true,
+            "semantic_score": 0.194354,
+            "source_file": "packet_one.txt"
+          }
+        ],
+        "confidence": 0.95,
+        "field_id": "car_number",
+        "reason": "selected highest-confidence local evidence",
+        "selected_value": "DOTX 123456",
+        "state": "FILL"
+      },
+      {
+        "candidates": [
+          {
+            "candidate_value": "2026-05-07",
+            "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+            "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+            "chunk_id": 1,
+            "confidence": 0.95,
+            "field_id": "date",
+            "retrieval_score": 204,
+            "review_required": true,
+            "semantic_score": 0.194354,
+            "source_file": "packet_one.txt"
+          }
+        ],
+        "confidence": 0.95,
+        "field_id": "date",
+        "reason": "selected highest-confidence local evidence",
+        "selected_value": "2026-05-07",
+        "state": "FILL"
+      },
+      {
+        "candidates": [
+          {
+            "candidate_value": "Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill",
+            "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+            "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+            "chunk_id": 1,
+            "confidence": 0.95,
+            "field_id": "facility_name",
+            "retrieval_score": 204,
+            "review_required": true,
+            "semantic_score": 0.194354,
+            "source_file": "packet_one.txt"
+          }
+        ],
+        "confidence": 0.95,
+        "field_id": "facility_name",
+        "reason": "selected highest-confidence local evidence",
+        "selected_value": "Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill",
+        "state": "FILL"
+      }
+    ],
+    "field_suggestions": [
+      {
+        "candidate_value": "Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill",
+        "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+        "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+        "chunk_id": 1,
+        "confidence": 0.95,
+        "field_id": "facility_name",
+        "retrieval_score": 204,
+        "review_required": true,
+        "semantic_score": 0.194354,
+        "source_file": "packet_one.txt"
+      },
+      {
+        "candidate_value": "Casey",
+        "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+        "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+        "chunk_id": 1,
+        "confidence": 0.87,
+        "field_id": "auditor",
+        "retrieval_score": 204,
+        "review_required": true,
+        "semantic_score": 0.194354,
+        "source_file": "packet_one.txt"
+      },
+      {
+        "candidate_value": "2026-05-07",
+        "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+        "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+        "chunk_id": 1,
+        "confidence": 0.95,
+        "field_id": "date",
+        "retrieval_score": 204,
+        "review_required": true,
+        "semantic_score": 0.194354,
+        "source_file": "packet_one.txt"
+      },
+      {
+        "candidate_value": "DOTX 123456",
+        "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+        "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+        "chunk_id": 1,
+        "confidence": 0.95,
+        "field_id": "car_number",
+        "retrieval_score": 204,
+        "review_required": true,
+        "semantic_score": 0.194354,
+        "source_file": "packet_one.txt"
+      }
+    ],
+    "form_id": "B81",
+    "low_confidence_fields": [],
+    "missing_fields": [],
+    "production_scope": true,
+    "retrieval_method": "local_tfidf_cosine",
+    "retrieved_context": [
+      {
+        "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+        "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+        "chunk_id": 1,
+        "keyword_score": 5,
+        "retrieval_method": "local_tfidf_cosine",
+        "retrieval_score": 204,
+        "score": 204,
+        "semantic_score": 0.194354,
+        "source_file": "packet_one.txt",
+        "text": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey"
+      }
+    ],
+    "review_required_fields": [],
+    "source_files": [
+      "packet_one.txt"
+    ],
+    "write_authority": "none; exact approval_map.json is required before DOCX patching"
+  },
+  "B89": {
+    "conflicts": [],
+    "decision_summary": {
+      "counts_by_state": {
+        "FILL": 4
+      },
+      "fill_eligible_field_ids": [
+        "auditor",
+        "car_number",
+        "date",
+        "facility_name"
+      ]
+    },
+    "default_status": "first_class",
+    "field_decisions": [
+      {
+        "candidates": [
+          {
+            "candidate_value": "Casey",
+            "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+            "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+            "chunk_id": 1,
+            "confidence": 0.87,
+            "field_id": "auditor",
+            "retrieval_score": 222,
+            "review_required": true,
+            "semantic_score": 0.207829,
+            "source_file": "packet_one.txt"
+          }
+        ],
+        "confidence": 0.87,
+        "field_id": "auditor",
+        "reason": "selected highest-confidence local evidence",
+        "selected_value": "Casey",
+        "state": "FILL"
+      },
+      {
+        "candidates": [
+          {
+            "candidate_value": "DOTX 123456",
+            "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+            "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+            "chunk_id": 1,
+            "confidence": 0.95,
+            "field_id": "car_number",
+            "retrieval_score": 222,
+            "review_required": true,
+            "semantic_score": 0.207829,
+            "source_file": "packet_one.txt"
+          }
+        ],
+        "confidence": 0.95,
+        "field_id": "car_number",
+        "reason": "selected highest-confidence local evidence",
+        "selected_value": "DOTX 123456",
+        "state": "FILL"
+      },
+      {
+        "candidates": [
+          {
+            "candidate_value": "2026-05-07",
+            "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+            "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+            "chunk_id": 1,
+            "confidence": 0.95,
+            "field_id": "date",
+            "retrieval_score": 222,
+            "review_required": true,
+            "semantic_score": 0.207829,
+            "source_file": "packet_one.txt"
+          }
+        ],
+        "confidence": 0.95,
+        "field_id": "date",
+        "reason": "selected highest-confidence local evidence",
+        "selected_value": "2026-05-07",
+        "state": "FILL"
+      },
+      {
+        "candidates": [
+          {
+            "candidate_value": "Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill",
+            "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+            "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+            "chunk_id": 1,
+            "confidence": 0.95,
+            "field_id": "facility_name",
+            "retrieval_score": 222,
+            "review_required": true,
+            "semantic_score": 0.207829,
+            "source_file": "packet_one.txt"
+          }
+        ],
+        "confidence": 0.95,
+        "field_id": "facility_name",
+        "reason": "selected highest-confidence local evidence",
+        "selected_value": "Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill",
+        "state": "FILL"
+      }
+    ],
+    "field_suggestions": [
+      {
+        "candidate_value": "Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill",
+        "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+        "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+        "chunk_id": 1,
+        "confidence": 0.95,
+        "field_id": "facility_name",
+        "retrieval_score": 222,
+        "review_required": true,
+        "semantic_score": 0.207829,
+        "source_file": "packet_one.txt"
+      },
+      {
+        "candidate_value": "Casey",
+        "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+        "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+        "chunk_id": 1,
+        "confidence": 0.87,
+        "field_id": "auditor",
+        "retrieval_score": 222,
+        "review_required": true,
+        "semantic_score": 0.207829,
+        "source_file": "packet_one.txt"
+      },
+      {
+        "candidate_value": "2026-05-07",
+        "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+        "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+        "chunk_id": 1,
+        "confidence": 0.95,
+        "field_id": "date",
+        "retrieval_score": 222,
+        "review_required": true,
+        "semantic_score": 0.207829,
+        "source_file": "packet_one.txt"
+      },
+      {
+        "candidate_value": "DOTX 123456",
+        "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+        "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+        "chunk_id": 1,
+        "confidence": 0.95,
+        "field_id": "car_number",
+        "retrieval_score": 222,
+        "review_required": true,
+        "semantic_score": 0.207829,
+        "source_file": "packet_one.txt"
+      }
+    ],
+    "form_id": "B89",
+    "low_confidence_fields": [],
+    "missing_fields": [],
+    "production_scope": true,
+    "retrieval_method": "local_tfidf_cosine",
+    "retrieved_context": [
+      {
+        "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+        "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+        "chunk_id": 1,
+        "keyword_score": 7,
+        "retrieval_method": "local_tfidf_cosine",
+        "retrieval_score": 222,
+        "score": 222,
+        "semantic_score": 0.207829,
+        "source_file": "packet_one.txt",
+        "text": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey"
+      }
+    ],
+    "review_required_fields": [],
+    "source_files": [
+      "packet_one.txt"
+    ],
+    "write_authority": "none; exact approval_map.json is required before DOCX patching"
+  },
+  "B90": {
+    "conflicts": [],
+    "decision_summary": {
+      "counts_by_state": {
+        "FILL": 4
+      },
+      "fill_eligible_field_ids": [
+        "auditor",
+        "car_number",
+        "date",
+        "facility_name"
+      ]
+    },
+    "default_status": "first_class",
+    "field_decisions": [
+      {
+        "candidates": [
+          {
+            "candidate_value": "Casey",
+            "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+            "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+            "chunk_id": 1,
+            "confidence": 0.87,
+            "field_id": "auditor",
+            "retrieval_score": 234,
+            "review_required": true,
+            "semantic_score": 0.219695,
+            "source_file": "packet_one.txt"
+          }
+        ],
+        "confidence": 0.87,
+        "field_id": "auditor",
+        "reason": "selected highest-confidence local evidence",
+        "selected_value": "Casey",
+        "state": "FILL"
+      },
+      {
+        "candidates": [
+          {
+            "candidate_value": "DOTX 123456",
+            "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+            "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+            "chunk_id": 1,
+            "confidence": 0.95,
+            "field_id": "car_number",
+            "retrieval_score": 234,
+            "review_required": true,
+            "semantic_score": 0.219695,
+            "source_file": "packet_one.txt"
+          }
+        ],
+        "confidence": 0.95,
+        "field_id": "car_number",
+        "reason": "selected highest-confidence local evidence",
+        "selected_value": "DOTX 123456",
+        "state": "FILL"
+      },
+      {
+        "candidates": [
+          {
+            "candidate_value": "2026-05-07",
+            "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+            "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+            "chunk_id": 1,
+            "confidence": 0.95,
+            "field_id": "date",
+            "retrieval_score": 234,
+            "review_required": true,
+            "semantic_score": 0.219695,
+            "source_file": "packet_one.txt"
+          }
+        ],
+        "confidence": 0.95,
+        "field_id": "date",
+        "reason": "selected highest-confidence local evidence",
+        "selected_value": "2026-05-07",
+        "state": "FILL"
+      },
+      {
+        "candidates": [
+          {
+            "candidate_value": "Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill",
+            "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+            "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+            "chunk_id": 1,
+            "confidence": 0.95,
+            "field_id": "facility_name",
+            "retrieval_score": 234,
+            "review_required": true,
+            "semantic_score": 0.219695,
+            "source_file": "packet_one.txt"
+          }
+        ],
+        "confidence": 0.95,
+        "field_id": "facility_name",
+        "reason": "selected highest-confidence local evidence",
+        "selected_value": "Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill",
+        "state": "FILL"
+      }
+    ],
+    "field_suggestions": [
+      {
+        "candidate_value": "Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill",
+        "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+        "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+        "chunk_id": 1,
+        "confidence": 0.95,
+        "field_id": "facility_name",
+        "retrieval_score": 234,
+        "review_required": true,
+        "semantic_score": 0.219695,
+        "source_file": "packet_one.txt"
+      },
+      {
+        "candidate_value": "Casey",
+        "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+        "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+        "chunk_id": 1,
+        "confidence": 0.87,
+        "field_id": "auditor",
+        "retrieval_score": 234,
+        "review_required": true,
+        "semantic_score": 0.219695,
+        "source_file": "packet_one.txt"
+      },
+      {
+        "candidate_value": "2026-05-07",
+        "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+        "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+        "chunk_id": 1,
+        "confidence": 0.95,
+        "field_id": "date",
+        "retrieval_score": 234,
+        "review_required": true,
+        "semantic_score": 0.219695,
+        "source_file": "packet_one.txt"
+      },
+      {
+        "candidate_value": "DOTX 123456",
+        "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+        "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+        "chunk_id": 1,
+        "confidence": 0.95,
+        "field_id": "car_number",
+        "retrieval_score": 234,
+        "review_required": true,
+        "semantic_score": 0.219695,
+        "source_file": "packet_one.txt"
+      }
+    ],
+    "form_id": "B90",
+    "low_confidence_fields": [],
+    "missing_fields": [],
+    "production_scope": true,
+    "retrieval_method": "local_tfidf_cosine",
+    "retrieved_context": [
+      {
+        "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+        "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+        "chunk_id": 1,
+        "keyword_score": 7,
+        "retrieval_method": "local_tfidf_cosine",
+        "retrieval_score": 234,
+        "score": 234,
+        "semantic_score": 0.219695,
+        "source_file": "packet_one.txt",
+        "text": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey"
+      }
+    ],
+    "review_required_fields": [],
+    "source_files": [
+      "packet_one.txt"
+    ],
+    "write_authority": "none; exact approval_map.json is required before DOCX patching"
+  },
+  "Cover_Page": {
+    "conflicts": [],
+    "decision_summary": {
+      "counts_by_state": {
+        "FILL": 4
+      },
+      "fill_eligible_field_ids": [
+        "auditor",
+        "car_number",
+        "date",
+        "facility_name"
+      ]
+    },
+    "default_status": "first_class",
+    "field_decisions": [
+      {
+        "candidates": [
+          {
+            "candidate_value": "Casey",
+            "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+            "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+            "chunk_id": 1,
+            "confidence": 0.87,
+            "field_id": "auditor",
+            "retrieval_score": 218,
+            "review_required": true,
+            "semantic_score": 0.198382,
+            "source_file": "packet_one.txt"
+          }
+        ],
+        "confidence": 0.87,
+        "field_id": "auditor",
+        "reason": "selected highest-confidence local evidence",
+        "selected_value": "Casey",
+        "state": "FILL"
+      },
+      {
+        "candidates": [
+          {
+            "candidate_value": "DOTX 123456",
+            "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+            "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+            "chunk_id": 1,
+            "confidence": 0.95,
+            "field_id": "car_number",
+            "retrieval_score": 218,
+            "review_required": true,
+            "semantic_score": 0.198382,
+            "source_file": "packet_one.txt"
+          }
+        ],
+        "confidence": 0.95,
+        "field_id": "car_number",
+        "reason": "selected highest-confidence local evidence",
+        "selected_value": "DOTX 123456",
+        "state": "FILL"
+      },
+      {
+        "candidates": [
+          {
+            "candidate_value": "2026-05-07",
+            "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+            "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+            "chunk_id": 1,
+            "confidence": 0.95,
+            "field_id": "date",
+            "retrieval_score": 218,
+            "review_required": true,
+            "semantic_score": 0.198382,
+            "source_file": "packet_one.txt"
+          }
+        ],
+        "confidence": 0.95,
+        "field_id": "date",
+        "reason": "selected highest-confidence local evidence",
+        "selected_value": "2026-05-07",
+        "state": "FILL"
+      },
+      {
+        "candidates": [
+          {
+            "candidate_value": "Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill",
+            "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+            "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+            "chunk_id": 1,
+            "confidence": 0.95,
+            "field_id": "facility_name",
+            "retrieval_score": 218,
+            "review_required": true,
+            "semantic_score": 0.198382,
+            "source_file": "packet_one.txt"
+          }
+        ],
+        "confidence": 0.95,
+        "field_id": "facility_name",
+        "reason": "selected highest-confidence local evidence",
+        "selected_value": "Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill",
+        "state": "FILL"
+      }
+    ],
+    "field_suggestions": [
+      {
+        "candidate_value": "Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill",
+        "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+        "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+        "chunk_id": 1,
+        "confidence": 0.95,
+        "field_id": "facility_name",
+        "retrieval_score": 218,
+        "review_required": true,
+        "semantic_score": 0.198382,
+        "source_file": "packet_one.txt"
+      },
+      {
+        "candidate_value": "Casey",
+        "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+        "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+        "chunk_id": 1,
+        "confidence": 0.87,
+        "field_id": "auditor",
+        "retrieval_score": 218,
+        "review_required": true,
+        "semantic_score": 0.198382,
+        "source_file": "packet_one.txt"
+      },
+      {
+        "candidate_value": "2026-05-07",
+        "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+        "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+        "chunk_id": 1,
+        "confidence": 0.95,
+        "field_id": "date",
+        "retrieval_score": 218,
+        "review_required": true,
+        "semantic_score": 0.198382,
+        "source_file": "packet_one.txt"
+      },
+      {
+        "candidate_value": "DOTX 123456",
+        "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+        "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+        "chunk_id": 1,
+        "confidence": 0.95,
+        "field_id": "car_number",
+        "retrieval_score": 218,
+        "review_required": true,
+        "semantic_score": 0.198382,
+        "source_file": "packet_one.txt"
+      }
+    ],
+    "form_id": "Cover_Page",
+    "low_confidence_fields": [],
+    "missing_fields": [],
+    "production_scope": true,
+    "retrieval_method": "local_tfidf_cosine",
+    "retrieved_context": [
+      {
+        "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey",
+        "chunk_hash": "e2e52810a6d7bced59f80a95d7e12af6e3feca5395cb3a4afbdfe072c1f7b413",
+        "chunk_id": 1,
+        "keyword_score": 10,
+        "retrieval_method": "local_tfidf_cosine",
+        "retrieval_score": 218,
+        "score": 218,
+        "semantic_score": 0.198382,
+        "source_file": "packet_one.txt",
+        "text": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456 B89 insulation test plate evidence B90 RLS return to service evidence Auditor: Casey"
+      }
+    ],
+    "review_required_fields": [],
+    "source_files": [
+      "packet_one.txt"
+    ],
+    "write_authority": "none; exact approval_map.json is required before DOCX patching"
+  }
+}

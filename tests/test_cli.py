@@ -52,6 +52,15 @@ def test_b2_inbox_rejects_unknown_review_form(tmp_path):
     assert "B24_RL2" in r.stderr
 
 
+def test_b2_inbox_rejects_b24_rl1_review_form(tmp_path):
+    inbox = tmp_path / "inbox"
+    inbox.mkdir()
+    (inbox / "evidence.txt").write_text("evidence", encoding="utf-8")
+    r = _run_cli(["inbox", "--inbox", str(inbox), "--out", str(tmp_path / "out"), "--review-forms", "B24_RL1"])
+    assert r.returncode == 2
+    assert "legacy/sample-only" in r.stderr
+
+
 def test_b2_discover_no_templates_dir(tmp_path):
     r = _run_cli(
         ["discover"],

@@ -1,0 +1,75 @@
+{
+  "forms": [
+    {
+      "approval_map": null,
+      "attempted": false,
+      "errors": [
+        "No approval map found for B24_RL2"
+      ],
+      "filled_docx": null,
+      "form_id": "B24_RL2",
+      "patched_fields": [],
+      "status": "skipped_missing_exact_approval_map",
+      "structure_guard_passed": false,
+      "structure_guard_report": null,
+      "template": null
+    },
+    {
+      "approval_map": null,
+      "attempted": false,
+      "errors": [
+        "No approval map found for B81"
+      ],
+      "filled_docx": null,
+      "form_id": "B81",
+      "patched_fields": [],
+      "status": "skipped_missing_exact_approval_map",
+      "structure_guard_passed": false,
+      "structure_guard_report": null,
+      "template": null
+    },
+    {
+      "approval_map": null,
+      "attempted": false,
+      "errors": [
+        "No approval map found for B89"
+      ],
+      "filled_docx": null,
+      "form_id": "B89",
+      "patched_fields": [],
+      "status": "skipped_no_fill_decisions",
+      "structure_guard_passed": false,
+      "structure_guard_report": null,
+      "template": null
+    },
+    {
+      "approval_map": null,
+      "attempted": false,
+      "errors": [
+        "No approval map found for B90"
+      ],
+      "filled_docx": null,
+      "form_id": "B90",
+      "patched_fields": [],
+      "status": "skipped_no_fill_decisions",
+      "structure_guard_passed": false,
+      "structure_guard_report": null,
+      "template": null
+    },
+    {
+      "approval_map": null,
+      "attempted": false,
+      "errors": [
+        "No approval map found for Cover_Page"
+      ],
+      "filled_docx": null,
+      "form_id": "Cover_Page",
+      "patched_fields": [],
+      "status": "skipped_missing_exact_approval_map",
+      "structure_guard_passed": false,
+      "structure_guard_report": null,
+      "template": null
+    }
+  ],
+  "pass": true
+}

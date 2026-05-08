@@ -16,6 +16,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0.0"]
+semantic = ["numpy>=1.24.0", "scikit-learn>=1.3.0"]
 
 [project.scripts]
 b2 = "b2_automation.cli:main"
@@ -27,3 +28,6 @@ where = ["src"]
 testpaths = ["tests"]
 pythonpath = ["src"]
 addopts = ["-p", "no:cacheprovider"]
+markers = [
+    "legacy_rl1: legacy B24_RL1 / DocuPipe adapter tests",
+]

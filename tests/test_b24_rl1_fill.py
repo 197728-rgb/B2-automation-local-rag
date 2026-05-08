@@ -8,6 +8,9 @@ import pytest
 from docx import Document
 
 from b2_automation.b24_rl1_filler import fill_b24_rl1_partial, load_manifest
+from b2_automation.paths import B24_SHARED_TEMPLATE_DOCX
+
+pytestmark = pytest.mark.legacy_rl1
 
 
 def _repo_root() -> Path:
@@ -34,7 +37,7 @@ def _cell_text_for_field(doc: Document, manifest: dict, field_id: str) -> str:
 @pytest.fixture
 def b24_paths():
     root = _repo_root()
-    template = root / "templates" / "B24_RL1.docx"
+    template = root / "templates" / B24_SHARED_TEMPLATE_DOCX
     manifest = root / "schemas" / "templates" / "B24_RL1.json"
     return root, template, manifest
 

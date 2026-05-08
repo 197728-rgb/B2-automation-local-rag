@@ -1,0 +1,71 @@
+{
+  "forms": [
+    {
+      "approval_map": "C:\\Projects\\B2-automation-local-rag\\schemas\\maps\\B24_RL2.json",
+      "attempted": true,
+      "errors": [],
+      "filled_docx": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_default_local_inbox_does_0\\run\\filled\\B24_RL2_filled.docx",
+      "form_id": "B24_RL2",
+      "patched_fields": [
+        "facility_name"
+      ],
+      "status": "filled",
+      "structure_guard_passed": true,
+      "structure_guard_report": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_default_local_inbox_does_0\\run\\structure_guard_reports\\B24_RL2_structure_guard_report.json",
+      "template": "C:\\Projects\\B2-automation-local-rag\\templates\\B24_RL2.docx"
+    },
+    {
+      "approval_map": "C:\\Projects\\B2-automation-local-rag\\schemas\\maps\\B81.json",
+      "attempted": true,
+      "errors": [],
+      "filled_docx": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_default_local_inbox_does_0\\run\\filled\\B81_filled.docx",
+      "form_id": "B81",
+      "patched_fields": [
+        "facility_name"
+      ],
+      "status": "filled",
+      "structure_guard_passed": true,
+      "structure_guard_report": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_default_local_inbox_does_0\\run\\structure_guard_reports\\B81_structure_guard_report.json",
+      "template": "C:\\Projects\\B2-automation-local-rag\\templates\\B81_B24_ONLY.docx"
+    },
+    {
+      "approval_map": "C:\\Projects\\B2-automation-local-rag\\schemas\\maps\\B89.json",
+      "attempted": false,
+      "errors": [],
+      "filled_docx": null,
+      "form_id": "B89",
+      "patched_fields": [],
+      "status": "skipped_no_fill_decisions",
+      "structure_guard_passed": false,
+      "structure_guard_report": null,
+      "template": "C:\\Projects\\B2-automation-local-rag\\templates\\B89_INSULATION_TEST_PLATE.docx"
+    },
+    {
+      "approval_map": "C:\\Projects\\B2-automation-local-rag\\schemas\\maps\\B90.json",
+      "attempted": false,
+      "errors": [],
+      "filled_docx": null,
+      "form_id": "B90",
+      "patched_fields": [],
+      "status": "skipped_no_fill_decisions",
+      "structure_guard_passed": false,
+      "structure_guard_report": null,
+      "template": "C:\\Projects\\B2-automation-local-rag\\templates\\B90_RLS.docx"
+    },
+    {
+      "approval_map": "C:\\Projects\\B2-automation-local-rag\\schemas\\maps\\Cover_Page.json",
+      "attempted": true,
+      "errors": [],
+      "filled_docx": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_default_local_inbox_does_0\\run\\filled\\Cover_Page_filled.docx",
+      "form_id": "Cover_Page",
+      "patched_fields": [
+        "facility_name"
+      ],
+      "status": "filled",
+      "structure_guard_passed": true,
+      "structure_guard_report": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_default_local_inbox_does_0\\run\\structure_guard_reports\\Cover_Page_structure_guard_report.json",
+      "template": "C:\\Projects\\B2-automation-local-rag\\templates\\Cover_Page.docx"
+    }
+  ],
+  "pass": true
+}

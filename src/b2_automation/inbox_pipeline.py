@@ -11,16 +11,26 @@ import json
 import shutil
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping
 
-from b2_automation.approval_maps import load_exact_approval_bundle
+from b2_automation.approval_maps import ApprovalBundle, load_exact_approval_bundle, load_exact_approval_bundle_checked
+from b2_automation.evidence_outputs import (
+    build_canonical_evidence_document,
+    build_field_traceability_document,
+    build_legacy_b24_rl1_packet_from_review,
+    build_legacy_docx_results,
+)
 from b2_automation.b24_normalizer import normalize_docupipe_payload_for_b24_rl1
 from b2_automation.b24_rl1_filler import REVIEW_REQUIRED_TEXT, load_manifest
+<<<<<<< HEAD
 <<<<<<< HEAD
 from b2_automation.cell_evidence import DecisionState, decide_cell, state_to_decision
 =======
 from b2_automation.cell_evidence import DecisionState, decide_cell
 >>>>>>> f1714d6 (Wire exact approval maps for safe OOXML writes)
+=======
+from b2_automation.cell_evidence import DecisionState, decide_cell, parse_decision_state
+>>>>>>> b2490eb (Stage 6/7 hardening: maps, guardrails, semantic retrieval, evidence outputs)
 from b2_automation.docupipe_client import process_pdf
 from b2_automation.local_extraction import (
     DEFAULT_REVIEW_FORMS,
@@ -32,10 +42,16 @@ from b2_automation.local_extraction import (
     utc_now,
     write_local_artifacts,
 )
-from b2_automation.ooxml_writer import patch_docx_cells
+from b2_automation.ooxml_writer import PatchOutcome, patch_docx_cells
+from b2_automation.paths import B24_SHARED_TEMPLATE_DOCX
 
 DEFAULT_REQUIRED_FIELDS = ("tco_name", "pitp_id", "car_type")
 DEFAULT_LOW_CONFIDENCE_THRESHOLD = 0.70
+
+
+def _retrieval_summary(packets: dict[str, dict[str, Any]], forms: tuple[str, ...]) -> str:
+    modes = sorted({str(packets.get(f, {}).get("retrieval_method") or "unknown") for f in forms})
+    return "local semantic ranking: " + ", ".join(modes) + " (evidence-only; does not authorize writes)"
 
 
 @dataclass(frozen=True)
@@ -295,7 +311,7 @@ def _inventory_status_counts(rows: list[dict[str, Any]]) -> dict[str, int]:
 
 def _write_review_md(path: Path, review: dict[str, Any]) -> None:
     lines = [
-        "# B24 RL1 Review Report",
+        "# Legacy DocuPipe / B24_RL1 Review Report",
         "",
         f"Run status: **{review['status']}**",
         f"Generated: {review['generated_at']}",
@@ -353,7 +369,7 @@ def _field_values_from_packet(packet: dict[str, Any]) -> tuple[dict[str, str], d
     values: dict[str, str] = {}
     confidences: dict[str, float] = {}
     for decision in packet.get("field_decisions", []):
-        if decision.get("state") != DecisionState.FILL.value:
+        if parse_decision_state(decision.get("state")) != DecisionState.FILL:
             continue
         value = decision.get("selected_value")
         if value is None or str(value).strip() == "":
@@ -363,6 +379,19 @@ def _field_values_from_packet(packet: dict[str, Any]) -> tuple[dict[str, str], d
         if decision.get("confidence") is not None:
             confidences[field_id] = float(decision["confidence"])
     return values, confidences
+
+
+def _manifest_cells_for_fill(bundle: ApprovalBundle, values: Mapping[str, str]) -> dict[str, Any]:
+    """Include only manifest rows for FILL keys that exist in the exact approval map."""
+    raw_fields = bundle.approval_map.get("fields") or {}
+    approved_ids = {str(k) for k in raw_fields.keys()} if isinstance(raw_fields, dict) else set()
+    cells: list[dict[str, Any]] = []
+    for spec in bundle.manifest.get("cells") or []:
+        fid = str(spec.get("field_id", ""))
+        if fid not in values or fid not in approved_ids:
+            continue
+        cells.append(spec)
+    return {**dict(bundle.manifest), "cells": cells}
 
 
 def _write_local_filled_docx(
@@ -381,7 +410,8 @@ def _write_local_filled_docx(
     results: list[dict[str, Any]] = []
     for form, packet in packets.items():
         values, confidences = _field_values_from_packet(packet)
-        bundle = load_exact_approval_bundle(root, form)
+        load_result = load_exact_approval_bundle_checked(root, form)
+        bundle = load_result.bundle
         result: dict[str, Any] = {
             "form_id": form,
             "attempted": False,
@@ -392,7 +422,7 @@ def _write_local_filled_docx(
             "structure_guard_report": None,
             "structure_guard_passed": False,
             "patched_fields": [],
-            "errors": [],
+            "errors": list(load_result.errors),
         }
         if not values:
             results.append(result)
@@ -406,21 +436,24 @@ def _write_local_filled_docx(
             results.append(result)
             continue
 
-        required_ids = {
-            str(spec["field_id"])
-            for spec in (bundle.manifest.get("cells") or [])
-            if _truthy(spec.get("required"))
-        }
+        fill_manifest = _manifest_cells_for_fill(bundle, values)
+        if not fill_manifest.get("cells"):
+            result["status"] = "skipped_no_matching_manifest_cells"
+            result["errors"] = [
+                "FILL field_ids must appear in manifest cells and in approval map fields with exact coordinates.",
+            ]
+            results.append(result)
+            continue
         candidate_docx = work_dir / f"{form}_candidate.docx"
         final_docx = filled_dir / f"{form}_filled.docx"
         guard_path = guard_dir / f"{form}_structure_guard_report.json"
         outcome = patch_docx_cells(
             bundle.template_path,
-            bundle.manifest,
+            fill_manifest,
             values,
             candidate_docx,
             field_confidences=confidences,
-            required_field_ids=required_ids,
+            required_field_ids=set(),
             low_confidence_threshold=low_confidence_threshold,
             structure_guard_report_path=guard_path,
             approval_map=bundle.approval_map,
@@ -444,6 +477,12 @@ def _write_local_filled_docx(
                 candidate_docx.unlink()
             except FileNotFoundError:
                 pass
+            guard_payload: dict[str, Any] = {}
+            if guard_path.is_file():
+                guard_payload = json.loads(guard_path.read_text(encoding="utf-8"))
+            result["failure_reason"] = "structure_guard_failed"
+            result["structure_guard_errors"] = list(guard_payload.get("errors") or [])
+            result["pass"] = guard_payload.get("pass")
         results.append(result)
 
     attempted = [item for item in results if item.get("attempted")]
@@ -506,6 +545,24 @@ def _run_local_rag_inbox_pipeline(
         packets=packets,
         low_confidence_threshold=low_confidence_threshold,
     )
+    canonical_path = run_dir / "canonical_evidence.json"
+    trace_path = run_dir / "field_traceability.json"
+    canonical_path.write_text(
+        json.dumps(
+            build_canonical_evidence_document(forms=forms, packets=packets, docx_results=docx_results, root=root),
+            indent=2,
+            sort_keys=True,
+        ),
+        encoding="utf-8",
+    )
+    trace_path.write_text(
+        json.dumps(
+            build_field_traceability_document(forms=forms, packets=packets, docx_results=docx_results, root=root),
+            indent=2,
+            sort_keys=True,
+        ),
+        encoding="utf-8",
+    )
     failed_docx = [item for item in docx_results if item.get("attempted") and not item.get("structure_guard_passed")]
     review_states = {
         decision.get("state")
@@ -527,8 +584,7 @@ def _run_local_rag_inbox_pipeline(
         "docupipe_used": False,
         "legacy_adapter_used": False,
         "forms": list(forms),
-        "first_class_forms": list(DEFAULT_REVIEW_FORMS),
-        "legacy_sample_forms": ["B24_RL1"],
+        "production_scope_forms": list(DEFAULT_REVIEW_FORMS),
         "inputs": [
             {
                 "source_file": doc.source_file,
@@ -546,6 +602,22 @@ def _run_local_rag_inbox_pipeline(
         "structure_guard_failed_forms": [
             item["form_id"] for item in docx_results if item.get("attempted") and not item.get("structure_guard_passed")
         ],
+        "structure_guard_discard_detail": [
+            {
+                "form_id": item["form_id"],
+                "failure_reason": item.get("failure_reason"),
+                "structure_guard_errors": item.get("structure_guard_errors"),
+            }
+            for item in docx_results
+            if item.get("failure_reason") == "structure_guard_failed"
+        ],
+        "approval_map_and_fill_errors": [
+            {"form_id": item["form_id"], "errors": list(item.get("errors") or [])}
+            for item in docx_results
+            if item.get("errors")
+        ],
+        "canonical_evidence": str(canonical_path),
+        "field_traceability": str(trace_path),
     }
     review_json.write_text(json.dumps(review, indent=2, sort_keys=True), encoding="utf-8")
 
@@ -564,6 +636,14 @@ def _run_local_rag_inbox_pipeline(
     if docx_results:
         for item in docx_results:
             lines.append(f"- {item['form_id']}: {item['status']}")
+        discarded = [item for item in docx_results if item.get("failure_reason") == "structure_guard_failed"]
+        if discarded:
+            lines.extend(["", "## DOCX structure guard failures (filled output discarded)"])
+            for item in discarded:
+                lines.append(f"- **{item['form_id']}**: structure guard did not pass; candidate DOCX removed.")
+                errs = item.get("structure_guard_errors") or []
+                for msg in errs[:8]:
+                    lines.append(f"  - {msg}")
     else:
         lines.append("- No DOCX generation attempted.")
     lines.append("- RAG evidence did not authorize write locations; exact approval maps did.")
@@ -589,10 +669,9 @@ def _run_local_rag_inbox_pipeline(
         "legacy_adapter_used": False,
         "ocr_engine": "local text/PDF extraction; OCR hooks only",
         "llm_runner": "not required for deterministic local review",
-        "embedding_model": "lexical local retrieval",
-        "vector_db": "none",
+        "embedding_model": _retrieval_summary(packets, forms),
+        "vector_db": "none; local TF-IDF / keyword (no cloud index)",
         "forms": list(forms),
-        "b24_rl1_default": False,
         "review_json": str(review_json),
         "review_markdown": str(review_md),
         "rag_selection_report": str(rag_selection_path),
@@ -603,7 +682,14 @@ def _run_local_rag_inbox_pipeline(
         "structure_guard_report": str(run_dir / "structure_guard_report.json"),
         "structure_guard_passed": bool(guard_summary.get("pass")),
         "artifacts": artifact_index,
-        "outputs": [str(review_json), str(review_md), str(rag_selection_path), str(artifact_index["aggregate_review_path"])]
+        "outputs": [
+            str(canonical_path),
+            str(trace_path),
+            str(review_json),
+            str(review_md),
+            str(rag_selection_path),
+            str(artifact_index["aggregate_review_path"]),
+        ]
         + [str(item["filled_docx"]) for item in docx_results if item.get("filled_docx")],
     }
     manifest_path.write_text(json.dumps(run_manifest, indent=2, sort_keys=True), encoding="utf-8")
@@ -713,21 +799,31 @@ def run_inbox_pipeline(
         status = "review_required"
 
     filled_docx: Path | None = None
+<<<<<<< HEAD
     exact_approval_map = _load_exact_approval_map(root, "B24_RL1")
     if records and exact_approval_map is not None:
         template = root / "templates" / "B24_RL1.docx"
+=======
+    patch_outcome: PatchOutcome | None = None
+    template_b24 = root / "templates" / B24_SHARED_TEMPLATE_DOCX
+    structure_guard_report_path = run_dir / "structure_guard_report.json"
+    if records:
+>>>>>>> b2490eb (Stage 6/7 hardening: maps, guardrails, semantic retrieval, evidence outputs)
         candidate_filled_docx = filled_dir / "B24_RL1_filled.docx"
-        structure_guard_report = run_dir / "structure_guard_report.json"
         patch_outcome = patch_docx_cells(
-            template,
+            template_b24,
             manifest,
             merged_values,
             candidate_filled_docx,
             field_confidences=merged_confidences,
             required_field_ids=set(active_required_fields),
             low_confidence_threshold=low_confidence_threshold,
+<<<<<<< HEAD
             structure_guard_report_path=structure_guard_report,
             approval_map=exact_approval_map,
+=======
+            structure_guard_report_path=structure_guard_report_path,
+>>>>>>> b2490eb (Stage 6/7 hardening: maps, guardrails, semantic retrieval, evidence outputs)
         )
         if patch_outcome.structure_guard_passed:
             filled_docx = patch_outcome.output_docx
@@ -753,6 +849,62 @@ def run_inbox_pipeline(
         "structure_guard_report": str(run_dir / "structure_guard_report.json") if records else None,
         "selected_approval_map": str(root / "schemas" / "maps" / "B24_RL1.approval_map.json") if exact_approval_map else None,
     }
+    sgr_path = run_dir / "structure_guard_report.json"
+    if records and sgr_path.is_file():
+        review["structure_guard"] = json.loads(sgr_path.read_text(encoding="utf-8"))
+
+    legacy_packet = build_legacy_b24_rl1_packet_from_review({"cell_inventory_report": cell_inventory_report})
+    legacy_forms = ("B24_RL1",)
+    legacy_packets = {"B24_RL1": legacy_packet}
+    docx_results_legacy = build_legacy_docx_results(
+        records=records,
+        template_path=template_b24,
+        structure_guard_report_path=structure_guard_report_path if records else None,
+        filled_docx=filled_docx,
+        patch_attempted=bool(records),
+        structure_guard_passed=patch_outcome.structure_guard_passed if patch_outcome else None,
+        patched_fields=patch_outcome.patched_fields if patch_outcome else (),
+        patch_errors=patch_outcome.errors if patch_outcome else (),
+    )
+    canonical_path = run_dir / "canonical_evidence.json"
+    trace_path = run_dir / "field_traceability.json"
+    canonical_path.write_text(
+        json.dumps(
+            build_canonical_evidence_document(
+                forms=legacy_forms, packets=legacy_packets, docx_results=docx_results_legacy, root=root
+            ),
+            indent=2,
+            sort_keys=True,
+        ),
+        encoding="utf-8",
+    )
+    trace_path.write_text(
+        json.dumps(
+            build_field_traceability_document(
+                forms=legacy_forms, packets=legacy_packets, docx_results=docx_results_legacy, root=root
+            ),
+            indent=2,
+            sort_keys=True,
+        ),
+        encoding="utf-8",
+    )
+    review["canonical_evidence"] = str(canonical_path)
+    review["field_traceability"] = str(trace_path)
+    review["docx_generation"] = docx_results_legacy
+    review["write_authority"] = "legacy B24_RL1 manifest only; production forms require exact approval maps"
+    if records and patch_outcome and not patch_outcome.structure_guard_passed:
+        review["structure_guard_failed_forms"] = ["B24_RL1"]
+        review["structure_guard_discard_detail"] = [
+            {
+                "form_id": "B24_RL1",
+                "failure_reason": "structure_guard_failed",
+                "structure_guard_errors": list(patch_outcome.errors),
+            }
+        ]
+    else:
+        review["structure_guard_failed_forms"] = []
+        review["structure_guard_discard_detail"] = []
+
     review_json = review_dir / "B24_RL1_review.json"
     review_md = review_dir / "B24_RL1_review.md"
     manifest_path = run_dir / "run_manifest.json"
@@ -777,6 +929,16 @@ def run_inbox_pipeline(
         "filled_docx": str(filled_docx) if filled_docx else None,
         "structure_guard_report": review["structure_guard_report"],
         "structure_guard_passed": structure_guard_passed,
+        "canonical_evidence": str(canonical_path),
+        "field_traceability": str(trace_path),
+        "structure_guard_failed_forms": list(review.get("structure_guard_failed_forms") or []),
+        "docx_generation": docx_results_legacy,
+        "outputs": [
+            str(canonical_path),
+            str(trace_path),
+            str(review_json),
+            str(review_md),
+        ],
     }
     manifest_path.write_text(json.dumps(run_manifest, indent=2, sort_keys=True), encoding="utf-8")
 

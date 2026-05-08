@@ -10,6 +10,8 @@ from docx import Document
 from b2_automation.b24_normalizer import normalize_docupipe_payload_for_b24_rl1
 from b2_automation.b24_pipeline import run_b24_rl1_from_docupipe
 
+pytestmark = pytest.mark.legacy_rl1
+
 
 def _repo() -> Path:
     return Path(__file__).resolve().parents[1]

@@ -1,0 +1,11 @@
+{
+  "characters": 126,
+  "extension": ".txt",
+  "extracted_at": "2026-05-08T02:13:00+00:00",
+  "extraction_method": "local_text",
+  "ocr_json_path": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_local_structure_gua0\\run\\raw\\packet_one.ocr.json",
+  "paid_api_used": false,
+  "sha256": "954309ffd7af6b9915a1248584be253f2fe2ff9e32410f0573b12581fe32bf0a",
+  "source_file": "packet_one.txt",
+  "source_path": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_local_structure_gua0\\inbox\\packet_one.txt"
+}

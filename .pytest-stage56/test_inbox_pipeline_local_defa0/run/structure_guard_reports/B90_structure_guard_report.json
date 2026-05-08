@@ -1,0 +1,44 @@
+{
+  "after": {
+    "cells": 363,
+    "footers": 1,
+    "gridSpan": 337,
+    "headers": 1,
+    "relationships": 9,
+    "rows": 105,
+    "styles": 1,
+    "tables": 5,
+    "text_nodes": 356,
+    "vMerge": 0
+  },
+  "before": {
+    "cells": 363,
+    "footers": 1,
+    "gridSpan": 337,
+    "headers": 1,
+    "relationships": 9,
+    "rows": 105,
+    "styles": 1,
+    "tables": 5,
+    "text_nodes": 346,
+    "vMerge": 0
+  },
+  "deltas": {
+    "cells": 0,
+    "footers": 0,
+    "gridSpan": 0,
+    "headers": 0,
+    "relationships": 0,
+    "rows": 0,
+    "styles": 0,
+    "tables": 0,
+    "text_nodes": 10,
+    "vMerge": 0
+  },
+  "errors": [],
+  "intentional_text_node_creations": 10,
+  "pass": true,
+  "text_nodes_delta_actual": 10,
+  "text_nodes_delta_expected": 10,
+  "text_nodes_delta_matches_expected": true
+}

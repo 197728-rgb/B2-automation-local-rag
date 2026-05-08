@@ -13,6 +13,8 @@ from b2_automation.b24_pipeline import run_b24_rl1_from_docupipe
 from b2_automation.b24_rl1_filler import load_manifest
 from b2_automation.ooxml_writer import count_docx_structure, patch_docx_cells
 
+pytestmark = pytest.mark.legacy_rl1
+
 
 def _repo() -> Path:
     return Path(__file__).resolve().parents[1]

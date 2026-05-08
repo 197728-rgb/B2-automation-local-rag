@@ -1,0 +1,8 @@
+{
+  "completed_at": "2026-05-08T00:17:19+00:00",
+  "raw_json_path": "C:\\Projects\\B2-automation-local-rag\\.pytest-stage56\\test_inbox_pipeline_legacy_doc0\\run\\raw\\packet_two.docupipe.json",
+  "sha256": "e940668843db4b4d9d17f6ce5614e71e38998c395847fd9327961bfe178c797e",
+  "source_file": "packet_two.pdf",
+  "status": "completed",
+  "submitted_at": "2026-05-08T00:17:19+00:00"
+}

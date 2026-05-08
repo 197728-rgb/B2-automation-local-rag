@@ -1,0 +1,15 @@
+---
+description: Local-first B2 automation guardrails for inbox review, DOCX writes, and traceability.
+alwaysApply: true
+---
+
+# Local automation guardrails
+
+- Use the **local-first** pipeline (local extraction, retrieval, review) for normal work.
+- Do **not** require paid APIs for normal tests, demos, or inbox review.
+- **DocuPipe** is legacy-only; use it only when the user explicitly passes `--legacy-docupipe`.
+- **RAG/retrieval must not authorize** writable DOCX locations or cells. Only **exact per-form/version approval maps** may authorize DOCX writes—never generic, nearest, latest, or similar maps.
+- **Preserve DOCX table formatting**; prefer **raw OOXML byte patching** for production DOCX writes.
+- Do **not** hand off a filled DOCX unless **`structure_guard_report.json`** passes.
+- Always emit **review JSON and Markdown** for missing, conflicting, and low-confidence evidence.
+- Keep **raw extraction, chunk, retrieval, and metadata** artifacts for traceability.

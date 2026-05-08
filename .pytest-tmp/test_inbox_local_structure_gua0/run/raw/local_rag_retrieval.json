@@ -1,0 +1,511 @@
+{
+  "B24_RL2": {
+    "conflicts": [],
+    "decision_summary": {
+      "counts_by_state": {
+        "FILL": 3
+      },
+      "fill_eligible_field_ids": [
+        "car_number",
+        "date",
+        "facility_name"
+      ]
+    },
+    "default_status": "first_class",
+    "field_decisions": [
+      {
+        "candidates": [
+          {
+            "candidate_value": "DOTX 123456",
+            "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456",
+            "chunk_hash": "bb45d0611691d915726cb362261d44429405f64de57818bd47a4a8f4dcf2c7c3",
+            "chunk_id": 1,
+            "confidence": 0.95,
+            "field_id": "car_number",
+            "retrieval_score": 330,
+            "review_required": true,
+            "semantic_score": 0.313528,
+            "source_file": "packet_one.txt"
+          }
+        ],
+        "confidence": 0.95,
+        "field_id": "car_number",
+        "reason": "selected highest-confidence local evidence",
+        "selected_value": "DOTX 123456",
+        "state": "FILL"
+      },
+      {
+        "candidates": [
+          {
+            "candidate_value": "2026-05-07",
+            "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456",
+            "chunk_hash": "bb45d0611691d915726cb362261d44429405f64de57818bd47a4a8f4dcf2c7c3",
+            "chunk_id": 1,
+            "confidence": 0.95,
+            "field_id": "date",
+            "retrieval_score": 330,
+            "review_required": true,
+            "semantic_score": 0.313528,
+            "source_file": "packet_one.txt"
+          }
+        ],
+        "confidence": 0.95,
+        "field_id": "date",
+        "reason": "selected highest-confidence local evidence",
+        "selected_value": "2026-05-07",
+        "state": "FILL"
+      },
+      {
+        "candidates": [
+          {
+            "candidate_value": "Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill",
+            "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456",
+            "chunk_hash": "bb45d0611691d915726cb362261d44429405f64de57818bd47a4a8f4dcf2c7c3",
+            "chunk_id": 1,
+            "confidence": 0.95,
+            "field_id": "facility_name",
+            "retrieval_score": 330,
+            "review_required": true,
+            "semantic_score": 0.313528,
+            "source_file": "packet_one.txt"
+          }
+        ],
+        "confidence": 0.95,
+        "field_id": "facility_name",
+        "reason": "selected highest-confidence local evidence",
+        "selected_value": "Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill",
+        "state": "FILL"
+      }
+    ],
+    "field_suggestions": [
+      {
+        "candidate_value": "Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill",
+        "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456",
+        "chunk_hash": "bb45d0611691d915726cb362261d44429405f64de57818bd47a4a8f4dcf2c7c3",
+        "chunk_id": 1,
+        "confidence": 0.95,
+        "field_id": "facility_name",
+        "retrieval_score": 330,
+        "review_required": true,
+        "semantic_score": 0.313528,
+        "source_file": "packet_one.txt"
+      },
+      {
+        "candidate_value": "2026-05-07",
+        "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456",
+        "chunk_hash": "bb45d0611691d915726cb362261d44429405f64de57818bd47a4a8f4dcf2c7c3",
+        "chunk_id": 1,
+        "confidence": 0.95,
+        "field_id": "date",
+        "retrieval_score": 330,
+        "review_required": true,
+        "semantic_score": 0.313528,
+        "source_file": "packet_one.txt"
+      },
+      {
+        "candidate_value": "DOTX 123456",
+        "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456",
+        "chunk_hash": "bb45d0611691d915726cb362261d44429405f64de57818bd47a4a8f4dcf2c7c3",
+        "chunk_id": 1,
+        "confidence": 0.95,
+        "field_id": "car_number",
+        "retrieval_score": 330,
+        "review_required": true,
+        "semantic_score": 0.313528,
+        "source_file": "packet_one.txt"
+      }
+    ],
+    "form_id": "B24_RL2",
+    "low_confidence_fields": [],
+    "missing_fields": [],
+    "production_scope": true,
+    "retrieval_method": "local_tfidf_cosine",
+    "retrieved_context": [
+      {
+        "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456",
+        "chunk_hash": "bb45d0611691d915726cb362261d44429405f64de57818bd47a4a8f4dcf2c7c3",
+        "chunk_id": 1,
+        "keyword_score": 8,
+        "retrieval_method": "local_tfidf_cosine",
+        "retrieval_score": 330,
+        "score": 330,
+        "semantic_score": 0.313528,
+        "source_file": "packet_one.txt",
+        "text": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456"
+      }
+    ],
+    "review_required_fields": [],
+    "source_files": [
+      "packet_one.txt"
+    ],
+    "write_authority": "none; exact approval_map.json is required before DOCX patching"
+  },
+  "B81": {
+    "conflicts": [],
+    "decision_summary": {
+      "counts_by_state": {
+        "FILL": 3
+      },
+      "fill_eligible_field_ids": [
+        "car_number",
+        "date",
+        "facility_name"
+      ]
+    },
+    "default_status": "first_class",
+    "field_decisions": [
+      {
+        "candidates": [
+          {
+            "candidate_value": "DOTX 123456",
+            "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456",
+            "chunk_hash": "bb45d0611691d915726cb362261d44429405f64de57818bd47a4a8f4dcf2c7c3",
+            "chunk_id": 1,
+            "confidence": 0.95,
+            "field_id": "car_number",
+            "retrieval_score": 282,
+            "review_required": true,
+            "semantic_score": 0.271979,
+            "source_file": "packet_one.txt"
+          }
+        ],
+        "confidence": 0.95,
+        "field_id": "car_number",
+        "reason": "selected highest-confidence local evidence",
+        "selected_value": "DOTX 123456",
+        "state": "FILL"
+      },
+      {
+        "candidates": [
+          {
+            "candidate_value": "2026-05-07",
+            "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456",
+            "chunk_hash": "bb45d0611691d915726cb362261d44429405f64de57818bd47a4a8f4dcf2c7c3",
+            "chunk_id": 1,
+            "confidence": 0.95,
+            "field_id": "date",
+            "retrieval_score": 282,
+            "review_required": true,
+            "semantic_score": 0.271979,
+            "source_file": "packet_one.txt"
+          }
+        ],
+        "confidence": 0.95,
+        "field_id": "date",
+        "reason": "selected highest-confidence local evidence",
+        "selected_value": "2026-05-07",
+        "state": "FILL"
+      },
+      {
+        "candidates": [
+          {
+            "candidate_value": "Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill",
+            "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456",
+            "chunk_hash": "bb45d0611691d915726cb362261d44429405f64de57818bd47a4a8f4dcf2c7c3",
+            "chunk_id": 1,
+            "confidence": 0.95,
+            "field_id": "facility_name",
+            "retrieval_score": 282,
+            "review_required": true,
+            "semantic_score": 0.271979,
+            "source_file": "packet_one.txt"
+          }
+        ],
+        "confidence": 0.95,
+        "field_id": "facility_name",
+        "reason": "selected highest-confidence local evidence",
+        "selected_value": "Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill",
+        "state": "FILL"
+      }
+    ],
+    "field_suggestions": [
+      {
+        "candidate_value": "Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill",
+        "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456",
+        "chunk_hash": "bb45d0611691d915726cb362261d44429405f64de57818bd47a4a8f4dcf2c7c3",
+        "chunk_id": 1,
+        "confidence": 0.95,
+        "field_id": "facility_name",
+        "retrieval_score": 282,
+        "review_required": true,
+        "semantic_score": 0.271979,
+        "source_file": "packet_one.txt"
+      },
+      {
+        "candidate_value": "2026-05-07",
+        "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456",
+        "chunk_hash": "bb45d0611691d915726cb362261d44429405f64de57818bd47a4a8f4dcf2c7c3",
+        "chunk_id": 1,
+        "confidence": 0.95,
+        "field_id": "date",
+        "retrieval_score": 282,
+        "review_required": true,
+        "semantic_score": 0.271979,
+        "source_file": "packet_one.txt"
+      },
+      {
+        "candidate_value": "DOTX 123456",
+        "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456",
+        "chunk_hash": "bb45d0611691d915726cb362261d44429405f64de57818bd47a4a8f4dcf2c7c3",
+        "chunk_id": 1,
+        "confidence": 0.95,
+        "field_id": "car_number",
+        "retrieval_score": 282,
+        "review_required": true,
+        "semantic_score": 0.271979,
+        "source_file": "packet_one.txt"
+      }
+    ],
+    "form_id": "B81",
+    "low_confidence_fields": [],
+    "missing_fields": [],
+    "production_scope": true,
+    "retrieval_method": "local_tfidf_cosine",
+    "retrieved_context": [
+      {
+        "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456",
+        "chunk_hash": "bb45d0611691d915726cb362261d44429405f64de57818bd47a4a8f4dcf2c7c3",
+        "chunk_id": 1,
+        "keyword_score": 5,
+        "retrieval_method": "local_tfidf_cosine",
+        "retrieval_score": 282,
+        "score": 282,
+        "semantic_score": 0.271979,
+        "source_file": "packet_one.txt",
+        "text": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456"
+      }
+    ],
+    "review_required_fields": [],
+    "source_files": [
+      "packet_one.txt"
+    ],
+    "write_authority": "none; exact approval_map.json is required before DOCX patching"
+  },
+  "B89": {
+    "conflicts": [],
+    "decision_summary": {
+      "counts_by_state": {
+        "MISSING": 2
+      },
+      "fill_eligible_field_ids": []
+    },
+    "default_status": "first_class",
+    "field_decisions": [
+      {
+        "candidates": [],
+        "confidence": null,
+        "field_id": "date",
+        "reason": "no retrieved evidence candidate",
+        "selected_value": null,
+        "state": "MISSING"
+      },
+      {
+        "candidates": [],
+        "confidence": null,
+        "field_id": "facility_name",
+        "reason": "no retrieved evidence candidate",
+        "selected_value": null,
+        "state": "MISSING"
+      }
+    ],
+    "field_suggestions": [],
+    "form_id": "B89",
+    "low_confidence_fields": [],
+    "missing_fields": [
+      "date",
+      "facility_name"
+    ],
+    "production_scope": true,
+    "retrieval_method": "keyword_fallback",
+    "retrieved_context": [],
+    "review_required_fields": [],
+    "source_files": [
+      "packet_one.txt"
+    ],
+    "write_authority": "none; exact approval_map.json is required before DOCX patching"
+  },
+  "B90": {
+    "conflicts": [],
+    "decision_summary": {
+      "counts_by_state": {
+        "MISSING": 2
+      },
+      "fill_eligible_field_ids": []
+    },
+    "default_status": "first_class",
+    "field_decisions": [
+      {
+        "candidates": [],
+        "confidence": null,
+        "field_id": "date",
+        "reason": "no retrieved evidence candidate",
+        "selected_value": null,
+        "state": "MISSING"
+      },
+      {
+        "candidates": [],
+        "confidence": null,
+        "field_id": "facility_name",
+        "reason": "no retrieved evidence candidate",
+        "selected_value": null,
+        "state": "MISSING"
+      }
+    ],
+    "field_suggestions": [],
+    "form_id": "B90",
+    "low_confidence_fields": [],
+    "missing_fields": [
+      "date",
+      "facility_name"
+    ],
+    "production_scope": true,
+    "retrieval_method": "keyword_fallback",
+    "retrieved_context": [],
+    "review_required_fields": [],
+    "source_files": [
+      "packet_one.txt"
+    ],
+    "write_authority": "none; exact approval_map.json is required before DOCX patching"
+  },
+  "Cover_Page": {
+    "conflicts": [],
+    "decision_summary": {
+      "counts_by_state": {
+        "FILL": 3
+      },
+      "fill_eligible_field_ids": [
+        "car_number",
+        "date",
+        "facility_name"
+      ]
+    },
+    "default_status": "first_class",
+    "field_decisions": [
+      {
+        "candidates": [
+          {
+            "candidate_value": "DOTX 123456",
+            "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456",
+            "chunk_hash": "bb45d0611691d915726cb362261d44429405f64de57818bd47a4a8f4dcf2c7c3",
+            "chunk_id": 1,
+            "confidence": 0.95,
+            "field_id": "car_number",
+            "retrieval_score": 294,
+            "review_required": true,
+            "semantic_score": 0.277616,
+            "source_file": "packet_one.txt"
+          }
+        ],
+        "confidence": 0.95,
+        "field_id": "car_number",
+        "reason": "selected highest-confidence local evidence",
+        "selected_value": "DOTX 123456",
+        "state": "FILL"
+      },
+      {
+        "candidates": [
+          {
+            "candidate_value": "2026-05-07",
+            "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456",
+            "chunk_hash": "bb45d0611691d915726cb362261d44429405f64de57818bd47a4a8f4dcf2c7c3",
+            "chunk_id": 1,
+            "confidence": 0.95,
+            "field_id": "date",
+            "retrieval_score": 294,
+            "review_required": true,
+            "semantic_score": 0.277616,
+            "source_file": "packet_one.txt"
+          }
+        ],
+        "confidence": 0.95,
+        "field_id": "date",
+        "reason": "selected highest-confidence local evidence",
+        "selected_value": "2026-05-07",
+        "state": "FILL"
+      },
+      {
+        "candidates": [
+          {
+            "candidate_value": "Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill",
+            "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456",
+            "chunk_hash": "bb45d0611691d915726cb362261d44429405f64de57818bd47a4a8f4dcf2c7c3",
+            "chunk_id": 1,
+            "confidence": 0.95,
+            "field_id": "facility_name",
+            "retrieval_score": 294,
+            "review_required": true,
+            "semantic_score": 0.277616,
+            "source_file": "packet_one.txt"
+          }
+        ],
+        "confidence": 0.95,
+        "field_id": "facility_name",
+        "reason": "selected highest-confidence local evidence",
+        "selected_value": "Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill",
+        "state": "FILL"
+      }
+    ],
+    "field_suggestions": [
+      {
+        "candidate_value": "Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill",
+        "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456",
+        "chunk_hash": "bb45d0611691d915726cb362261d44429405f64de57818bd47a4a8f4dcf2c7c3",
+        "chunk_id": 1,
+        "confidence": 0.95,
+        "field_id": "facility_name",
+        "retrieval_score": 294,
+        "review_required": true,
+        "semantic_score": 0.277616,
+        "source_file": "packet_one.txt"
+      },
+      {
+        "candidate_value": "2026-05-07",
+        "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456",
+        "chunk_hash": "bb45d0611691d915726cb362261d44429405f64de57818bd47a4a8f4dcf2c7c3",
+        "chunk_id": 1,
+        "confidence": 0.95,
+        "field_id": "date",
+        "retrieval_score": 294,
+        "review_required": true,
+        "semantic_score": 0.277616,
+        "source_file": "packet_one.txt"
+      },
+      {
+        "candidate_value": "DOTX 123456",
+        "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456",
+        "chunk_hash": "bb45d0611691d915726cb362261d44429405f64de57818bd47a4a8f4dcf2c7c3",
+        "chunk_id": 1,
+        "confidence": 0.95,
+        "field_id": "car_number",
+        "retrieval_score": 294,
+        "review_required": true,
+        "semantic_score": 0.277616,
+        "source_file": "packet_one.txt"
+      }
+    ],
+    "form_id": "Cover_Page",
+    "low_confidence_fields": [],
+    "missing_fields": [],
+    "production_scope": true,
+    "retrieval_method": "local_tfidf_cosine",
+    "retrieved_context": [
+      {
+        "chunk_excerpt": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456",
+        "chunk_hash": "bb45d0611691d915726cb362261d44429405f64de57818bd47a4a8f4dcf2c7c3",
+        "chunk_id": 1,
+        "keyword_score": 8,
+        "retrieval_method": "local_tfidf_cosine",
+        "retrieval_score": 294,
+        "score": 294,
+        "semantic_score": 0.277616,
+        "source_file": "packet_one.txt",
+        "text": "Cover Page Facility: Midwest Tank Rail Inc B24 RL2 objective evidence Date: 2026-05-07 B81 stub sill evidence Car: DOTX 123456"
+      }
+    ],
+    "review_required_fields": [],
+    "source_files": [
+      "packet_one.txt"
+    ],
+    "write_authority": "none; exact approval_map.json is required before DOCX patching"
+  }
+}

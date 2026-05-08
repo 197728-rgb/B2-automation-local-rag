@@ -1,0 +1,50 @@
+{
+  "cell_inventory_summary": {
+    "blank_optional": 14,
+    "blank_required_MISSING": 2,
+    "filled": 2
+  },
+  "docupipe_used": true,
+  "filled_docx": "C:\\Projects\\B2-automation-local-rag\\.pytest-stage56\\test_inbox_pipeline_required_f0\\run\\filled\\B24_RL1_filled.docx",
+  "inputs": [
+    {
+      "confidences": {
+        "pitp_id": 0.99
+      },
+      "field_values": {
+        "evidence_notes": "DocuPipe extraction audit trail (field_key, confidence, source).\npitp_id: value='MC-2024-77'; confidence=0.99; source: page_index=0",
+        "pitp_id": "MC-2024-77"
+      },
+      "metadata_path": "C:\\Projects\\B2-automation-local-rag\\.pytest-stage56\\test_inbox_pipeline_required_f0\\run\\raw\\packet_one.metadata.json",
+      "raw_json_path": "C:\\Projects\\B2-automation-local-rag\\.pytest-stage56\\test_inbox_pipeline_required_f0\\run\\raw\\packet_one.docupipe.json",
+      "sha256": "e5c62df5dab5c87b6a015ef3d43597074d1eec433b15f51aec63b8582d0e4ab4",
+      "source_file": "packet_one.pdf",
+      "source_path": "C:\\Projects\\B2-automation-local-rag\\.pytest-stage56\\test_inbox_pipeline_required_f0\\inbox\\packet_one.pdf",
+      "sources": {
+        "pitp_id": {
+          "confidence": 0.99,
+          "field_key": "pitp_id",
+          "source_file": "packet_one.pdf",
+          "source_page": 0
+        }
+      },
+      "started_at": "2026-05-08T00:17:19+00:00",
+      "status": "extracted"
+    }
+  ],
+  "legacy_adapter_used": true,
+  "missing_required_fields": [
+    "tco_name",
+    "car_type"
+  ],
+  "mode": "legacy_docupipe_b24_rl1",
+  "required_fields": [
+    "tco_name",
+    "pitp_id",
+    "car_type"
+  ],
+  "review_json": "C:\\Projects\\B2-automation-local-rag\\.pytest-stage56\\test_inbox_pipeline_required_f0\\run\\review\\B24_RL1_review.json",
+  "status": "review_required",
+  "structure_guard_passed": true,
+  "structure_guard_report": "C:\\Projects\\B2-automation-local-rag\\.pytest-stage56\\test_inbox_pipeline_required_f0\\run\\structure_guard_report.json"
+}

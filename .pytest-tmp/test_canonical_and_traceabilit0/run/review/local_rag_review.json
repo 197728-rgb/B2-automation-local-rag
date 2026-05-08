@@ -1,0 +1,1052 @@
+{
+  "approval_map_and_fill_errors": [],
+  "canonical_evidence": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_canonical_and_traceabilit0\\run\\canonical_evidence.json",
+  "decision_summary_by_form": {
+    "B24_RL2": {
+      "counts_by_state": {
+        "FILL": 4
+      },
+      "fill_eligible_field_ids": [
+        "auditor",
+        "car_number",
+        "date",
+        "facility_name"
+      ]
+    },
+    "B81": {
+      "counts_by_state": {
+        "FILL": 4
+      },
+      "fill_eligible_field_ids": [
+        "auditor",
+        "car_number",
+        "date",
+        "facility_name"
+      ]
+    },
+    "B89": {
+      "counts_by_state": {
+        "FILL": 4
+      },
+      "fill_eligible_field_ids": [
+        "auditor",
+        "car_number",
+        "date",
+        "facility_name"
+      ]
+    },
+    "B90": {
+      "counts_by_state": {
+        "FILL": 4
+      },
+      "fill_eligible_field_ids": [
+        "auditor",
+        "car_number",
+        "date",
+        "facility_name"
+      ]
+    },
+    "Cover_Page": {
+      "counts_by_state": {
+        "FILL": 4
+      },
+      "fill_eligible_field_ids": [
+        "auditor",
+        "car_number",
+        "date",
+        "facility_name"
+      ]
+    }
+  },
+  "docupipe_used": false,
+  "docx_generation": [
+    {
+      "approval_map": "C:\\Projects\\B2-automation-local-rag\\schemas\\maps\\B24_RL2.json",
+      "attempted": true,
+      "errors": [],
+      "filled_docx": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_canonical_and_traceabilit0\\run\\filled\\B24_RL2_filled.docx",
+      "form_id": "B24_RL2",
+      "patched_fields": [
+        "facility_name"
+      ],
+      "status": "filled",
+      "structure_guard_passed": true,
+      "structure_guard_report": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_canonical_and_traceabilit0\\run\\structure_guard_reports\\B24_RL2_structure_guard_report.json",
+      "template": "C:\\Projects\\B2-automation-local-rag\\templates\\B24_RL2.docx"
+    },
+    {
+      "approval_map": "C:\\Projects\\B2-automation-local-rag\\schemas\\maps\\B81.json",
+      "attempted": true,
+      "errors": [],
+      "filled_docx": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_canonical_and_traceabilit0\\run\\filled\\B81_filled.docx",
+      "form_id": "B81",
+      "patched_fields": [
+        "date",
+        "facility_name",
+        "car_number"
+      ],
+      "status": "filled",
+      "structure_guard_passed": true,
+      "structure_guard_report": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_canonical_and_traceabilit0\\run\\structure_guard_reports\\B81_structure_guard_report.json",
+      "template": "C:\\Projects\\B2-automation-local-rag\\templates\\B81_B24_ONLY.docx"
+    },
+    {
+      "approval_map": "C:\\Projects\\B2-automation-local-rag\\schemas\\maps\\B89.json",
+      "attempted": true,
+      "errors": [],
+      "filled_docx": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_canonical_and_traceabilit0\\run\\filled\\B89_filled.docx",
+      "form_id": "B89",
+      "patched_fields": [
+        "facility_name",
+        "date",
+        "date",
+        "car_number"
+      ],
+      "status": "filled",
+      "structure_guard_passed": true,
+      "structure_guard_report": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_canonical_and_traceabilit0\\run\\structure_guard_reports\\B89_structure_guard_report.json",
+      "template": "C:\\Projects\\B2-automation-local-rag\\templates\\B89_INSULATION_TEST_PLATE.docx"
+    },
+    {
+      "approval_map": "C:\\Projects\\B2-automation-local-rag\\schemas\\maps\\B90.json",
+      "attempted": true,
+      "errors": [],
+      "filled_docx": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_canonical_and_traceabilit0\\run\\filled\\B90_filled.docx",
+      "form_id": "B90",
+      "patched_fields": [
+        "facility_name",
+        "date",
+        "auditor",
+        "car_number"
+      ],
+      "status": "filled",
+      "structure_guard_passed": true,
+      "structure_guard_report": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_canonical_and_traceabilit0\\run\\structure_guard_reports\\B90_structure_guard_report.json",
+      "template": "C:\\Projects\\B2-automation-local-rag\\templates\\B90_RLS.docx"
+    },
+    {
+      "approval_map": "C:\\Projects\\B2-automation-local-rag\\schemas\\maps\\Cover_Page.json",
+      "attempted": true,
+      "errors": [],
+      "filled_docx": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_canonical_and_traceabilit0\\run\\filled\\Cover_Page_filled.docx",
+      "form_id": "Cover_Page",
+      "patched_fields": [
+        "date",
+        "facility_name",
+        "auditor"
+      ],
+      "status": "filled",
+      "structure_guard_passed": true,
+      "structure_guard_report": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_canonical_and_traceabilit0\\run\\structure_guard_reports\\Cover_Page_structure_guard_report.json",
+      "template": "C:\\Projects\\B2-automation-local-rag\\templates\\Cover_Page.docx"
+    }
+  ],
+  "field_traceability": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_canonical_and_traceabilit0\\run\\field_traceability.json",
+  "form_packets": {
+    "B24_RL2": {
+      "conflicts": [],
+      "decision_summary": {
+        "counts_by_state": {
+          "FILL": 4
+        },
+        "fill_eligible_field_ids": [
+          "auditor",
+          "car_number",
+          "date",
+          "facility_name"
+        ]
+      },
+      "default_status": "first_class",
+      "field_decisions": [
+        {
+          "candidates": [
+            {
+              "candidate_value": "Pat",
+              "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+              "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+              "chunk_id": 1,
+              "confidence": 0.87,
+              "field_id": "auditor",
+              "retrieval_score": 301,
+              "review_required": true,
+              "semantic_score": 0.284686,
+              "source_file": "evidence.txt"
+            }
+          ],
+          "confidence": 0.87,
+          "field_id": "auditor",
+          "reason": "selected highest-confidence local evidence",
+          "selected_value": "Pat",
+          "state": "FILL"
+        },
+        {
+          "candidates": [
+            {
+              "candidate_value": "XX 99999",
+              "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+              "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+              "chunk_id": 1,
+              "confidence": 0.95,
+              "field_id": "car_number",
+              "retrieval_score": 301,
+              "review_required": true,
+              "semantic_score": 0.284686,
+              "source_file": "evidence.txt"
+            }
+          ],
+          "confidence": 0.95,
+          "field_id": "car_number",
+          "reason": "selected highest-confidence local evidence",
+          "selected_value": "XX 99999",
+          "state": "FILL"
+        },
+        {
+          "candidates": [
+            {
+              "candidate_value": "2026-05-07",
+              "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+              "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+              "chunk_id": 1,
+              "confidence": 0.95,
+              "field_id": "date",
+              "retrieval_score": 301,
+              "review_required": true,
+              "semantic_score": 0.284686,
+              "source_file": "evidence.txt"
+            }
+          ],
+          "confidence": 0.95,
+          "field_id": "date",
+          "reason": "selected highest-confidence local evidence",
+          "selected_value": "2026-05-07",
+          "state": "FILL"
+        },
+        {
+          "candidates": [
+            {
+              "candidate_value": "Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insula",
+              "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+              "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+              "chunk_id": 1,
+              "confidence": 0.95,
+              "field_id": "facility_name",
+              "retrieval_score": 301,
+              "review_required": true,
+              "semantic_score": 0.284686,
+              "source_file": "evidence.txt"
+            }
+          ],
+          "confidence": 0.95,
+          "field_id": "facility_name",
+          "reason": "selected highest-confidence local evidence",
+          "selected_value": "Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insula",
+          "state": "FILL"
+        }
+      ],
+      "field_suggestions": [
+        {
+          "candidate_value": "Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insula",
+          "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+          "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+          "chunk_id": 1,
+          "confidence": 0.95,
+          "field_id": "facility_name",
+          "retrieval_score": 301,
+          "review_required": true,
+          "semantic_score": 0.284686,
+          "source_file": "evidence.txt"
+        },
+        {
+          "candidate_value": "Pat",
+          "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+          "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+          "chunk_id": 1,
+          "confidence": 0.87,
+          "field_id": "auditor",
+          "retrieval_score": 301,
+          "review_required": true,
+          "semantic_score": 0.284686,
+          "source_file": "evidence.txt"
+        },
+        {
+          "candidate_value": "2026-05-07",
+          "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+          "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+          "chunk_id": 1,
+          "confidence": 0.95,
+          "field_id": "date",
+          "retrieval_score": 301,
+          "review_required": true,
+          "semantic_score": 0.284686,
+          "source_file": "evidence.txt"
+        },
+        {
+          "candidate_value": "XX 99999",
+          "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+          "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+          "chunk_id": 1,
+          "confidence": 0.95,
+          "field_id": "car_number",
+          "retrieval_score": 301,
+          "review_required": true,
+          "semantic_score": 0.284686,
+          "source_file": "evidence.txt"
+        }
+      ],
+      "form_id": "B24_RL2",
+      "low_confidence_fields": [],
+      "missing_fields": [],
+      "production_scope": true,
+      "retrieval_method": "local_tfidf_cosine",
+      "retrieved_context": [
+        {
+          "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+          "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+          "chunk_id": 1,
+          "keyword_score": 8,
+          "retrieval_method": "local_tfidf_cosine",
+          "retrieval_score": 301,
+          "score": 301,
+          "semantic_score": 0.284686,
+          "source_file": "evidence.txt",
+          "text": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat"
+        }
+      ],
+      "review_required_fields": [],
+      "source_files": [
+        "evidence.txt"
+      ],
+      "write_authority": "none; exact approval_map.json is required before DOCX patching"
+    },
+    "B81": {
+      "conflicts": [],
+      "decision_summary": {
+        "counts_by_state": {
+          "FILL": 4
+        },
+        "fill_eligible_field_ids": [
+          "auditor",
+          "car_number",
+          "date",
+          "facility_name"
+        ]
+      },
+      "default_status": "first_class",
+      "field_decisions": [
+        {
+          "candidates": [
+            {
+              "candidate_value": "Pat",
+              "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+              "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+              "chunk_id": 1,
+              "confidence": 0.87,
+              "field_id": "auditor",
+              "retrieval_score": 192,
+              "review_required": true,
+              "semantic_score": 0.186252,
+              "source_file": "evidence.txt"
+            }
+          ],
+          "confidence": 0.87,
+          "field_id": "auditor",
+          "reason": "selected highest-confidence local evidence",
+          "selected_value": "Pat",
+          "state": "FILL"
+        },
+        {
+          "candidates": [
+            {
+              "candidate_value": "XX 99999",
+              "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+              "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+              "chunk_id": 1,
+              "confidence": 0.95,
+              "field_id": "car_number",
+              "retrieval_score": 192,
+              "review_required": true,
+              "semantic_score": 0.186252,
+              "source_file": "evidence.txt"
+            }
+          ],
+          "confidence": 0.95,
+          "field_id": "car_number",
+          "reason": "selected highest-confidence local evidence",
+          "selected_value": "XX 99999",
+          "state": "FILL"
+        },
+        {
+          "candidates": [
+            {
+              "candidate_value": "2026-05-07",
+              "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+              "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+              "chunk_id": 1,
+              "confidence": 0.95,
+              "field_id": "date",
+              "retrieval_score": 192,
+              "review_required": true,
+              "semantic_score": 0.186252,
+              "source_file": "evidence.txt"
+            }
+          ],
+          "confidence": 0.95,
+          "field_id": "date",
+          "reason": "selected highest-confidence local evidence",
+          "selected_value": "2026-05-07",
+          "state": "FILL"
+        },
+        {
+          "candidates": [
+            {
+              "candidate_value": "Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insula",
+              "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+              "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+              "chunk_id": 1,
+              "confidence": 0.95,
+              "field_id": "facility_name",
+              "retrieval_score": 192,
+              "review_required": true,
+              "semantic_score": 0.186252,
+              "source_file": "evidence.txt"
+            }
+          ],
+          "confidence": 0.95,
+          "field_id": "facility_name",
+          "reason": "selected highest-confidence local evidence",
+          "selected_value": "Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insula",
+          "state": "FILL"
+        }
+      ],
+      "field_suggestions": [
+        {
+          "candidate_value": "Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insula",
+          "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+          "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+          "chunk_id": 1,
+          "confidence": 0.95,
+          "field_id": "facility_name",
+          "retrieval_score": 192,
+          "review_required": true,
+          "semantic_score": 0.186252,
+          "source_file": "evidence.txt"
+        },
+        {
+          "candidate_value": "Pat",
+          "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+          "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+          "chunk_id": 1,
+          "confidence": 0.87,
+          "field_id": "auditor",
+          "retrieval_score": 192,
+          "review_required": true,
+          "semantic_score": 0.186252,
+          "source_file": "evidence.txt"
+        },
+        {
+          "candidate_value": "2026-05-07",
+          "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+          "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+          "chunk_id": 1,
+          "confidence": 0.95,
+          "field_id": "date",
+          "retrieval_score": 192,
+          "review_required": true,
+          "semantic_score": 0.186252,
+          "source_file": "evidence.txt"
+        },
+        {
+          "candidate_value": "XX 99999",
+          "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+          "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+          "chunk_id": 1,
+          "confidence": 0.95,
+          "field_id": "car_number",
+          "retrieval_score": 192,
+          "review_required": true,
+          "semantic_score": 0.186252,
+          "source_file": "evidence.txt"
+        }
+      ],
+      "form_id": "B81",
+      "low_confidence_fields": [],
+      "missing_fields": [],
+      "production_scope": true,
+      "retrieval_method": "local_tfidf_cosine",
+      "retrieved_context": [
+        {
+          "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+          "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+          "chunk_id": 1,
+          "keyword_score": 3,
+          "retrieval_method": "local_tfidf_cosine",
+          "retrieval_score": 192,
+          "score": 192,
+          "semantic_score": 0.186252,
+          "source_file": "evidence.txt",
+          "text": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat"
+        }
+      ],
+      "review_required_fields": [],
+      "source_files": [
+        "evidence.txt"
+      ],
+      "write_authority": "none; exact approval_map.json is required before DOCX patching"
+    },
+    "B89": {
+      "conflicts": [],
+      "decision_summary": {
+        "counts_by_state": {
+          "FILL": 4
+        },
+        "fill_eligible_field_ids": [
+          "auditor",
+          "car_number",
+          "date",
+          "facility_name"
+        ]
+      },
+      "default_status": "first_class",
+      "field_decisions": [
+        {
+          "candidates": [
+            {
+              "candidate_value": "Pat",
+              "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+              "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+              "chunk_id": 1,
+              "confidence": 0.87,
+              "field_id": "auditor",
+              "retrieval_score": 245,
+              "review_required": true,
+              "semantic_score": 0.235492,
+              "source_file": "evidence.txt"
+            }
+          ],
+          "confidence": 0.87,
+          "field_id": "auditor",
+          "reason": "selected highest-confidence local evidence",
+          "selected_value": "Pat",
+          "state": "FILL"
+        },
+        {
+          "candidates": [
+            {
+              "candidate_value": "XX 99999",
+              "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+              "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+              "chunk_id": 1,
+              "confidence": 0.95,
+              "field_id": "car_number",
+              "retrieval_score": 245,
+              "review_required": true,
+              "semantic_score": 0.235492,
+              "source_file": "evidence.txt"
+            }
+          ],
+          "confidence": 0.95,
+          "field_id": "car_number",
+          "reason": "selected highest-confidence local evidence",
+          "selected_value": "XX 99999",
+          "state": "FILL"
+        },
+        {
+          "candidates": [
+            {
+              "candidate_value": "2026-05-07",
+              "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+              "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+              "chunk_id": 1,
+              "confidence": 0.95,
+              "field_id": "date",
+              "retrieval_score": 245,
+              "review_required": true,
+              "semantic_score": 0.235492,
+              "source_file": "evidence.txt"
+            }
+          ],
+          "confidence": 0.95,
+          "field_id": "date",
+          "reason": "selected highest-confidence local evidence",
+          "selected_value": "2026-05-07",
+          "state": "FILL"
+        },
+        {
+          "candidates": [
+            {
+              "candidate_value": "Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insula",
+              "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+              "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+              "chunk_id": 1,
+              "confidence": 0.95,
+              "field_id": "facility_name",
+              "retrieval_score": 245,
+              "review_required": true,
+              "semantic_score": 0.235492,
+              "source_file": "evidence.txt"
+            }
+          ],
+          "confidence": 0.95,
+          "field_id": "facility_name",
+          "reason": "selected highest-confidence local evidence",
+          "selected_value": "Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insula",
+          "state": "FILL"
+        }
+      ],
+      "field_suggestions": [
+        {
+          "candidate_value": "Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insula",
+          "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+          "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+          "chunk_id": 1,
+          "confidence": 0.95,
+          "field_id": "facility_name",
+          "retrieval_score": 245,
+          "review_required": true,
+          "semantic_score": 0.235492,
+          "source_file": "evidence.txt"
+        },
+        {
+          "candidate_value": "Pat",
+          "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+          "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+          "chunk_id": 1,
+          "confidence": 0.87,
+          "field_id": "auditor",
+          "retrieval_score": 245,
+          "review_required": true,
+          "semantic_score": 0.235492,
+          "source_file": "evidence.txt"
+        },
+        {
+          "candidate_value": "2026-05-07",
+          "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+          "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+          "chunk_id": 1,
+          "confidence": 0.95,
+          "field_id": "date",
+          "retrieval_score": 245,
+          "review_required": true,
+          "semantic_score": 0.235492,
+          "source_file": "evidence.txt"
+        },
+        {
+          "candidate_value": "XX 99999",
+          "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+          "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+          "chunk_id": 1,
+          "confidence": 0.95,
+          "field_id": "car_number",
+          "retrieval_score": 245,
+          "review_required": true,
+          "semantic_score": 0.235492,
+          "source_file": "evidence.txt"
+        }
+      ],
+      "form_id": "B89",
+      "low_confidence_fields": [],
+      "missing_fields": [],
+      "production_scope": true,
+      "retrieval_method": "local_tfidf_cosine",
+      "retrieved_context": [
+        {
+          "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+          "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+          "chunk_id": 1,
+          "keyword_score": 5,
+          "retrieval_method": "local_tfidf_cosine",
+          "retrieval_score": 245,
+          "score": 245,
+          "semantic_score": 0.235492,
+          "source_file": "evidence.txt",
+          "text": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat"
+        }
+      ],
+      "review_required_fields": [],
+      "source_files": [
+        "evidence.txt"
+      ],
+      "write_authority": "none; exact approval_map.json is required before DOCX patching"
+    },
+    "B90": {
+      "conflicts": [],
+      "decision_summary": {
+        "counts_by_state": {
+          "FILL": 4
+        },
+        "fill_eligible_field_ids": [
+          "auditor",
+          "car_number",
+          "date",
+          "facility_name"
+        ]
+      },
+      "default_status": "first_class",
+      "field_decisions": [
+        {
+          "candidates": [
+            {
+              "candidate_value": "Pat",
+              "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+              "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+              "chunk_id": 1,
+              "confidence": 0.87,
+              "field_id": "auditor",
+              "retrieval_score": 122,
+              "review_required": true,
+              "semantic_score": 0.116026,
+              "source_file": "evidence.txt"
+            }
+          ],
+          "confidence": 0.87,
+          "field_id": "auditor",
+          "reason": "selected highest-confidence local evidence",
+          "selected_value": "Pat",
+          "state": "FILL"
+        },
+        {
+          "candidates": [
+            {
+              "candidate_value": "XX 99999",
+              "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+              "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+              "chunk_id": 1,
+              "confidence": 0.95,
+              "field_id": "car_number",
+              "retrieval_score": 122,
+              "review_required": true,
+              "semantic_score": 0.116026,
+              "source_file": "evidence.txt"
+            }
+          ],
+          "confidence": 0.95,
+          "field_id": "car_number",
+          "reason": "selected highest-confidence local evidence",
+          "selected_value": "XX 99999",
+          "state": "FILL"
+        },
+        {
+          "candidates": [
+            {
+              "candidate_value": "2026-05-07",
+              "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+              "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+              "chunk_id": 1,
+              "confidence": 0.95,
+              "field_id": "date",
+              "retrieval_score": 122,
+              "review_required": true,
+              "semantic_score": 0.116026,
+              "source_file": "evidence.txt"
+            }
+          ],
+          "confidence": 0.95,
+          "field_id": "date",
+          "reason": "selected highest-confidence local evidence",
+          "selected_value": "2026-05-07",
+          "state": "FILL"
+        },
+        {
+          "candidates": [
+            {
+              "candidate_value": "Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insula",
+              "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+              "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+              "chunk_id": 1,
+              "confidence": 0.95,
+              "field_id": "facility_name",
+              "retrieval_score": 122,
+              "review_required": true,
+              "semantic_score": 0.116026,
+              "source_file": "evidence.txt"
+            }
+          ],
+          "confidence": 0.95,
+          "field_id": "facility_name",
+          "reason": "selected highest-confidence local evidence",
+          "selected_value": "Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insula",
+          "state": "FILL"
+        }
+      ],
+      "field_suggestions": [
+        {
+          "candidate_value": "Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insula",
+          "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+          "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+          "chunk_id": 1,
+          "confidence": 0.95,
+          "field_id": "facility_name",
+          "retrieval_score": 122,
+          "review_required": true,
+          "semantic_score": 0.116026,
+          "source_file": "evidence.txt"
+        },
+        {
+          "candidate_value": "Pat",
+          "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+          "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+          "chunk_id": 1,
+          "confidence": 0.87,
+          "field_id": "auditor",
+          "retrieval_score": 122,
+          "review_required": true,
+          "semantic_score": 0.116026,
+          "source_file": "evidence.txt"
+        },
+        {
+          "candidate_value": "2026-05-07",
+          "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+          "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+          "chunk_id": 1,
+          "confidence": 0.95,
+          "field_id": "date",
+          "retrieval_score": 122,
+          "review_required": true,
+          "semantic_score": 0.116026,
+          "source_file": "evidence.txt"
+        },
+        {
+          "candidate_value": "XX 99999",
+          "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+          "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+          "chunk_id": 1,
+          "confidence": 0.95,
+          "field_id": "car_number",
+          "retrieval_score": 122,
+          "review_required": true,
+          "semantic_score": 0.116026,
+          "source_file": "evidence.txt"
+        }
+      ],
+      "form_id": "B90",
+      "low_confidence_fields": [],
+      "missing_fields": [],
+      "production_scope": true,
+      "retrieval_method": "local_tfidf_cosine",
+      "retrieved_context": [
+        {
+          "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+          "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+          "chunk_id": 1,
+          "keyword_score": 3,
+          "retrieval_method": "local_tfidf_cosine",
+          "retrieval_score": 122,
+          "score": 122,
+          "semantic_score": 0.116026,
+          "source_file": "evidence.txt",
+          "text": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat"
+        }
+      ],
+      "review_required_fields": [],
+      "source_files": [
+        "evidence.txt"
+      ],
+      "write_authority": "none; exact approval_map.json is required before DOCX patching"
+    },
+    "Cover_Page": {
+      "conflicts": [],
+      "decision_summary": {
+        "counts_by_state": {
+          "FILL": 4
+        },
+        "fill_eligible_field_ids": [
+          "auditor",
+          "car_number",
+          "date",
+          "facility_name"
+        ]
+      },
+      "default_status": "first_class",
+      "field_decisions": [
+        {
+          "candidates": [
+            {
+              "candidate_value": "Pat",
+              "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+              "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+              "chunk_id": 1,
+              "confidence": 0.87,
+              "field_id": "auditor",
+              "retrieval_score": 304,
+              "review_required": true,
+              "semantic_score": 0.283587,
+              "source_file": "evidence.txt"
+            }
+          ],
+          "confidence": 0.87,
+          "field_id": "auditor",
+          "reason": "selected highest-confidence local evidence",
+          "selected_value": "Pat",
+          "state": "FILL"
+        },
+        {
+          "candidates": [
+            {
+              "candidate_value": "XX 99999",
+              "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+              "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+              "chunk_id": 1,
+              "confidence": 0.95,
+              "field_id": "car_number",
+              "retrieval_score": 304,
+              "review_required": true,
+              "semantic_score": 0.283587,
+              "source_file": "evidence.txt"
+            }
+          ],
+          "confidence": 0.95,
+          "field_id": "car_number",
+          "reason": "selected highest-confidence local evidence",
+          "selected_value": "XX 99999",
+          "state": "FILL"
+        },
+        {
+          "candidates": [
+            {
+              "candidate_value": "2026-05-07",
+              "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+              "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+              "chunk_id": 1,
+              "confidence": 0.95,
+              "field_id": "date",
+              "retrieval_score": 304,
+              "review_required": true,
+              "semantic_score": 0.283587,
+              "source_file": "evidence.txt"
+            }
+          ],
+          "confidence": 0.95,
+          "field_id": "date",
+          "reason": "selected highest-confidence local evidence",
+          "selected_value": "2026-05-07",
+          "state": "FILL"
+        },
+        {
+          "candidates": [
+            {
+              "candidate_value": "Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insula",
+              "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+              "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+              "chunk_id": 1,
+              "confidence": 0.95,
+              "field_id": "facility_name",
+              "retrieval_score": 304,
+              "review_required": true,
+              "semantic_score": 0.283587,
+              "source_file": "evidence.txt"
+            }
+          ],
+          "confidence": 0.95,
+          "field_id": "facility_name",
+          "reason": "selected highest-confidence local evidence",
+          "selected_value": "Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insula",
+          "state": "FILL"
+        }
+      ],
+      "field_suggestions": [
+        {
+          "candidate_value": "Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insula",
+          "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+          "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+          "chunk_id": 1,
+          "confidence": 0.95,
+          "field_id": "facility_name",
+          "retrieval_score": 304,
+          "review_required": true,
+          "semantic_score": 0.283587,
+          "source_file": "evidence.txt"
+        },
+        {
+          "candidate_value": "Pat",
+          "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+          "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+          "chunk_id": 1,
+          "confidence": 0.87,
+          "field_id": "auditor",
+          "retrieval_score": 304,
+          "review_required": true,
+          "semantic_score": 0.283587,
+          "source_file": "evidence.txt"
+        },
+        {
+          "candidate_value": "2026-05-07",
+          "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+          "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+          "chunk_id": 1,
+          "confidence": 0.95,
+          "field_id": "date",
+          "retrieval_score": 304,
+          "review_required": true,
+          "semantic_score": 0.283587,
+          "source_file": "evidence.txt"
+        },
+        {
+          "candidate_value": "XX 99999",
+          "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+          "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+          "chunk_id": 1,
+          "confidence": 0.95,
+          "field_id": "car_number",
+          "retrieval_score": 304,
+          "review_required": true,
+          "semantic_score": 0.283587,
+          "source_file": "evidence.txt"
+        }
+      ],
+      "form_id": "Cover_Page",
+      "low_confidence_fields": [],
+      "missing_fields": [],
+      "production_scope": true,
+      "retrieval_method": "local_tfidf_cosine",
+      "retrieved_context": [
+        {
+          "chunk_excerpt": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat",
+          "chunk_hash": "5224e9ce1bc22f9b75e7c50b7fa9e72b387de889436ec190ca3dd20e2e9004a4",
+          "chunk_id": 1,
+          "keyword_score": 10,
+          "retrieval_method": "local_tfidf_cosine",
+          "retrieval_score": 304,
+          "score": 304,
+          "semantic_score": 0.283587,
+          "source_file": "evidence.txt",
+          "text": "Cover Page Facility: Acme Co B24 RL2 objective evidence Date: 2026-05-07 B81 Car: XX 99999 B89 insulation plate B90 Auditor: Pat"
+        }
+      ],
+      "review_required_fields": [],
+      "source_files": [
+        "evidence.txt"
+      ],
+      "write_authority": "none; exact approval_map.json is required before DOCX patching"
+    }
+  },
+  "forms": [
+    "B24_RL2",
+    "B81",
+    "B89",
+    "B90",
+    "Cover_Page"
+  ],
+  "generated_at": "2026-05-08T02:12:57+00:00",
+  "inputs": [
+    {
+      "extraction_method": "local_text",
+      "sha256": "70ee50f2d4544aa637c33d3dfd27de023a305abd06b6688ba757f92cdd2084d9",
+      "source_file": "evidence.txt",
+      "status": "extracted"
+    }
+  ],
+  "legacy_adapter_used": false,
+  "missing_context_forms": [],
+  "mode": "local_rag_extraction",
+  "production_scope_forms": [
+    "B24_RL2",
+    "B81",
+    "B89",
+    "B90",
+    "Cover_Page"
+  ],
+  "status": "success",
+  "structure_guard_discard_detail": [],
+  "structure_guard_failed_forms": [],
+  "write_authority": "exact approval maps required; only FILL decisions are passed to DOCX patching"
+}

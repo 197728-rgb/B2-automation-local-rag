@@ -1,0 +1,45 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Test (pytest)",
+      "type": "shell",
+      "command": ".\\.venv\\Scripts\\python.exe -m pytest -q --basetemp .pytest-tmp",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "problemMatcher": [],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      }
+    },
+    {
+      "label": "B2: Inbox Local Review",
+      "type": "shell",
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\run_local_inbox.ps1",
+      "problemMatcher": [],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      }
+    },
+    {
+      "label": "B2: Discover Table Maps",
+      "type": "shell",
+      "command": ".\\.venv\\Scripts\\b2.exe discover",
+      "problemMatcher": [],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      }
+    },
+    {
+      "label": "B2: Legacy DocuPipe Review",
+      "type": "shell",
+      "command": ".\\.venv\\Scripts\\b2.exe inbox --legacy-docupipe --inbox .\\inbox --out .\\outputs\\legacy_docupipe_run",
+      "problemMatcher": [],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      }
+    }
+  ]
+}

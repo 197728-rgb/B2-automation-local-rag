@@ -1,0 +1,367 @@
+{
+  "canonical_evidence": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_pipeline_legacy_doc0\\run\\canonical_evidence.json",
+  "cell_inventory_summary": {
+    "filled": 18
+  },
+  "docupipe_used": true,
+  "docx_generation": [
+    {
+      "approval_map": null,
+      "attempted": true,
+      "errors": [],
+      "filled_docx": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_pipeline_legacy_doc0\\run\\filled\\B24_RL1_filled.docx",
+      "form_id": "B24_RL1",
+      "patched_fields": [
+        "tco_name",
+        "tco_permission_date",
+        "tco_written_instructions",
+        "pitp_document_name",
+        "pitp_id",
+        "pitp_approved_by",
+        "pitp_date_approved",
+        "pitp_rev",
+        "car_mark",
+        "tank_design_spec",
+        "car_type",
+        "aar_form_4_2_number",
+        "four_two_drawing_number",
+        "four_two_drawing_revision",
+        "test_plate_tank_material",
+        "test_plate_tank_mtr",
+        "attachment_material",
+        "evidence_notes"
+      ],
+      "status": "filled",
+      "structure_guard_passed": true,
+      "structure_guard_report": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_pipeline_legacy_doc0\\run\\structure_guard_report.json",
+      "template": "C:\\Projects\\B2-automation-local-rag\\templates\\B24_RL1.docx"
+    }
+  ],
+  "field_traceability": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_pipeline_legacy_doc0\\run\\field_traceability.json",
+  "filled_docx": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_pipeline_legacy_doc0\\run\\filled\\B24_RL1_filled.docx",
+  "inputs": [
+    {
+      "confidences": {
+        "aar_form_4_2_number": 0.8,
+        "attachment_material": 0.7,
+        "car_mark": 0.92,
+        "car_type": 0.88,
+        "four_two_drawing_number": 0.77,
+        "four_two_drawing_revision": 0.75,
+        "pitp_approved_by": 0.84,
+        "pitp_date_approved": 0.86,
+        "pitp_document_name": 0.87,
+        "pitp_id": 0.9,
+        "pitp_rev": 0.79,
+        "tank_design_spec": 0.83,
+        "tco_name": 0.94,
+        "tco_permission_date": 0.89,
+        "tco_written_instructions": 0.81,
+        "test_plate_tank_material": 0.72,
+        "test_plate_tank_mtr": 0.74
+      },
+      "field_values": {
+        "aar_form_4_2_number": "AAR-42-778812",
+        "attachment_material": "A516-70 pad per dwg A-12",
+        "car_mark": "UTLX 556891",
+        "car_type": "DOT-117J100W",
+        "evidence_notes": "DocuPipe extraction audit trail (field_key, confidence, source).\nTankCarOwnerName: value='Midwest Tank Rail Inc'; confidence=0.94; source: page_index=0, region=cover_header\nPermissionInstructionDate: value='2025-11-20'; confidence=0.89; source: page_index=0, region=cover_header\nPITPDocumentTitle: value='PITP MC-2024-77 Rev C'; confidence=0.87; source: page_index=0\nCarMarking: value='UTLX 556891'; confidence=0.92; source: page_index=1, region=stencil_block\nTCOWrittenInstructions: value='RL1 repair authorized per email 2025-11-18.'; confidence=0.81; source: page_index=0, region=tco_permission_block\nPITPIdentifier: value='MC-2024-77'; confidence=0.90; source: page_index=0, region=pitp_header\nPITPApprovedBy: value='J. Ortega'; confidence=0.84; source: page_index=0\nPITPApprovalDate: value='2024-09-12'; confidence=0.86; source: page_index=0\nPITPRevision: value='C'; confidence=0.79; source: page_index=0\nTankDesignSpec: value='Spec 112A / Stencil PKG-09'; confidence=0.83; source: page_index=2, region=design_control\nCarType: value='DOT-117J100W'; confidence=0.88; source: page_index=2\nAARForm42Number: value='AAR-42-778812'; confidence=0.80; source: page_index=2\nDrawingNumber42: value='DWG-UTLX-4419'; confidence=0.77; source: page_index=3, region=drawing_index\nDrawingRevision42: value='Rev 4'; confidence=0.75; source: page_index=3\nTestPlateTankMaterial: value='TC-128 Grade B normalized plate'; confidence=0.72; source: page_index=4, region=mtr_bundle\nTestPlateTankMTR: value='MTR-99821-A'; confidence=0.74; source: page_index=4\nAttachmentMaterial: value='A516-70 pad per dwg A-12'; confidence=0.70; source: page_index=4",
+        "four_two_drawing_number": "DWG-UTLX-4419",
+        "four_two_drawing_revision": "Rev 4",
+        "pitp_approved_by": "J. Ortega",
+        "pitp_date_approved": "2024-09-12",
+        "pitp_document_name": "PITP MC-2024-77 Rev C",
+        "pitp_id": "MC-2024-77",
+        "pitp_rev": "C",
+        "tank_design_spec": "Spec 112A / Stencil PKG-09",
+        "tco_name": "Midwest Tank Rail Inc",
+        "tco_permission_date": "2025-11-20",
+        "tco_written_instructions": "RL1 repair authorized per email 2025-11-18.",
+        "test_plate_tank_material": "TC-128 Grade B normalized plate",
+        "test_plate_tank_mtr": "MTR-99821-A"
+      },
+      "metadata_path": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_pipeline_legacy_doc0\\run\\raw\\packet_one.metadata.json",
+      "raw_json_path": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_pipeline_legacy_doc0\\run\\raw\\packet_one.docupipe.json",
+      "sha256": "e940668843db4b4d9d17f6ce5614e71e38998c395847fd9327961bfe178c797e",
+      "source_file": "packet_one.pdf",
+      "source_path": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_pipeline_legacy_doc0\\inbox\\packet_one.pdf",
+      "sources": {
+        "aar_form_4_2_number": {
+          "confidence": 0.8,
+          "field_key": "AARForm42Number",
+          "source_file": "packet_one.pdf",
+          "source_page": 2
+        },
+        "attachment_material": {
+          "confidence": 0.7,
+          "field_key": "AttachmentMaterial",
+          "source_file": "packet_one.pdf",
+          "source_page": 4
+        },
+        "car_mark": {
+          "confidence": 0.92,
+          "field_key": "CarMarking",
+          "source_file": "packet_one.pdf",
+          "source_page": 1
+        },
+        "car_type": {
+          "confidence": 0.88,
+          "field_key": "CarType",
+          "source_file": "packet_one.pdf",
+          "source_page": 2
+        },
+        "four_two_drawing_number": {
+          "confidence": 0.77,
+          "field_key": "DrawingNumber42",
+          "source_file": "packet_one.pdf",
+          "source_page": 3
+        },
+        "four_two_drawing_revision": {
+          "confidence": 0.75,
+          "field_key": "DrawingRevision42",
+          "source_file": "packet_one.pdf",
+          "source_page": 3
+        },
+        "pitp_approved_by": {
+          "confidence": 0.84,
+          "field_key": "PITPApprovedBy",
+          "source_file": "packet_one.pdf",
+          "source_page": 0
+        },
+        "pitp_date_approved": {
+          "confidence": 0.86,
+          "field_key": "PITPApprovalDate",
+          "source_file": "packet_one.pdf",
+          "source_page": 0
+        },
+        "pitp_document_name": {
+          "confidence": 0.87,
+          "field_key": "PITPDocumentTitle",
+          "source_file": "packet_one.pdf",
+          "source_page": 0
+        },
+        "pitp_id": {
+          "confidence": 0.9,
+          "field_key": "PITPIdentifier",
+          "source_file": "packet_one.pdf",
+          "source_page": 0
+        },
+        "pitp_rev": {
+          "confidence": 0.79,
+          "field_key": "PITPRevision",
+          "source_file": "packet_one.pdf",
+          "source_page": 0
+        },
+        "tank_design_spec": {
+          "confidence": 0.83,
+          "field_key": "TankDesignSpec",
+          "source_file": "packet_one.pdf",
+          "source_page": 2
+        },
+        "tco_name": {
+          "confidence": 0.94,
+          "field_key": "TankCarOwnerName",
+          "source_file": "packet_one.pdf",
+          "source_page": 0
+        },
+        "tco_permission_date": {
+          "confidence": 0.89,
+          "field_key": "PermissionInstructionDate",
+          "source_file": "packet_one.pdf",
+          "source_page": 0
+        },
+        "tco_written_instructions": {
+          "confidence": 0.81,
+          "field_key": "TCOWrittenInstructions",
+          "source_file": "packet_one.pdf",
+          "source_page": 0
+        },
+        "test_plate_tank_material": {
+          "confidence": 0.72,
+          "field_key": "TestPlateTankMaterial",
+          "source_file": "packet_one.pdf",
+          "source_page": 4
+        },
+        "test_plate_tank_mtr": {
+          "confidence": 0.74,
+          "field_key": "TestPlateTankMTR",
+          "source_file": "packet_one.pdf",
+          "source_page": 4
+        }
+      },
+      "started_at": "2026-05-08T02:12:58+00:00",
+      "status": "extracted"
+    },
+    {
+      "confidences": {
+        "aar_form_4_2_number": 0.8,
+        "attachment_material": 0.7,
+        "car_mark": 0.92,
+        "car_type": 0.88,
+        "four_two_drawing_number": 0.77,
+        "four_two_drawing_revision": 0.75,
+        "pitp_approved_by": 0.84,
+        "pitp_date_approved": 0.86,
+        "pitp_document_name": 0.87,
+        "pitp_id": 0.9,
+        "pitp_rev": 0.79,
+        "tank_design_spec": 0.83,
+        "tco_name": 0.94,
+        "tco_permission_date": 0.89,
+        "tco_written_instructions": 0.81,
+        "test_plate_tank_material": 0.72,
+        "test_plate_tank_mtr": 0.74
+      },
+      "field_values": {
+        "aar_form_4_2_number": "AAR-42-778812",
+        "attachment_material": "A516-70 pad per dwg A-12",
+        "car_mark": "UTLX 556891",
+        "car_type": "DOT-117J100W",
+        "evidence_notes": "DocuPipe extraction audit trail (field_key, confidence, source).\nTankCarOwnerName: value='Midwest Tank Rail Inc'; confidence=0.94; source: page_index=0, region=cover_header\nPermissionInstructionDate: value='2025-11-20'; confidence=0.89; source: page_index=0, region=cover_header\nPITPDocumentTitle: value='PITP MC-2024-77 Rev C'; confidence=0.87; source: page_index=0\nCarMarking: value='UTLX 556891'; confidence=0.92; source: page_index=1, region=stencil_block\nTCOWrittenInstructions: value='RL1 repair authorized per email 2025-11-18.'; confidence=0.81; source: page_index=0, region=tco_permission_block\nPITPIdentifier: value='MC-2024-77'; confidence=0.90; source: page_index=0, region=pitp_header\nPITPApprovedBy: value='J. Ortega'; confidence=0.84; source: page_index=0\nPITPApprovalDate: value='2024-09-12'; confidence=0.86; source: page_index=0\nPITPRevision: value='C'; confidence=0.79; source: page_index=0\nTankDesignSpec: value='Spec 112A / Stencil PKG-09'; confidence=0.83; source: page_index=2, region=design_control\nCarType: value='DOT-117J100W'; confidence=0.88; source: page_index=2\nAARForm42Number: value='AAR-42-778812'; confidence=0.80; source: page_index=2\nDrawingNumber42: value='DWG-UTLX-4419'; confidence=0.77; source: page_index=3, region=drawing_index\nDrawingRevision42: value='Rev 4'; confidence=0.75; source: page_index=3\nTestPlateTankMaterial: value='TC-128 Grade B normalized plate'; confidence=0.72; source: page_index=4, region=mtr_bundle\nTestPlateTankMTR: value='MTR-99821-A'; confidence=0.74; source: page_index=4\nAttachmentMaterial: value='A516-70 pad per dwg A-12'; confidence=0.70; source: page_index=4",
+        "four_two_drawing_number": "DWG-UTLX-4419",
+        "four_two_drawing_revision": "Rev 4",
+        "pitp_approved_by": "J. Ortega",
+        "pitp_date_approved": "2024-09-12",
+        "pitp_document_name": "PITP MC-2024-77 Rev C",
+        "pitp_id": "MC-2024-77",
+        "pitp_rev": "C",
+        "tank_design_spec": "Spec 112A / Stencil PKG-09",
+        "tco_name": "Midwest Tank Rail Inc",
+        "tco_permission_date": "2025-11-20",
+        "tco_written_instructions": "RL1 repair authorized per email 2025-11-18.",
+        "test_plate_tank_material": "TC-128 Grade B normalized plate",
+        "test_plate_tank_mtr": "MTR-99821-A"
+      },
+      "metadata_path": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_pipeline_legacy_doc0\\run\\raw\\packet_two.metadata.json",
+      "raw_json_path": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_pipeline_legacy_doc0\\run\\raw\\packet_two.docupipe.json",
+      "sha256": "e940668843db4b4d9d17f6ce5614e71e38998c395847fd9327961bfe178c797e",
+      "source_file": "packet_two.pdf",
+      "source_path": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_pipeline_legacy_doc0\\inbox\\packet_two.pdf",
+      "sources": {
+        "aar_form_4_2_number": {
+          "confidence": 0.8,
+          "field_key": "AARForm42Number",
+          "source_file": "packet_two.pdf",
+          "source_page": 2
+        },
+        "attachment_material": {
+          "confidence": 0.7,
+          "field_key": "AttachmentMaterial",
+          "source_file": "packet_two.pdf",
+          "source_page": 4
+        },
+        "car_mark": {
+          "confidence": 0.92,
+          "field_key": "CarMarking",
+          "source_file": "packet_two.pdf",
+          "source_page": 1
+        },
+        "car_type": {
+          "confidence": 0.88,
+          "field_key": "CarType",
+          "source_file": "packet_two.pdf",
+          "source_page": 2
+        },
+        "four_two_drawing_number": {
+          "confidence": 0.77,
+          "field_key": "DrawingNumber42",
+          "source_file": "packet_two.pdf",
+          "source_page": 3
+        },
+        "four_two_drawing_revision": {
+          "confidence": 0.75,
+          "field_key": "DrawingRevision42",
+          "source_file": "packet_two.pdf",
+          "source_page": 3
+        },
+        "pitp_approved_by": {
+          "confidence": 0.84,
+          "field_key": "PITPApprovedBy",
+          "source_file": "packet_two.pdf",
+          "source_page": 0
+        },
+        "pitp_date_approved": {
+          "confidence": 0.86,
+          "field_key": "PITPApprovalDate",
+          "source_file": "packet_two.pdf",
+          "source_page": 0
+        },
+        "pitp_document_name": {
+          "confidence": 0.87,
+          "field_key": "PITPDocumentTitle",
+          "source_file": "packet_two.pdf",
+          "source_page": 0
+        },
+        "pitp_id": {
+          "confidence": 0.9,
+          "field_key": "PITPIdentifier",
+          "source_file": "packet_two.pdf",
+          "source_page": 0
+        },
+        "pitp_rev": {
+          "confidence": 0.79,
+          "field_key": "PITPRevision",
+          "source_file": "packet_two.pdf",
+          "source_page": 0
+        },
+        "tank_design_spec": {
+          "confidence": 0.83,
+          "field_key": "TankDesignSpec",
+          "source_file": "packet_two.pdf",
+          "source_page": 2
+        },
+        "tco_name": {
+          "confidence": 0.94,
+          "field_key": "TankCarOwnerName",
+          "source_file": "packet_two.pdf",
+          "source_page": 0
+        },
+        "tco_permission_date": {
+          "confidence": 0.89,
+          "field_key": "PermissionInstructionDate",
+          "source_file": "packet_two.pdf",
+          "source_page": 0
+        },
+        "tco_written_instructions": {
+          "confidence": 0.81,
+          "field_key": "TCOWrittenInstructions",
+          "source_file": "packet_two.pdf",
+          "source_page": 0
+        },
+        "test_plate_tank_material": {
+          "confidence": 0.72,
+          "field_key": "TestPlateTankMaterial",
+          "source_file": "packet_two.pdf",
+          "source_page": 4
+        },
+        "test_plate_tank_mtr": {
+          "confidence": 0.74,
+          "field_key": "TestPlateTankMTR",
+          "source_file": "packet_two.pdf",
+          "source_page": 4
+        }
+      },
+      "started_at": "2026-05-08T02:12:58+00:00",
+      "status": "extracted"
+    }
+  ],
+  "legacy_adapter_used": true,
+  "missing_required_fields": [],
+  "mode": "legacy_docupipe_b24_rl1",
+  "outputs": [
+    "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_pipeline_legacy_doc0\\run\\canonical_evidence.json",
+    "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_pipeline_legacy_doc0\\run\\field_traceability.json",
+    "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_pipeline_legacy_doc0\\run\\review\\B24_RL1_review.json",
+    "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_pipeline_legacy_doc0\\run\\review\\B24_RL1_review.md"
+  ],
+  "required_fields": [
+    "tco_name",
+    "pitp_id",
+    "car_type"
+  ],
+  "review_json": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_pipeline_legacy_doc0\\run\\review\\B24_RL1_review.json",
+  "status": "success",
+  "structure_guard_failed_forms": [],
+  "structure_guard_passed": true,
+  "structure_guard_report": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_pipeline_legacy_doc0\\run\\structure_guard_report.json"
+}

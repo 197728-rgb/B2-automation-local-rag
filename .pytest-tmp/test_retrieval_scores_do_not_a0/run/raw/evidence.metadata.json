@@ -1,0 +1,11 @@
+{
+  "characters": 686,
+  "extension": ".txt",
+  "extracted_at": "2026-05-08T02:12:57+00:00",
+  "extraction_method": "local_text",
+  "ocr_json_path": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_retrieval_scores_do_not_a0\\run\\raw\\evidence.ocr.json",
+  "paid_api_used": false,
+  "sha256": "195ffa76e41e30a1b2ac3feec920d110f7c28be4f2544dd720e4bd567ebb8ca5",
+  "source_file": "evidence.txt",
+  "source_path": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_retrieval_scores_do_not_a0\\inbox\\evidence.txt"
+}

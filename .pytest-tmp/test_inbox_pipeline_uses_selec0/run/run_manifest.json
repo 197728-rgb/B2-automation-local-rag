@@ -1,0 +1,117 @@
+{
+  "canonical_evidence": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_pipeline_uses_selec0\\run\\canonical_evidence.json",
+  "cell_inventory_summary": {
+    "blank_optional": 14,
+    "blank_required_MISSING": 1,
+    "filled": 3
+  },
+  "docupipe_used": true,
+  "docx_generation": [
+    {
+      "approval_map": null,
+      "attempted": true,
+      "errors": [],
+      "filled_docx": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_pipeline_uses_selec0\\run\\filled\\B24_RL1_filled.docx",
+      "form_id": "B24_RL1",
+      "patched_fields": [
+        "tco_name",
+        "pitp_id",
+        "car_type",
+        "evidence_notes"
+      ],
+      "status": "filled",
+      "structure_guard_passed": true,
+      "structure_guard_report": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_pipeline_uses_selec0\\run\\structure_guard_report.json",
+      "template": "C:\\Projects\\B2-automation-local-rag\\templates\\B24_RL1.docx"
+    }
+  ],
+  "field_traceability": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_pipeline_uses_selec0\\run\\field_traceability.json",
+  "filled_docx": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_pipeline_uses_selec0\\run\\filled\\B24_RL1_filled.docx",
+  "inputs": [
+    {
+      "confidences": {
+        "car_type": 0.99,
+        "pitp_id": 0.99
+      },
+      "field_values": {
+        "car_type": "DOT-117J100W",
+        "evidence_notes": "DocuPipe extraction audit trail (field_key, confidence, source).\npitp_id: value='MC-2024-77'; confidence=0.99; source: page_index=0\ncar_type: value='DOT-117J100W'; confidence=0.99; source: page_index=0",
+        "pitp_id": "MC-2024-77"
+      },
+      "metadata_path": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_pipeline_uses_selec0\\run\\raw\\packet_high.metadata.json",
+      "raw_json_path": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_pipeline_uses_selec0\\run\\raw\\packet_high.docupipe.json",
+      "sha256": "e5c62df5dab5c87b6a015ef3d43597074d1eec433b15f51aec63b8582d0e4ab4",
+      "source_file": "packet_high.pdf",
+      "source_path": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_pipeline_uses_selec0\\inbox\\packet_high.pdf",
+      "sources": {
+        "car_type": {
+          "confidence": 0.99,
+          "field_key": "car_type",
+          "source_file": "packet_high.pdf",
+          "source_page": 0
+        },
+        "pitp_id": {
+          "confidence": 0.99,
+          "field_key": "pitp_id",
+          "source_file": "packet_high.pdf",
+          "source_page": 0
+        }
+      },
+      "started_at": "2026-05-08T02:12:58+00:00",
+      "status": "extracted"
+    },
+    {
+      "confidences": {
+        "car_type": 0.99,
+        "pitp_id": 0.99
+      },
+      "field_values": {
+        "car_type": "DOT-117J100W",
+        "evidence_notes": "DocuPipe extraction audit trail (field_key, confidence, source).\npitp_id: value='MC-2024-77'; confidence=0.99; source: page_index=0\ncar_type: value='DOT-117J100W'; confidence=0.99; source: page_index=0",
+        "pitp_id": "MC-2024-77"
+      },
+      "metadata_path": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_pipeline_uses_selec0\\run\\raw\\packet_low.metadata.json",
+      "raw_json_path": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_pipeline_uses_selec0\\run\\raw\\packet_low.docupipe.json",
+      "sha256": "e5c62df5dab5c87b6a015ef3d43597074d1eec433b15f51aec63b8582d0e4ab4",
+      "source_file": "packet_low.pdf",
+      "source_path": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_pipeline_uses_selec0\\inbox\\packet_low.pdf",
+      "sources": {
+        "car_type": {
+          "confidence": 0.99,
+          "field_key": "car_type",
+          "source_file": "packet_low.pdf",
+          "source_page": 0
+        },
+        "pitp_id": {
+          "confidence": 0.99,
+          "field_key": "pitp_id",
+          "source_file": "packet_low.pdf",
+          "source_page": 0
+        }
+      },
+      "started_at": "2026-05-08T02:12:58+00:00",
+      "status": "extracted"
+    }
+  ],
+  "legacy_adapter_used": true,
+  "missing_required_fields": [
+    "tco_name"
+  ],
+  "mode": "legacy_docupipe_b24_rl1",
+  "outputs": [
+    "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_pipeline_uses_selec0\\run\\canonical_evidence.json",
+    "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_pipeline_uses_selec0\\run\\field_traceability.json",
+    "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_pipeline_uses_selec0\\run\\review\\B24_RL1_review.json",
+    "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_pipeline_uses_selec0\\run\\review\\B24_RL1_review.md"
+  ],
+  "required_fields": [
+    "tco_name",
+    "pitp_id",
+    "car_type"
+  ],
+  "review_json": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_pipeline_uses_selec0\\run\\review\\B24_RL1_review.json",
+  "status": "review_required",
+  "structure_guard_failed_forms": [],
+  "structure_guard_passed": true,
+  "structure_guard_report": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_pipeline_uses_selec0\\run\\structure_guard_report.json"
+}

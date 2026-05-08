@@ -1,0 +1,63 @@
+{
+  "after": {
+    "cells": 545,
+    "footers": 1,
+    "gridSpan": 503,
+    "headers": 1,
+    "relationships": 9,
+    "rows": 147,
+    "styles": 1,
+    "tables": 8,
+    "text_nodes": 503,
+    "vMerge": 0
+  },
+  "before": {
+    "cells": 545,
+    "footers": 1,
+    "gridSpan": 503,
+    "headers": 1,
+    "relationships": 9,
+    "rows": 147,
+    "styles": 1,
+    "tables": 8,
+    "text_nodes": 503,
+    "vMerge": 0
+  },
+  "deltas": {
+    "cells": 0,
+    "footers": 0,
+    "gridSpan": 0,
+    "headers": 0,
+    "relationships": 0,
+    "rows": 0,
+    "styles": 0,
+    "tables": 0,
+    "text_nodes": 0,
+    "vMerge": 0
+  },
+  "errors": [
+    "tco_name: manifest target (0, 4, 0) does not match exact approval map (99, 4, 0)",
+    "tco_permission_date: field is not present in exact approval map",
+    "tco_written_instructions: field is not present in exact approval map",
+    "pitp_document_name: field is not present in exact approval map",
+    "pitp_id: field is not present in exact approval map",
+    "pitp_approved_by: field is not present in exact approval map",
+    "pitp_date_approved: field is not present in exact approval map",
+    "pitp_rev: field is not present in exact approval map",
+    "car_mark: field is not present in exact approval map",
+    "tank_design_spec: field is not present in exact approval map",
+    "car_type: field is not present in exact approval map",
+    "aar_form_4_2_number: field is not present in exact approval map",
+    "four_two_drawing_number: field is not present in exact approval map",
+    "four_two_drawing_revision: field is not present in exact approval map",
+    "test_plate_tank_material: field is not present in exact approval map",
+    "test_plate_tank_mtr: field is not present in exact approval map",
+    "attachment_material: field is not present in exact approval map",
+    "evidence_notes: field is not present in exact approval map"
+  ],
+  "intentional_text_node_creations": 0,
+  "pass": false,
+  "text_nodes_delta_actual": 0,
+  "text_nodes_delta_expected": 0,
+  "text_nodes_delta_matches_expected": true
+}

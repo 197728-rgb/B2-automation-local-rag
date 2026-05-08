@@ -1,0 +1,36 @@
+{
+  "result": {
+    "field_extractions": [
+      {
+        "confidence": 0.55,
+        "field_key": "tco_name",
+        "provenance": [
+          {
+            "page_index": 0
+          }
+        ],
+        "value": "Midwest Tank Rail Inc"
+      },
+      {
+        "confidence": 0.99,
+        "field_key": "pitp_id",
+        "provenance": [
+          {
+            "page_index": 0
+          }
+        ],
+        "value": "MC-2024-77"
+      },
+      {
+        "confidence": 0.99,
+        "field_key": "car_type",
+        "provenance": [
+          {
+            "page_index": 0
+          }
+        ],
+        "value": "DOT-117J100W"
+      }
+    ]
+  }
+}

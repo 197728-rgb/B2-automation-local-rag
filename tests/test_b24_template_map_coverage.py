@@ -5,11 +5,15 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from b2_automation.b24_normalizer import (
     B24_RL1_MANUAL_OR_SYNTHETIC_FIELDS,
     DOCUPIPE_MAPPED_B24_RL1_FIELD_IDS,
     _FIELD_KEY_TO_MANIFEST,
 )
+
+pytestmark = pytest.mark.legacy_rl1
 
 
 def _repo_root() -> Path:

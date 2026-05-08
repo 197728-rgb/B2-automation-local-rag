@@ -1,0 +1,44 @@
+{
+  "after": {
+    "cells": 488,
+    "footers": 1,
+    "gridSpan": 454,
+    "headers": 1,
+    "relationships": 9,
+    "rows": 125,
+    "styles": 1,
+    "tables": 7,
+    "text_nodes": 452,
+    "vMerge": 0
+  },
+  "before": {
+    "cells": 488,
+    "footers": 1,
+    "gridSpan": 454,
+    "headers": 1,
+    "relationships": 9,
+    "rows": 125,
+    "styles": 1,
+    "tables": 7,
+    "text_nodes": 451,
+    "vMerge": 0
+  },
+  "deltas": {
+    "cells": 0,
+    "footers": 0,
+    "gridSpan": 0,
+    "headers": 0,
+    "relationships": 0,
+    "rows": 0,
+    "styles": 0,
+    "tables": 0,
+    "text_nodes": 1,
+    "vMerge": 0
+  },
+  "errors": [],
+  "intentional_text_node_creations": 1,
+  "pass": true,
+  "text_nodes_delta_actual": 1,
+  "text_nodes_delta_expected": 1,
+  "text_nodes_delta_matches_expected": true
+}

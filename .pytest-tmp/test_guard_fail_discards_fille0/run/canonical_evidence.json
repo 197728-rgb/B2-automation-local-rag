@@ -1,0 +1,137 @@
+{
+  "fields": [
+    {
+      "candidate_values": [
+        "2026-05-07"
+      ],
+      "confidence": 0.95,
+      "decision_state": "FILL",
+      "field_id": "date",
+      "fill_block_reason": "field_not_in_approval_map",
+      "filled": false,
+      "form_id": "B24_RL2",
+      "provenance_summary": "evidence.txt chunk=1",
+      "reviewer_status": "ok",
+      "selected_value": "2026-05-07"
+    },
+    {
+      "candidate_values": [
+        "Midwest B24 RL2 evidence Date: 2026-05-07"
+      ],
+      "confidence": 0.95,
+      "decision_state": "FILL",
+      "field_id": "facility_name",
+      "fill_block_reason": "structure_guard_failed",
+      "filled": false,
+      "form_id": "B24_RL2",
+      "provenance_summary": "evidence.txt chunk=1",
+      "reviewer_status": "ok",
+      "selected_value": "Midwest B24 RL2 evidence Date: 2026-05-07"
+    },
+    {
+      "candidate_values": [
+        "2026-05-07"
+      ],
+      "confidence": 0.95,
+      "decision_state": "FILL",
+      "field_id": "date",
+      "fill_block_reason": "structure_guard_failed",
+      "filled": false,
+      "form_id": "B81",
+      "provenance_summary": "evidence.txt chunk=1",
+      "reviewer_status": "ok",
+      "selected_value": "2026-05-07"
+    },
+    {
+      "candidate_values": [
+        "Midwest B24 RL2 evidence Date: 2026-05-07"
+      ],
+      "confidence": 0.95,
+      "decision_state": "FILL",
+      "field_id": "facility_name",
+      "fill_block_reason": "structure_guard_failed",
+      "filled": false,
+      "form_id": "B81",
+      "provenance_summary": "evidence.txt chunk=1",
+      "reviewer_status": "ok",
+      "selected_value": "Midwest B24 RL2 evidence Date: 2026-05-07"
+    },
+    {
+      "candidate_values": [],
+      "confidence": null,
+      "decision_state": "MISSING",
+      "field_id": "date",
+      "fill_block_reason": "decision_not_fill:MISSING",
+      "filled": false,
+      "form_id": "B89",
+      "provenance_summary": "",
+      "reviewer_status": "missing",
+      "selected_value": null
+    },
+    {
+      "candidate_values": [],
+      "confidence": null,
+      "decision_state": "MISSING",
+      "field_id": "facility_name",
+      "fill_block_reason": "decision_not_fill:MISSING",
+      "filled": false,
+      "form_id": "B89",
+      "provenance_summary": "",
+      "reviewer_status": "missing",
+      "selected_value": null
+    },
+    {
+      "candidate_values": [],
+      "confidence": null,
+      "decision_state": "MISSING",
+      "field_id": "date",
+      "fill_block_reason": "decision_not_fill:MISSING",
+      "filled": false,
+      "form_id": "B90",
+      "provenance_summary": "",
+      "reviewer_status": "missing",
+      "selected_value": null
+    },
+    {
+      "candidate_values": [],
+      "confidence": null,
+      "decision_state": "MISSING",
+      "field_id": "facility_name",
+      "fill_block_reason": "decision_not_fill:MISSING",
+      "filled": false,
+      "form_id": "B90",
+      "provenance_summary": "",
+      "reviewer_status": "missing",
+      "selected_value": null
+    },
+    {
+      "candidate_values": [
+        "2026-05-07"
+      ],
+      "confidence": 0.95,
+      "decision_state": "FILL",
+      "field_id": "date",
+      "fill_block_reason": "structure_guard_failed",
+      "filled": false,
+      "form_id": "Cover_Page",
+      "provenance_summary": "evidence.txt chunk=1",
+      "reviewer_status": "ok",
+      "selected_value": "2026-05-07"
+    },
+    {
+      "candidate_values": [
+        "Midwest B24 RL2 evidence Date: 2026-05-07"
+      ],
+      "confidence": 0.95,
+      "decision_state": "FILL",
+      "field_id": "facility_name",
+      "fill_block_reason": "structure_guard_failed",
+      "filled": false,
+      "form_id": "Cover_Page",
+      "provenance_summary": "evidence.txt chunk=1",
+      "reviewer_status": "ok",
+      "selected_value": "Midwest B24 RL2 evidence Date: 2026-05-07"
+    }
+  ],
+  "schema": "canonical_evidence.v1"
+}

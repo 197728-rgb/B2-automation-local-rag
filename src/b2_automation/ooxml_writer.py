@@ -41,7 +41,11 @@ def patch_docx_cells(
     required_field_ids: set[str] | None = None,
     low_confidence_threshold: float = DEFAULT_LOW_CONFIDENCE_THRESHOLD,
     structure_guard_report_path: Path | None = None,
+<<<<<<< HEAD
     approval_map: Mapping[str, Mapping[str, int]] | None = None,
+=======
+    approval_map: Mapping[str, Any] | None = None,
+>>>>>>> b2490eb (Stage 6/7 hardening: maps, guardrails, semantic retrieval, evidence outputs)
 ) -> PatchOutcome:
     """Patch approved manifest cells in a DOCX package.
 
@@ -70,8 +74,13 @@ def patch_docx_cells(
         document_xml = zin.read("word/document.xml").decode("utf-8")
 
     tables = _find_elements(document_xml, "w:tbl")
+<<<<<<< HEAD
     approved = dict(approval_map or {})
     for spec in manifest.get("cells", []):
+=======
+    specs = _approved_manifest_cells(manifest, approval_map, errors)
+    for spec in specs:
+>>>>>>> b2490eb (Stage 6/7 hardening: maps, guardrails, semantic retrieval, evidence outputs)
         fid = str(spec["field_id"])
         if approved:
             exact = approved.get(fid)
@@ -141,6 +150,11 @@ def patch_docx_cells(
     after_counts = count_docx_structure(output_path)
     guard = build_structure_guard(before_counts, after_counts, errors, intentional_text_node_creations)
     structure_guard_report_path.write_text(json.dumps(guard, indent=2, sort_keys=True), encoding="utf-8")
+    if not guard["pass"]:
+        try:
+            output_path.unlink()
+        except FileNotFoundError:
+            pass
     return PatchOutcome(
         output_docx=output_path.resolve(),
         structure_guard_report=structure_guard_report_path.resolve(),
@@ -219,7 +233,11 @@ def _value_for_write(
     )
     if decision == DecisionState.BLANK:
         return ""
+<<<<<<< HEAD
     if decision != DecisionState.FILL:
+=======
+    if decision in {DecisionState.REVIEW_REQUIRED, DecisionState.MISSING, DecisionState.CONFLICT, DecisionState.LOW_CONFIDENCE}:
+>>>>>>> b2490eb (Stage 6/7 hardening: maps, guardrails, semantic retrieval, evidence outputs)
         reason = "requires review"
         if value is None or str(value).strip() == "":
             reason = "missing required value"
@@ -229,6 +247,47 @@ def _value_for_write(
             reason = str(value)
         return _review_text(fid, reason)
     return str(value)
+
+
+def _approved_manifest_cells(
+    manifest: Mapping[str, Any],
+    approval_map: Mapping[str, Any] | None,
+    errors: list[str],
+) -> list[Mapping[str, Any]]:
+    cells = list(manifest.get("cells") or _approval_fields(approval_map).values())
+    if approval_map is None:
+        return cells
+
+    approved = _approval_fields(approval_map)
+    out: list[Mapping[str, Any]] = []
+    for spec in cells:
+        fid = str(spec.get("field_id", ""))
+        approval = approved.get(fid)
+        if approval is None:
+            errors.append(f"{fid}: field is not present in exact approval map")
+            continue
+        if _cell_coordinates(spec) != _cell_coordinates(approval):
+            errors.append(
+                f"{fid}: manifest target {_cell_coordinates(spec)} does not match exact approval map {_cell_coordinates(approval)}"
+            )
+            continue
+        out.append({**dict(approval), **dict(spec)})
+    return out
+
+
+def _approval_fields(approval_map: Mapping[str, Any] | None) -> dict[str, Mapping[str, Any]]:
+    if approval_map is None:
+        return {}
+    raw = approval_map.get("fields") or {}
+    if isinstance(raw, dict):
+        return {str(field_id): spec for field_id, spec in raw.items() if isinstance(spec, Mapping)}
+    if isinstance(raw, list):
+        return {str(spec.get("field_id")): spec for spec in raw if isinstance(spec, Mapping) and spec.get("field_id")}
+    return {}
+
+
+def _cell_coordinates(spec: Mapping[str, Any]) -> tuple[int, int, int]:
+    return (int(spec["table_index"]), int(spec["row"]), int(spec["col"]))
 
 
 def _find_elements(xml: str, tag: str) -> list[tuple[int, int]]:

@@ -1,13 +1,23 @@
 {
-  "template": "B24_RL1.docx",
+  "template": "B24_RL2.docx",
   "cells": [
-    {
-      "field_id": "facility_name",
-      "table_index": 0,
-      "row": 4,
-      "col": 0,
-      "label": "Tank Car Owner (TCO) Name",
-      "required": false
-    }
+    {"field_id": "facility_name", "table_index": 0, "row": 4, "col": 0, "label": "Tank Car Owner (TCO) Name", "required": true},
+    {"field_id": "tco_permission_date", "table_index": 0, "row": 4, "col": 2, "label": "Date Permission/Instruction Received from TCO", "required": true},
+    {"field_id": "tco_written_instructions", "table_index": 0, "row": 4, "col": 7, "label": "Written Instructions from TCO", "required": true},
+    {"field_id": "pitp_document_name", "table_index": 0, "row": 6, "col": 0, "label": "PITP Document Name", "required": true},
+    {"field_id": "pitp_id", "table_index": 0, "row": 6, "col": 4, "label": "PITP ID", "required": true},
+    {"field_id": "pitp_approved_by", "table_index": 0, "row": 6, "col": 8, "label": "Approved By", "required": true},
+    {"field_id": "pitp_date_approved", "table_index": 0, "row": 6, "col": 11, "label": "Date Approved", "required": true},
+    {"field_id": "pitp_rev", "table_index": 0, "row": 6, "col": 15, "label": "Rev", "required": false},
+    {"field_id": "car_mark", "table_index": 0, "row": 9, "col": 0, "label": "Car Mark and Number", "required": true},
+    {"field_id": "tank_design_spec", "table_index": 0, "row": 9, "col": 2, "label": "Tank Car Design Spec/Stencil Spec", "required": true},
+    {"field_id": "car_type", "table_index": 0, "row": 9, "col": 6, "label": "Type", "required": true},
+    {"field_id": "aar_form_4_2_number", "table_index": 0, "row": 9, "col": 10, "label": "AAR Form 4-2 (AAR No.)", "required": true},
+    {"field_id": "four_two_drawing_number", "table_index": 0, "row": 11, "col": 5, "label": "Drawing Number", "required": true},
+    {"field_id": "four_two_drawing_revision", "table_index": 0, "row": 11, "col": 12, "label": "Revision", "required": false},
+    {"field_id": "test_plate_tank_material", "table_index": 0, "row": 14, "col": 0, "label": "Tank Plate Material", "required": true},
+    {"field_id": "test_plate_tank_mtr", "table_index": 0, "row": 14, "col": 3, "label": "MTR # (tank plate)", "required": true},
+    {"field_id": "attachment_material", "table_index": 0, "row": 16, "col": 0, "label": "Attachment Material", "required": true},
+    {"field_id": "evidence_notes", "table_index": 0, "row": 18, "col": 0, "label": "Additional Auditor Objective Evidence/Comments/Notes", "required": false}
   ]
 }

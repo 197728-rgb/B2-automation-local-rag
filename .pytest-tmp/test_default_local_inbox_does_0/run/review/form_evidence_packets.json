@@ -1,0 +1,340 @@
+{
+  "B24_RL2": {
+    "conflicts": [],
+    "decision_summary": {
+      "counts_by_state": {
+        "FILL": 1,
+        "MISSING": 1
+      },
+      "fill_eligible_field_ids": [
+        "facility_name"
+      ]
+    },
+    "default_status": "first_class",
+    "field_decisions": [
+      {
+        "candidates": [],
+        "confidence": null,
+        "field_id": "date",
+        "reason": "no retrieved evidence candidate",
+        "selected_value": null,
+        "state": "MISSING"
+      },
+      {
+        "candidates": [
+          {
+            "candidate_value": "Midwest B24 RL2 evidence",
+            "chunk_excerpt": "Cover Page Facility: Midwest B24 RL2 evidence",
+            "chunk_hash": "6b6810f3182f50a1414833903266170b86410cf28febc25e77b55a06a6b16ab8",
+            "chunk_id": 1,
+            "confidence": 0.95,
+            "field_id": "facility_name",
+            "retrieval_score": 452,
+            "review_required": true,
+            "semantic_score": 0.439736,
+            "source_file": "packet_one.txt"
+          }
+        ],
+        "confidence": 0.95,
+        "field_id": "facility_name",
+        "reason": "selected highest-confidence local evidence",
+        "selected_value": "Midwest B24 RL2 evidence",
+        "state": "FILL"
+      }
+    ],
+    "field_suggestions": [
+      {
+        "candidate_value": "Midwest B24 RL2 evidence",
+        "chunk_excerpt": "Cover Page Facility: Midwest B24 RL2 evidence",
+        "chunk_hash": "6b6810f3182f50a1414833903266170b86410cf28febc25e77b55a06a6b16ab8",
+        "chunk_id": 1,
+        "confidence": 0.95,
+        "field_id": "facility_name",
+        "retrieval_score": 452,
+        "review_required": true,
+        "semantic_score": 0.439736,
+        "source_file": "packet_one.txt"
+      }
+    ],
+    "form_id": "B24_RL2",
+    "low_confidence_fields": [],
+    "missing_fields": [
+      "date"
+    ],
+    "production_scope": true,
+    "retrieval_method": "local_tfidf_cosine",
+    "retrieved_context": [
+      {
+        "chunk_excerpt": "Cover Page Facility: Midwest B24 RL2 evidence",
+        "chunk_hash": "6b6810f3182f50a1414833903266170b86410cf28febc25e77b55a06a6b16ab8",
+        "chunk_id": 1,
+        "keyword_score": 6,
+        "retrieval_method": "local_tfidf_cosine",
+        "retrieval_score": 452,
+        "score": 452,
+        "semantic_score": 0.439736,
+        "source_file": "packet_one.txt",
+        "text": "Cover Page Facility: Midwest B24 RL2 evidence"
+      }
+    ],
+    "review_required_fields": [],
+    "source_files": [
+      "packet_one.txt"
+    ],
+    "write_authority": "none; exact approval_map.json is required before DOCX patching"
+  },
+  "B81": {
+    "conflicts": [],
+    "decision_summary": {
+      "counts_by_state": {
+        "FILL": 1,
+        "MISSING": 1
+      },
+      "fill_eligible_field_ids": [
+        "facility_name"
+      ]
+    },
+    "default_status": "first_class",
+    "field_decisions": [
+      {
+        "candidates": [],
+        "confidence": null,
+        "field_id": "date",
+        "reason": "no retrieved evidence candidate",
+        "selected_value": null,
+        "state": "MISSING"
+      },
+      {
+        "candidates": [
+          {
+            "candidate_value": "Midwest B24 RL2 evidence",
+            "chunk_excerpt": "Cover Page Facility: Midwest B24 RL2 evidence",
+            "chunk_hash": "6b6810f3182f50a1414833903266170b86410cf28febc25e77b55a06a6b16ab8",
+            "chunk_id": 1,
+            "confidence": 0.95,
+            "field_id": "facility_name",
+            "retrieval_score": 48,
+            "review_required": true,
+            "semantic_score": 0.048314,
+            "source_file": "packet_one.txt"
+          }
+        ],
+        "confidence": 0.95,
+        "field_id": "facility_name",
+        "reason": "selected highest-confidence local evidence",
+        "selected_value": "Midwest B24 RL2 evidence",
+        "state": "FILL"
+      }
+    ],
+    "field_suggestions": [
+      {
+        "candidate_value": "Midwest B24 RL2 evidence",
+        "chunk_excerpt": "Cover Page Facility: Midwest B24 RL2 evidence",
+        "chunk_hash": "6b6810f3182f50a1414833903266170b86410cf28febc25e77b55a06a6b16ab8",
+        "chunk_id": 1,
+        "confidence": 0.95,
+        "field_id": "facility_name",
+        "retrieval_score": 48,
+        "review_required": true,
+        "semantic_score": 0.048314,
+        "source_file": "packet_one.txt"
+      }
+    ],
+    "form_id": "B81",
+    "low_confidence_fields": [],
+    "missing_fields": [
+      "date"
+    ],
+    "production_scope": true,
+    "retrieval_method": "local_tfidf_cosine",
+    "retrieved_context": [
+      {
+        "chunk_excerpt": "Cover Page Facility: Midwest B24 RL2 evidence",
+        "chunk_hash": "6b6810f3182f50a1414833903266170b86410cf28febc25e77b55a06a6b16ab8",
+        "chunk_id": 1,
+        "keyword_score": 0,
+        "retrieval_method": "local_tfidf_cosine",
+        "retrieval_score": 48,
+        "score": 48,
+        "semantic_score": 0.048314,
+        "source_file": "packet_one.txt",
+        "text": "Cover Page Facility: Midwest B24 RL2 evidence"
+      }
+    ],
+    "review_required_fields": [],
+    "source_files": [
+      "packet_one.txt"
+    ],
+    "write_authority": "none; exact approval_map.json is required before DOCX patching"
+  },
+  "B89": {
+    "conflicts": [],
+    "decision_summary": {
+      "counts_by_state": {
+        "MISSING": 2
+      },
+      "fill_eligible_field_ids": []
+    },
+    "default_status": "first_class",
+    "field_decisions": [
+      {
+        "candidates": [],
+        "confidence": null,
+        "field_id": "date",
+        "reason": "no retrieved evidence candidate",
+        "selected_value": null,
+        "state": "MISSING"
+      },
+      {
+        "candidates": [],
+        "confidence": null,
+        "field_id": "facility_name",
+        "reason": "no retrieved evidence candidate",
+        "selected_value": null,
+        "state": "MISSING"
+      }
+    ],
+    "field_suggestions": [],
+    "form_id": "B89",
+    "low_confidence_fields": [],
+    "missing_fields": [
+      "date",
+      "facility_name"
+    ],
+    "production_scope": true,
+    "retrieval_method": "keyword_fallback",
+    "retrieved_context": [],
+    "review_required_fields": [],
+    "source_files": [
+      "packet_one.txt"
+    ],
+    "write_authority": "none; exact approval_map.json is required before DOCX patching"
+  },
+  "B90": {
+    "conflicts": [],
+    "decision_summary": {
+      "counts_by_state": {
+        "MISSING": 2
+      },
+      "fill_eligible_field_ids": []
+    },
+    "default_status": "first_class",
+    "field_decisions": [
+      {
+        "candidates": [],
+        "confidence": null,
+        "field_id": "date",
+        "reason": "no retrieved evidence candidate",
+        "selected_value": null,
+        "state": "MISSING"
+      },
+      {
+        "candidates": [],
+        "confidence": null,
+        "field_id": "facility_name",
+        "reason": "no retrieved evidence candidate",
+        "selected_value": null,
+        "state": "MISSING"
+      }
+    ],
+    "field_suggestions": [],
+    "form_id": "B90",
+    "low_confidence_fields": [],
+    "missing_fields": [
+      "date",
+      "facility_name"
+    ],
+    "production_scope": true,
+    "retrieval_method": "keyword_fallback",
+    "retrieved_context": [],
+    "review_required_fields": [],
+    "source_files": [
+      "packet_one.txt"
+    ],
+    "write_authority": "none; exact approval_map.json is required before DOCX patching"
+  },
+  "Cover_Page": {
+    "conflicts": [],
+    "decision_summary": {
+      "counts_by_state": {
+        "FILL": 1,
+        "MISSING": 1
+      },
+      "fill_eligible_field_ids": [
+        "facility_name"
+      ]
+    },
+    "default_status": "first_class",
+    "field_decisions": [
+      {
+        "candidates": [],
+        "confidence": null,
+        "field_id": "date",
+        "reason": "no retrieved evidence candidate",
+        "selected_value": null,
+        "state": "MISSING"
+      },
+      {
+        "candidates": [
+          {
+            "candidate_value": "Midwest B24 RL2 evidence",
+            "chunk_excerpt": "Cover Page Facility: Midwest B24 RL2 evidence",
+            "chunk_hash": "6b6810f3182f50a1414833903266170b86410cf28febc25e77b55a06a6b16ab8",
+            "chunk_id": 1,
+            "confidence": 0.95,
+            "field_id": "facility_name",
+            "retrieval_score": 530,
+            "review_required": true,
+            "semantic_score": 0.514045,
+            "source_file": "packet_one.txt"
+          }
+        ],
+        "confidence": 0.95,
+        "field_id": "facility_name",
+        "reason": "selected highest-confidence local evidence",
+        "selected_value": "Midwest B24 RL2 evidence",
+        "state": "FILL"
+      }
+    ],
+    "field_suggestions": [
+      {
+        "candidate_value": "Midwest B24 RL2 evidence",
+        "chunk_excerpt": "Cover Page Facility: Midwest B24 RL2 evidence",
+        "chunk_hash": "6b6810f3182f50a1414833903266170b86410cf28febc25e77b55a06a6b16ab8",
+        "chunk_id": 1,
+        "confidence": 0.95,
+        "field_id": "facility_name",
+        "retrieval_score": 530,
+        "review_required": true,
+        "semantic_score": 0.514045,
+        "source_file": "packet_one.txt"
+      }
+    ],
+    "form_id": "Cover_Page",
+    "low_confidence_fields": [],
+    "missing_fields": [
+      "date"
+    ],
+    "production_scope": true,
+    "retrieval_method": "local_tfidf_cosine",
+    "retrieved_context": [
+      {
+        "chunk_excerpt": "Cover Page Facility: Midwest B24 RL2 evidence",
+        "chunk_hash": "6b6810f3182f50a1414833903266170b86410cf28febc25e77b55a06a6b16ab8",
+        "chunk_id": 1,
+        "keyword_score": 8,
+        "retrieval_method": "local_tfidf_cosine",
+        "retrieval_score": 530,
+        "score": 530,
+        "semantic_score": 0.514045,
+        "source_file": "packet_one.txt",
+        "text": "Cover Page Facility: Midwest B24 RL2 evidence"
+      }
+    ],
+    "review_required_fields": [],
+    "source_files": [
+      "packet_one.txt"
+    ],
+    "write_authority": "none; exact approval_map.json is required before DOCX patching"
+  }
+}
