@@ -358,9 +358,9 @@ def _field_aliases(field: dict[str, Any]) -> tuple[str, ...]:
     return tuple(dict.fromkeys(aliases))
 
 
-def _required_field_ids_for_form(form: str) -> tuple[str, ...]:
-    fields = tuple(str(item["field_id"]) for item in _form_field_definitions(form) if _truthy(item.get("required")))
-    return fields or tuple(DEFAULT_REQUIRED_SUGGESTION_FIELDS)
+def _required_field_ids_for_form(_form: str) -> tuple[str, ...]:
+    """Standard suggestion keys only; CSV inventory expands retrieval aliases but must not explode MISSING states."""
+    return tuple(DEFAULT_REQUIRED_SUGGESTION_FIELDS)
 
 
 def _trim_before_next_field_marker(value: str) -> str:
