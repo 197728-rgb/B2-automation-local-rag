@@ -1,0 +1,20 @@
+{
+  "form_id": "B90",
+  "form_version": "2026",
+  "template": "B90_RLS.docx",
+  "source": "outputs/B90_RLS_table_map.txt",
+  "fields": {
+    "tco.name": {"field_id": "tco.name", "table_index": 0, "row": 4, "col": 0, "required": true, "cell_role": "target", "label": "Tank Car Owner (TCO) Name"},
+    "tco.permission_date": {"field_id": "tco.permission_date", "table_index": 0, "row": 4, "col": 2, "required": true, "cell_role": "target", "label": "Date Permission Received from TCO"},
+    "tco.instructions": {"field_id": "tco.instructions", "table_index": 0, "row": 4, "col": 5, "required": true, "cell_role": "target", "label": "Written Instructions from TCO"},
+    "car.mark": {"field_id": "car.mark", "table_index": 0, "row": 7, "col": 0, "required": true, "cell_role": "target", "label": "Car Mark and Number"},
+    "car.design_spec": {"field_id": "car.design_spec", "table_index": 0, "row": 7, "col": 1, "required": true, "cell_role": "target", "label": "Tank Car Design Specification"},
+    "car.stencil_spec": {"field_id": "car.stencil_spec", "table_index": 0, "row": 7, "col": 4, "required": false, "cell_role": "target", "label": "Stencil Specification"},
+    "stub_sill.type": {"field_id": "stub_sill.type", "table_index": 0, "row": 7, "col": 6, "required": true, "cell_role": "target", "label": "Stub Sill Type"},
+    "aar.form_4_2.number": {"field_id": "aar.form_4_2.number", "table_index": 0, "row": 7, "col": 7, "required": true, "cell_role": "target", "label": "AAR Form 4-2 (AAR No.)"},
+    "materials.stub_sill.spec": {"field_id": "materials.stub_sill.spec", "table_index": 0, "row": 13, "col": 2, "required": true, "cell_role": "target", "label": "Material Specification"},
+    "pitp.name": {"field_id": "pitp.name", "table_index": 1, "row": 5, "col": 0, "required": true, "cell_role": "target", "label": "PITP Document Name"},
+    "pitp.id": {"field_id": "pitp.id", "table_index": 1, "row": 5, "col": 17, "required": true, "cell_role": "target", "label": "PITP ID"},
+    "stub_sill.procedure.id": {"field_id": "stub_sill.procedure.id", "table_index": 1, "row": 7, "col": 14, "required": true, "cell_role": "target", "label": "Procedure ID"}
+  }
+}

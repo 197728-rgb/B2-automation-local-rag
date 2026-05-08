@@ -95,3 +95,36 @@ def test_ooxml_production_path_uses_normalized_values(tmp_path: Path) -> None:
     blob = _doc_text(out)
     assert "Midwest Tank Rail Inc" in blob
     assert "UTLX 556891" in blob
+
+
+def test_exact_approval_map_coordinate_mismatch_fails_guard(tmp_path: Path) -> None:
+    root = _repo()
+    template = root / "templates" / "B24_RL1.docx"
+    if not template.is_file():
+        pytest.skip(f"missing template: {template}")
+    manifest = load_manifest(root / "schemas" / "templates" / "B24_RL1.json")
+    approval = {
+        "fields": {
+            "tco_name": {
+                "field_id": "tco_name",
+                "table_index": 99,
+                "row": 4,
+                "col": 0,
+                "label": "wrong table index",
+            }
+        }
+    }
+    out = tmp_path / "denied.docx"
+    guard_path = tmp_path / "structure_guard_report.json"
+    outcome = patch_docx_cells(
+        template,
+        manifest,
+        {"tco_name": "Should Not Hand Off"},
+        out,
+        approval_map=approval,
+        structure_guard_report_path=guard_path,
+    )
+    assert outcome.structure_guard_passed is False
+    assert not out.is_file()
+    guard = json.loads(guard_path.read_text(encoding="utf-8"))
+    assert guard["pass"] is False

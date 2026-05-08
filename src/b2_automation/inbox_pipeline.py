@@ -8,13 +8,19 @@ from __future__ import annotations
 
 import hashlib
 import json
+import shutil
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from b2_automation.approval_maps import load_exact_approval_bundle
 from b2_automation.b24_normalizer import normalize_docupipe_payload_for_b24_rl1
 from b2_automation.b24_rl1_filler import REVIEW_REQUIRED_TEXT, load_manifest
+<<<<<<< HEAD
 from b2_automation.cell_evidence import DecisionState, decide_cell, state_to_decision
+=======
+from b2_automation.cell_evidence import DecisionState, decide_cell
+>>>>>>> f1714d6 (Wire exact approval maps for safe OOXML writes)
 from b2_automation.docupipe_client import process_pdf
 from b2_automation.local_extraction import (
     DEFAULT_REVIEW_FORMS,
@@ -224,6 +230,7 @@ def _build_cell_inventory_report(
         confidence = field_confidences.get(fid)
         conflict = isinstance(value, str) and value.startswith(REVIEW_REQUIRED_TEXT)
         role = _cell_role(spec)
+<<<<<<< HEAD
         decision_state = decide_cell(value, confidence=confidence, threshold=threshold, required=required, conflict_detected=conflict, cell_role="target" if role == "notes" else role)
         decision = state_to_decision(decision_state)
         if decision_state == DecisionState.FILL:
@@ -236,6 +243,19 @@ def _build_cell_inventory_report(
             status = "review_required_conflict"
         elif decision_state == DecisionState.LOW_CONFIDENCE:
             status = "review_required_low_confidence"
+=======
+        decision = decide_cell(value, confidence=confidence, threshold=threshold, required=required, conflict_detected=conflict, cell_role="target" if role == "notes" else role)
+        if decision == DecisionState.FILL:
+            status = "filled"
+        elif decision == DecisionState.BLANK:
+            status = "blank_optional"
+        elif decision == DecisionState.MISSING:
+            status = "blank_required_MISSING"
+        elif decision == DecisionState.CONFLICT:
+            status = "review_required_conflict"
+        elif decision == DecisionState.LOW_CONFIDENCE:
+            status = "low_confidence"
+>>>>>>> f1714d6 (Wire exact approval maps for safe OOXML writes)
         else:
             status = "review_required"
         src = field_sources.get(fid) or {}
@@ -248,8 +268,12 @@ def _build_cell_inventory_report(
                 "col": int(spec["col"]),
                 "required": required,
                 "cell_role": role,
+<<<<<<< HEAD
                 "decision": decision,
                 "decision_state": decision_state.value,
+=======
+                "decision": decision.value,
+>>>>>>> f1714d6 (Wire exact approval maps for safe OOXML writes)
                 "status": status,
                 "value": value,
                 "confidence": confidence,
@@ -325,11 +349,119 @@ def _write_review_md(path: Path, review: dict[str, Any]) -> None:
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
+def _field_values_from_packet(packet: dict[str, Any]) -> tuple[dict[str, str], dict[str, float]]:
+    values: dict[str, str] = {}
+    confidences: dict[str, float] = {}
+    for decision in packet.get("field_decisions", []):
+        if decision.get("state") != DecisionState.FILL.value:
+            continue
+        value = decision.get("selected_value")
+        if value is None or str(value).strip() == "":
+            continue
+        field_id = str(decision["field_id"])
+        values[field_id] = str(value).strip()
+        if decision.get("confidence") is not None:
+            confidences[field_id] = float(decision["confidence"])
+    return values, confidences
+
+
+def _write_local_filled_docx(
+    *,
+    root: Path,
+    run_dir: Path,
+    filled_dir: Path,
+    packets: dict[str, dict[str, Any]],
+    low_confidence_threshold: float,
+) -> list[dict[str, Any]]:
+    work_dir = run_dir / "patch_work"
+    guard_dir = run_dir / "structure_guard_reports"
+    work_dir.mkdir(parents=True, exist_ok=True)
+    guard_dir.mkdir(parents=True, exist_ok=True)
+
+    results: list[dict[str, Any]] = []
+    for form, packet in packets.items():
+        values, confidences = _field_values_from_packet(packet)
+        bundle = load_exact_approval_bundle(root, form)
+        result: dict[str, Any] = {
+            "form_id": form,
+            "attempted": False,
+            "status": "skipped_no_fill_decisions",
+            "approval_map": str(bundle.map_path) if bundle else None,
+            "template": str(bundle.template_path) if bundle and bundle.template_path.is_file() else None,
+            "filled_docx": None,
+            "structure_guard_report": None,
+            "structure_guard_passed": False,
+            "patched_fields": [],
+            "errors": [],
+        }
+        if not values:
+            results.append(result)
+            continue
+        if bundle is None:
+            result["status"] = "skipped_missing_exact_approval_map"
+            results.append(result)
+            continue
+        if not bundle.template_path.is_file():
+            result["status"] = "skipped_missing_template"
+            results.append(result)
+            continue
+
+        required_ids = {
+            str(spec["field_id"])
+            for spec in (bundle.manifest.get("cells") or [])
+            if _truthy(spec.get("required"))
+        }
+        candidate_docx = work_dir / f"{form}_candidate.docx"
+        final_docx = filled_dir / f"{form}_filled.docx"
+        guard_path = guard_dir / f"{form}_structure_guard_report.json"
+        outcome = patch_docx_cells(
+            bundle.template_path,
+            bundle.manifest,
+            values,
+            candidate_docx,
+            field_confidences=confidences,
+            required_field_ids=required_ids,
+            low_confidence_threshold=low_confidence_threshold,
+            structure_guard_report_path=guard_path,
+            approval_map=bundle.approval_map,
+        )
+        result.update(
+            {
+                "attempted": True,
+                "status": "filled" if outcome.structure_guard_passed else "discarded_structure_guard_failed",
+                "structure_guard_report": str(outcome.structure_guard_report) if outcome.structure_guard_report else None,
+                "structure_guard_passed": outcome.structure_guard_passed,
+                "patched_fields": list(outcome.patched_fields),
+                "errors": list(outcome.errors),
+            }
+        )
+        if outcome.structure_guard_passed:
+            final_docx.parent.mkdir(parents=True, exist_ok=True)
+            shutil.move(str(candidate_docx), final_docx)
+            result["filled_docx"] = str(final_docx)
+        else:
+            try:
+                candidate_docx.unlink()
+            except FileNotFoundError:
+                pass
+        results.append(result)
+
+    attempted = [item for item in results if item.get("attempted")]
+    aggregate = {
+        "pass": all(bool(item.get("structure_guard_passed")) for item in attempted) if attempted else True,
+        "forms": results,
+    }
+    (run_dir / "structure_guard_report.json").write_text(json.dumps(aggregate, indent=2, sort_keys=True), encoding="utf-8")
+    return results
+
+
 def _run_local_rag_inbox_pipeline(
     *,
+    root: Path,
     inbox: Path,
     out_dir: Path,
     review_forms: tuple[str, ...] | None,
+    low_confidence_threshold: float,
 ) -> InboxPipelineResult:
     inbox = inbox.resolve()
     run_dir = out_dir.resolve()
@@ -347,7 +479,12 @@ def _run_local_rag_inbox_pipeline(
     forms = normalize_review_forms(review_forms)
     documents = [extract_local_document(path) for path in inputs]
     chunks_by_source = {doc.source_file: chunk_text(doc.text) for doc in documents}
-    packets = build_form_packets(documents, chunks_by_source, forms)
+    packets = build_form_packets(
+        documents,
+        chunks_by_source,
+        forms,
+        low_confidence_threshold=low_confidence_threshold,
+    )
     artifact_index = write_local_artifacts(
         raw_dir=raw_dir,
         review_dir=review_dir,
@@ -362,7 +499,27 @@ def _run_local_rag_inbox_pipeline(
     rag_selection_path = run_dir / "rag_selection_report.json"
 
     missing_context = [form for form, packet in packets.items() if not packet["retrieved_context"]]
-    status = "review_required" if missing_context else "success"
+    docx_results = _write_local_filled_docx(
+        root=root,
+        run_dir=run_dir,
+        filled_dir=filled_dir,
+        packets=packets,
+        low_confidence_threshold=low_confidence_threshold,
+    )
+    failed_docx = [item for item in docx_results if item.get("attempted") and not item.get("structure_guard_passed")]
+    review_states = {
+        decision.get("state")
+        for packet in packets.values()
+        for decision in packet.get("field_decisions", [])
+        if decision.get("state")
+        in {
+            DecisionState.MISSING.value,
+            DecisionState.CONFLICT.value,
+            DecisionState.LOW_CONFIDENCE.value,
+            DecisionState.REVIEW_REQUIRED.value,
+        }
+    }
+    status = "review_required" if missing_context or failed_docx or review_states else "success"
     review = {
         "generated_at": _utc_now(),
         "status": status,
@@ -383,7 +540,12 @@ def _run_local_rag_inbox_pipeline(
         ],
         "form_packets": packets,
         "missing_context_forms": missing_context,
-        "write_authority": "review only; exact approval maps are required before safe DOCX patching",
+        "decision_summary_by_form": {fid: packets[fid].get("decision_summary") for fid in forms},
+        "write_authority": "exact approval maps required; only FILL decisions are passed to DOCX patching",
+        "docx_generation": docx_results,
+        "structure_guard_failed_forms": [
+            item["form_id"] for item in docx_results if item.get("attempted") and not item.get("structure_guard_passed")
+        ],
     }
     review_json.write_text(json.dumps(review, indent=2, sort_keys=True), encoding="utf-8")
 
@@ -399,20 +561,26 @@ def _run_local_rag_inbox_pipeline(
     lines.extend(["", "## Inputs"])
     lines.extend(f"- {item['source_file']} ({item['extraction_method']})" for item in review["inputs"])
     lines.extend(["", "## DOCX writing"])
-    lines.append("- No DOCX was filled by the local review path.")
-    lines.append("- Exact approval maps and the safe OOXML patcher are required before filled files are handed off.")
+    if docx_results:
+        for item in docx_results:
+            lines.append(f"- {item['form_id']}: {item['status']}")
+    else:
+        lines.append("- No DOCX generation attempted.")
+    lines.append("- RAG evidence did not authorize write locations; exact approval maps did.")
     review_md.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
     rag_selection = {
-        "selected_approval_map": "",
+        "selected_approval_maps": [item.get("approval_map") for item in docx_results if item.get("approval_map")],
         "form_id": "",
         "form_version": "",
         "retrieved_context_used": list(artifact_index["per_form_reviews"].keys()),
         "rejected_candidates": [],
-        "decision": "review_only_no_docx_fill",
-        "uncertainty": "Exact per-form/version approval maps are not selected by the local inbox review step.",
+        "decision": "exact_maps_only_fill_decisions",
+        "uncertainty": "Forms without exact approval maps or templates are skipped.",
     }
     rag_selection_path.write_text(json.dumps(rag_selection, indent=2, sort_keys=True), encoding="utf-8")
+
+    guard_summary = json.loads((run_dir / "structure_guard_report.json").read_text(encoding="utf-8"))
 
     run_manifest = {
         "status": status,
@@ -428,12 +596,20 @@ def _run_local_rag_inbox_pipeline(
         "review_json": str(review_json),
         "review_markdown": str(review_md),
         "rag_selection_report": str(rag_selection_path),
+        "docx_generation": docx_results,
+        "structure_guard_failed_forms": [
+            item["form_id"] for item in docx_results if item.get("attempted") and not item.get("structure_guard_passed")
+        ],
+        "structure_guard_report": str(run_dir / "structure_guard_report.json"),
+        "structure_guard_passed": bool(guard_summary.get("pass")),
         "artifacts": artifact_index,
-        "outputs": [str(review_json), str(review_md), str(rag_selection_path), str(artifact_index["aggregate_review_path"])],
+        "outputs": [str(review_json), str(review_md), str(rag_selection_path), str(artifact_index["aggregate_review_path"])]
+        + [str(item["filled_docx"]) for item in docx_results if item.get("filled_docx")],
     }
     manifest_path.write_text(json.dumps(run_manifest, indent=2, sort_keys=True), encoding="utf-8")
 
-    return InboxPipelineResult(run_dir, manifest_path, review_json, review_md, None, status)
+    first_filled = next((Path(str(item["filled_docx"])) for item in docx_results if item.get("filled_docx")), None)
+    return InboxPipelineResult(run_dir, manifest_path, review_json, review_md, first_filled, status)
 
 
 def run_inbox_pipeline(
@@ -447,7 +623,13 @@ def run_inbox_pipeline(
     review_forms: tuple[str, ...] | None = None,
 ) -> InboxPipelineResult:
     if not legacy_docupipe:
-        return _run_local_rag_inbox_pipeline(inbox=inbox, out_dir=out_dir, review_forms=review_forms)
+        return _run_local_rag_inbox_pipeline(
+            root=root,
+            inbox=inbox,
+            out_dir=out_dir,
+            review_forms=review_forms,
+            low_confidence_threshold=low_confidence_threshold,
+        )
 
     inbox = inbox.resolve()
     out_dir = out_dir.resolve()
@@ -576,6 +758,12 @@ def run_inbox_pipeline(
     manifest_path = run_dir / "run_manifest.json"
     review_json.write_text(json.dumps(review, indent=2, sort_keys=True), encoding="utf-8")
     _write_review_md(review_md, review)
+
+    structure_guard_passed: bool | None = None
+    sgr_path = run_dir / "structure_guard_report.json"
+    if records and sgr_path.is_file():
+        structure_guard_passed = bool(json.loads(sgr_path.read_text(encoding="utf-8")).get("pass"))
+
     run_manifest = {
         "status": status,
         "mode": "legacy_docupipe_b24_rl1",
@@ -588,6 +776,7 @@ def run_inbox_pipeline(
         "cell_inventory_summary": review["cell_inventory_summary"],
         "filled_docx": str(filled_docx) if filled_docx else None,
         "structure_guard_report": review["structure_guard_report"],
+        "structure_guard_passed": structure_guard_passed,
     }
     manifest_path.write_text(json.dumps(run_manifest, indent=2, sort_keys=True), encoding="utf-8")
 

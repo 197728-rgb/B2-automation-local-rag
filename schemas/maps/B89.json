@@ -1,0 +1,15 @@
+{
+  "form_id": "B89",
+  "form_version": "2026",
+  "manifest_path": "schemas/templates/B89.json",
+  "template_path": "templates/B24_RL1.docx",
+  "fields": {
+    "facility_name": {
+      "field_id": "facility_name",
+      "table_index": 0,
+      "row": 4,
+      "col": 0,
+      "label": "Tank Car Owner (TCO) Name"
+    }
+  }
+}

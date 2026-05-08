@@ -1,0 +1,21 @@
+{
+  "form_id": "B89",
+  "form_version": "2026",
+  "template": "B89_INSULATION_TEST_PLATE.docx",
+  "source": "outputs/B89_INSULATION_TEST_PLATE_table_map.txt",
+  "fields": {
+    "tco.name": {"field_id": "tco.name", "table_index": 0, "row": 2, "col": 0, "required": true, "cell_role": "target", "label": "Tank Car Owner (TCO) Name"},
+    "tco.permission_date": {"field_id": "tco.permission_date", "table_index": 0, "row": 2, "col": 3, "required": true, "cell_role": "target", "label": "Date Permission Received from TCO"},
+    "tco.instructions": {"field_id": "tco.instructions", "table_index": 0, "row": 2, "col": 5, "required": true, "cell_role": "target", "label": "Written Instructions from TCO"},
+    "car.mark": {"field_id": "car.mark", "table_index": 0, "row": 5, "col": 0, "required": true, "cell_role": "target", "label": "Car Mark and Number"},
+    "car.design_spec": {"field_id": "car.design_spec", "table_index": 0, "row": 5, "col": 1, "required": true, "cell_role": "target", "label": "Tank Car Design Spec/Stencil Spec"},
+    "safety_system.type": {"field_id": "safety_system.type", "table_index": 0, "row": 5, "col": 6, "required": true, "cell_role": "target", "label": "Safety System Type"},
+    "aar.form_4_2.number": {"field_id": "aar.form_4_2.number", "table_index": 0, "row": 5, "col": 9, "required": true, "cell_role": "target", "label": "AAR Form 4-2 (AAR No.)"},
+    "materials.insulation.spec": {"field_id": "materials.insulation.spec", "table_index": 0, "row": 10, "col": 7, "required": true, "cell_role": "target", "label": "Insulation Material Specification"},
+    "materials.jacket.spec": {"field_id": "materials.jacket.spec", "table_index": 0, "row": 11, "col": 7, "required": true, "cell_role": "target", "label": "Jacket Material Specification"},
+    "test_fixture.patch_plate.size": {"field_id": "test_fixture.patch_plate.size", "table_index": 0, "row": 14, "col": 0, "required": true, "cell_role": "target", "label": "Observed Size of Patch Plate"},
+    "test_fixture.weld.length": {"field_id": "test_fixture.weld.length", "table_index": 0, "row": 16, "col": 8, "required": true, "cell_role": "target", "label": "Observed Weld Length"},
+    "pitp.name": {"field_id": "pitp.name", "table_index": 1, "row": 5, "col": 0, "required": true, "cell_role": "target", "label": "PITP Document Name"},
+    "pitp.id": {"field_id": "pitp.id", "table_index": 1, "row": 5, "col": 14, "required": true, "cell_role": "target", "label": "PITP ID"}
+  }
+}

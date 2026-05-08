@@ -52,8 +52,16 @@ def test_inbox_pipeline_local_default_generates_all_form_packets(tmp_path: Path,
 
     result = run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run")
 
+    template = root / "templates" / "B24_RL1.docx"
+    run_manifest_data = json.loads(result.manifest_path.read_text(encoding="utf-8"))
     assert result.status == "success"
-    assert result.filled_docx_path is None
+    if template.is_file():
+        assert result.filled_docx_path is not None and result.filled_docx_path.is_file()
+        assert run_manifest_data.get("structure_guard_failed_forms") == []
+        guard = json.loads((tmp_path / "run" / "structure_guard_report.json").read_text(encoding="utf-8"))
+        assert guard["pass"] is True
+    else:
+        assert result.filled_docx_path is None
     assert result.manifest_path.is_file()
     assert result.review_json_path.is_file()
     assert result.review_md_path.is_file()
@@ -81,6 +89,17 @@ def test_inbox_pipeline_local_default_generates_all_form_packets(tmp_path: Path,
         assert "missing_fields" in packet
         assert "conflicts" in packet
         assert "low_confidence_fields" in packet
+        assert "decision_summary" in packet
+        assert "field_decisions" in packet
+        for row in packet["field_decisions"]:
+            assert row["state"] in {
+                "FILL",
+                "BLANK",
+                "REVIEW_REQUIRED",
+                "MISSING",
+                "CONFLICT",
+                "LOW_CONFIDENCE",
+            }
         assert packet["field_suggestions"]
 
 

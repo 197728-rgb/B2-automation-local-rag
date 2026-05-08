@@ -1,0 +1,13 @@
+{
+  "template": "B24_RL1.docx",
+  "cells": [
+    {
+      "field_id": "facility_name",
+      "table_index": 0,
+      "row": 4,
+      "col": 0,
+      "label": "Tank Car Owner (TCO) Name",
+      "required": false
+    }
+  ]
+}
