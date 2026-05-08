@@ -10,6 +10,9 @@ from typing import Any
 
 from b2_automation.cell_evidence import DecisionState, FieldDecision
 
+# Local lexical suggestions only emit discrete decisions for these retrieval keys (not CSV canonical paths).
+_LOCAL_DECISION_ALLOWLIST = frozenset({"facility_name", "date", "auditor", "car_number"})
+
 
 def summarize_decisions(decisions: list[FieldDecision]) -> dict[str, Any]:
     counts = Counter(d.state.value for d in decisions)
@@ -33,7 +36,8 @@ def decide_fields_for_local_packet(
         by_field.setdefault(str(item["field_id"]), []).append(item)
 
     required_set = set(required_field_ids)
-    field_ids = sorted(set(required_field_ids) | set(by_field.keys()))
+    suggestion_keys = set(by_field.keys()) & _LOCAL_DECISION_ALLOWLIST
+    field_ids = sorted(required_set | suggestion_keys)
     decisions: list[FieldDecision] = []
 
     for field_id in field_ids:
