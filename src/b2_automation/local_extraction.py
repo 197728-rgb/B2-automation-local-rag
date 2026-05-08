@@ -16,6 +16,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
 
+from b2_automation.cell_evidence import DecisionState, FieldDecision
+from b2_automation.decision_engine import decide_fields_for_local_packet, summarize_decisions
+from b2_automation.paths import resolve_project_root
+
 DEFAULT_REVIEW_FORMS = ("B24_RL2", "B81", "B89", "B90", "Cover_Page")
 LEGACY_REVIEW_FORMS = ("B24_RL1",)
 ALLOWED_REVIEW_FORMS = DEFAULT_REVIEW_FORMS + LEGACY_REVIEW_FORMS
@@ -180,12 +184,20 @@ def build_form_packets(
     documents: list[LocalEvidenceDocument],
     chunks_by_source: dict[str, list[dict[str, Any]]],
     review_forms: tuple[str, ...],
+    *,
+    low_confidence_threshold: float = DEFAULT_LOW_CONFIDENCE_THRESHOLD,
 ) -> dict[str, dict[str, Any]]:
     packets: dict[str, dict[str, Any]] = {}
     for form in review_forms:
         retrieved = _retrieve_for_form(form, documents, chunks_by_source)
-        suggestions = _field_suggestions(retrieved)
-        review_lists = _derive_review_lists(suggestions)
+        suggestions = _field_suggestions(retrieved, form)
+        decisions = decide_fields_for_local_packet(
+            retrieved=retrieved,
+            suggestions=suggestions,
+            required_field_ids=_required_field_ids_for_form(form),
+            low_confidence_threshold=low_confidence_threshold,
+        )
+        review_lists = _derive_review_lists(decisions)
         packets[form] = {
             "form_id": form,
             "default_status": "first_class" if form in DEFAULT_REVIEW_FORMS else "requested",
@@ -193,8 +205,11 @@ def build_form_packets(
             "source_files": [doc.source_file for doc in documents],
             "retrieved_context": retrieved,
             "field_suggestions": suggestions,
+            "field_decisions": [decision.to_dict() for decision in decisions],
+            "decision_summary": summarize_decisions(decisions),
             "missing_fields": review_lists["missing_fields"],
             "conflicts": review_lists["conflicts"],
+            "review_required_fields": review_lists["review_required_fields"],
             "low_confidence_fields": review_lists["low_confidence_fields"],
             "write_authority": "none; exact approval_map.json is required before DOCX patching",
         }
@@ -226,14 +241,18 @@ def _retrieve_for_form(
     return scored[:8]
 
 
-def _field_suggestions(retrieved: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def _field_suggestions(retrieved: list[dict[str, Any]], form: str = "") -> list[dict[str, Any]]:
     suggestions: list[dict[str, Any]] = []
-    patterns = (
+    patterns: list[tuple[str, str]] = [
         ("facility_name", r"\b(?:facility|company|shop)\s*[:=-]\s*([^\n\r;]{2,80})"),
         ("auditor", r"\b(?:auditor|inspector)\s*[:=-]\s*([^\n\r;]{2,80})"),
         ("date", r"\b(?:date|inspection date)\s*[:=-]\s*([0-9]{4}-[0-9]{2}-[0-9]{2}|[0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4})"),
         ("car_number", r"\b(?:car|car no\.?|car number)\s*[:=-]\s*([A-Z]{2,5}\s*[0-9]{3,8})"),
-    )
+    ]
+    for field in _form_field_definitions(form):
+        for alias in _field_aliases(field):
+            patterns.append((str(field["field_id"]), rf"\b{re.escape(alias)}\s*[:=-]\s*([^\n\r;]{{2,120}})"))
+
     seen: set[tuple[str, str]] = set()
     for item in retrieved:
         text = str(item["text"])
@@ -242,6 +261,7 @@ def _field_suggestions(retrieved: list[dict[str, Any]]) -> list[dict[str, Any]]:
             if not match:
                 continue
             value = match.group(1).strip()
+            value = _trim_before_next_field_marker(value)
             key = (field, value)
             if key in seen:
                 continue
@@ -253,6 +273,7 @@ def _field_suggestions(retrieved: list[dict[str, Any]]) -> list[dict[str, Any]]:
                     "confidence": _deterministic_confidence(field, value, int(item.get("score") or 0)),
                     "source_file": item["source_file"],
                     "chunk_id": item["chunk_id"],
+                    "retrieval_score": item.get("score"),
                     "review_required": True,
                 }
             )
@@ -260,7 +281,9 @@ def _field_suggestions(retrieved: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 
 def _deterministic_confidence(field: str, value: str, retrieval_score: int) -> float:
-    base = 0.58 + min(retrieval_score, 5) * 0.04
+    base = 0.62 + min(retrieval_score, 5) * 0.05
+    if "." in field:
+        base += 0.05
     if field in {"facility_name", "car_number"} and len(value.strip()) >= 8:
         base += 0.08
     if field == "date" and re.search(r"[0-9]{4}[-/][0-9]{1,2}[-/][0-9]{1,2}", value):
@@ -268,35 +291,91 @@ def _deterministic_confidence(field: str, value: str, retrieval_score: int) -> f
     return round(min(base, 0.95), 2)
 
 
-def _derive_review_lists(suggestions: list[dict[str, Any]]) -> dict[str, list[dict[str, Any]] | list[str]]:
-    by_field: dict[str, list[dict[str, Any]]] = {}
-    for item in suggestions:
-        by_field.setdefault(str(item["field_id"]), []).append(item)
-
-    missing = [field for field in DEFAULT_REQUIRED_SUGGESTION_FIELDS if not by_field.get(field)]
+def _derive_review_lists(decisions: list[FieldDecision]) -> dict[str, list[dict[str, Any]] | list[str]]:
+    missing = [decision.field_id for decision in decisions if decision.state == DecisionState.MISSING]
     conflicts: list[dict[str, Any]] = []
+    review_required: list[str] = []
     low_confidence: list[dict[str, Any]] = []
-    for field, items in sorted(by_field.items()):
-        values = sorted({str(item.get("candidate_value") or "").strip() for item in items if str(item.get("candidate_value") or "").strip()})
-        if len(values) > 1:
-            conflicts.append({"field_id": field, "candidate_values": values, "count": len(values)})
-        for item in items:
-            confidence = float(item.get("confidence") or 0.0)
-            if confidence < DEFAULT_LOW_CONFIDENCE_THRESHOLD:
-                low_confidence.append(
-                    {
-                        "field_id": field,
-                        "candidate_value": item.get("candidate_value"),
-                        "confidence": confidence,
-                        "source_file": item.get("source_file"),
-                        "chunk_id": item.get("chunk_id"),
-                    }
-                )
+    for decision in decisions:
+        if decision.state == DecisionState.CONFLICT:
+            values = sorted(
+                {
+                    str(item.get("candidate_value") or "").strip()
+                    for item in decision.candidates
+                    if str(item.get("candidate_value") or "").strip()
+                }
+            )
+            conflicts.append({"field_id": decision.field_id, "candidate_values": values, "count": len(values), "state": decision.state.value})
+        if decision.state == DecisionState.REVIEW_REQUIRED:
+            review_required.append(decision.field_id)
+        if decision.state == DecisionState.LOW_CONFIDENCE:
+            low_confidence.append(
+                {
+                    "field_id": decision.field_id,
+                    "candidate_value": decision.selected_value,
+                    "confidence": decision.confidence,
+                    "state": decision.state.value,
+                }
+            )
     return {
         "missing_fields": missing,
         "conflicts": conflicts,
+        "review_required_fields": review_required,
         "low_confidence_fields": low_confidence,
     }
+
+
+def _form_field_definitions(form: str) -> list[dict[str, Any]]:
+    normalized = {"B24_RL2": "B24", "Cover_Page": "Cover"}.get(form, form)
+    path = resolve_project_root() / "mapping" / "cell_inventory.csv"
+    if not path.is_file():
+        return []
+    rows: list[dict[str, Any]] = []
+    with path.open("r", encoding="utf-8", newline="") as f:
+        for row in csv.DictReader(f):
+            if row.get("form") != normalized:
+                continue
+            canonical = str(row.get("canonical_path") or "").strip()
+            if not canonical:
+                continue
+            rows.append(
+                {
+                    "field_id": canonical,
+                    "row_label": str(row.get("row_label") or "").strip(),
+                    "cell_label": str(row.get("cell_label") or "").strip(),
+                    "required": _truthy(row.get("required")),
+                }
+            )
+    return rows
+
+
+def _field_aliases(field: dict[str, Any]) -> tuple[str, ...]:
+    aliases = [str(field["field_id"]).replace(".", " "), str(field["field_id"])]
+    for key in ("row_label", "cell_label"):
+        value = str(field.get(key) or "").strip()
+        if value and len(value) >= 3:
+            aliases.append(value)
+    return tuple(dict.fromkeys(aliases))
+
+
+def _required_field_ids_for_form(form: str) -> tuple[str, ...]:
+    fields = tuple(str(item["field_id"]) for item in _form_field_definitions(form) if _truthy(item.get("required")))
+    return fields or tuple(DEFAULT_REQUIRED_SUGGESTION_FIELDS)
+
+
+def _trim_before_next_field_marker(value: str) -> str:
+    canonical_marker = re.search(r"\s+[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z0-9_]+)+\s*[:=-]", value)
+    if canonical_marker:
+        value = value[: canonical_marker.start()]
+    return value.strip()
+
+
+def _truthy(value: Any) -> bool:
+    if isinstance(value, bool):
+        return value
+    if value is None:
+        return False
+    return str(value).strip().lower() in {"1", "true", "yes", "y", "required"}
 
 
 def _preview(text: str, limit: int = 600) -> str:
@@ -374,13 +453,33 @@ def write_local_artifacts(
 
 
 def _write_packet_md(path: Path, packet: dict[str, Any]) -> None:
+    summary = packet.get("decision_summary") or {}
+    counts = summary.get("counts_by_state") or {}
     lines = [
         f"# {packet['form_id']} Local Evidence Review",
         "",
         f"Write authority: {packet['write_authority']}",
         "",
-        "## Sources",
+        "## Decision states (discrete)",
+        "",
+        "Counts by state:",
     ]
+    if counts:
+        for state, n in sorted(counts.items()):
+            lines.append(f"- **{state}**: {n}")
+    else:
+        lines.append("- None")
+    fill_ids = summary.get("fill_eligible_field_ids") or []
+    lines.extend(["", "Fill-eligible field IDs (FILL only):", ", ".join(fill_ids) if fill_ids else "- None", "", "## Field decisions"])
+    for row in packet.get("field_decisions") or []:
+        fid = row.get("field_id")
+        st = row.get("state")
+        conf = row.get("confidence")
+        val = row.get("selected_value")
+        reason = row.get("reason") or ""
+        conf_s = "" if conf is None else f"{float(conf):.2f}"
+        lines.append(f"- **{fid}** — `{st}` — value={val!r} conf={conf_s} — {reason}")
+    lines.extend(["", "## Sources"])
     lines.extend(f"- {source}" for source in packet.get("source_files", []))
     lines.extend(["", "## Retrieved context"])
     retrieved = packet.get("retrieved_context", [])
@@ -394,6 +493,12 @@ def _write_packet_md(path: Path, packet: dict[str, Any]) -> None:
     if suggestions:
         for item in suggestions:
             lines.append(f"- {item['field_id']}: {item['candidate_value']} ({item['source_file']} chunk {item['chunk_id']})")
+    else:
+        lines.append("- None")
+    lines.extend(["", "## Review required (ambiguous disagreements)"])
+    rr = packet.get("review_required_fields") or []
+    if rr:
+        lines.extend(f"- {field}" for field in rr)
     else:
         lines.append("- None")
     lines.extend(["", "## Missing fields"])
