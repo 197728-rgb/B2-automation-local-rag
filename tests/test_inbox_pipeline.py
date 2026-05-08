@@ -10,6 +10,7 @@ from docx import Document
 
 from b2_automation.docupipe_client import DocuPipeConfigError, process_pdf
 from b2_automation.inbox_pipeline import run_inbox_pipeline
+from b2_automation.ooxml_writer import PatchOutcome
 from b2_automation.local_extraction import DEFAULT_REVIEW_FORMS
 
 
@@ -228,3 +229,47 @@ def test_inbox_pipeline_required_field_from_manifest_enforced(tmp_path: Path, mo
     total_from_summary = sum(int(v) for v in review["cell_inventory_summary"].values())
     assert total_from_summary == len(review["cell_inventory_report"])
     assert "car_type" in run_manifest["missing_required_fields"]
+
+
+def test_legacy_pipeline_skips_docx_fill_without_exact_approval_map(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    root = _repo_root()
+    map_path = root / "schemas" / "maps" / "B24_RL1.approval_map.json"
+    if not map_path.is_file():
+        pytest.skip(f"missing map: {map_path}")
+    backup = root / "schemas" / "maps" / "B24_RL1.approval_map.json.bak"
+    map_path.rename(backup)
+    try:
+        inbox = tmp_path / "inbox"
+        inbox.mkdir()
+        (inbox / "packet_one.pdf").write_bytes(b"%PDF-1.4\n")
+        monkeypatch.setenv("B2_DOCUPIPE_STUB", "1")
+        monkeypatch.setenv("B2_DOCUPIPE_FIXTURE", str(root / "samples" / "docupipe" / "realistic_b24_response.json"))
+        result = run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run", legacy_docupipe=True)
+        review = json.loads(result.review_json_path.read_text(encoding="utf-8"))
+        assert result.status == "review_required"
+        assert review["filled_docx"] is None
+    finally:
+        backup.rename(map_path)
+
+
+def test_legacy_pipeline_discards_docx_when_structure_guard_fails(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    root = _repo_root()
+    inbox = tmp_path / "inbox"
+    inbox.mkdir()
+    (inbox / "packet_one.pdf").write_bytes(b"%PDF-1.4\n")
+    monkeypatch.setenv("B2_DOCUPIPE_STUB", "1")
+    monkeypatch.setenv("B2_DOCUPIPE_FIXTURE", str(root / "samples" / "docupipe" / "realistic_b24_response.json"))
+
+    def _fake_patch(*args, **kwargs):
+        output = Path(kwargs.get("output_path") or args[3])
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_bytes(b"fake")
+        guard = Path(kwargs["structure_guard_report_path"])
+        guard.write_text('{"pass": false, "errors": ["forced"]}', encoding="utf-8")
+        return PatchOutcome(output, guard, False, tuple(), ("forced",))
+
+    monkeypatch.setattr("b2_automation.inbox_pipeline.patch_docx_cells", _fake_patch)
+    result = run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run", legacy_docupipe=True)
+    assert result.status == "review_required"
+    assert result.filled_docx_path is None
+    assert not (tmp_path / "run" / "filled" / "B24_RL1_filled.docx").exists()

@@ -13,7 +13,7 @@ from typing import Any, Mapping
 from docx import Document
 from docx.table import _Cell
 
-from b2_automation.cell_evidence import decide_cell
+from b2_automation.cell_evidence import DecisionState, decide_cell
 
 REVIEW_REQUIRED_TEXT = "REVIEW_REQUIRED"
 DEFAULT_LOW_CONFIDENCE_THRESHOLD = 0.70
@@ -179,9 +179,9 @@ def fill_b24_rl1_partial_legacy(
             conflict_detected=str(value).startswith(REVIEW_REQUIRED_TEXT),
             cell_role="target",
         )
-        if decision == "blank":
+        if decision == DecisionState.BLANK:
             _write_cell_preserving_format(cell, "")
-        elif decision == "review":
+        elif decision != DecisionState.FILL:
             reason = "requires review"
             if value is None or str(value).strip() == "":
                 reason = "missing required value"
