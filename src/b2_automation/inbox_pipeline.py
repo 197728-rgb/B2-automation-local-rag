@@ -22,15 +22,7 @@ from b2_automation.evidence_outputs import (
 )
 from b2_automation.b24_normalizer import normalize_docupipe_payload_for_b24_rl1
 from b2_automation.b24_rl1_filler import REVIEW_REQUIRED_TEXT, load_manifest
-<<<<<<< HEAD
-<<<<<<< HEAD
-from b2_automation.cell_evidence import DecisionState, decide_cell, state_to_decision
-=======
-from b2_automation.cell_evidence import DecisionState, decide_cell
->>>>>>> f1714d6 (Wire exact approval maps for safe OOXML writes)
-=======
 from b2_automation.cell_evidence import DecisionState, decide_cell, parse_decision_state
->>>>>>> b2490eb (Stage 6/7 hardening: maps, guardrails, semantic retrieval, evidence outputs)
 from b2_automation.docupipe_client import process_pdf
 from b2_automation.local_extraction import (
     DEFAULT_REVIEW_FORMS,
@@ -246,20 +238,6 @@ def _build_cell_inventory_report(
         confidence = field_confidences.get(fid)
         conflict = isinstance(value, str) and value.startswith(REVIEW_REQUIRED_TEXT)
         role = _cell_role(spec)
-<<<<<<< HEAD
-        decision_state = decide_cell(value, confidence=confidence, threshold=threshold, required=required, conflict_detected=conflict, cell_role="target" if role == "notes" else role)
-        decision = state_to_decision(decision_state)
-        if decision_state == DecisionState.FILL:
-            status = "filled"
-        elif decision_state == DecisionState.BLANK:
-            status = "blank_optional"
-        elif decision_state == DecisionState.MISSING:
-            status = "blank_required_MISSING"
-        elif decision_state == DecisionState.CONFLICT:
-            status = "review_required_conflict"
-        elif decision_state == DecisionState.LOW_CONFIDENCE:
-            status = "review_required_low_confidence"
-=======
         decision = decide_cell(value, confidence=confidence, threshold=threshold, required=required, conflict_detected=conflict, cell_role="target" if role == "notes" else role)
         if decision == DecisionState.FILL:
             status = "filled"
@@ -270,8 +248,7 @@ def _build_cell_inventory_report(
         elif decision == DecisionState.CONFLICT:
             status = "review_required_conflict"
         elif decision == DecisionState.LOW_CONFIDENCE:
-            status = "low_confidence"
->>>>>>> f1714d6 (Wire exact approval maps for safe OOXML writes)
+            status = "review_required_low_confidence"
         else:
             status = "review_required"
         src = field_sources.get(fid) or {}
@@ -284,12 +261,8 @@ def _build_cell_inventory_report(
                 "col": int(spec["col"]),
                 "required": required,
                 "cell_role": role,
-<<<<<<< HEAD
-                "decision": decision,
-                "decision_state": decision_state.value,
-=======
                 "decision": decision.value,
->>>>>>> f1714d6 (Wire exact approval maps for safe OOXML writes)
+                "decision_state": decision.value,
                 "status": status,
                 "value": value,
                 "confidence": confidence,
@@ -799,16 +772,11 @@ def run_inbox_pipeline(
         status = "review_required"
 
     filled_docx: Path | None = None
-<<<<<<< HEAD
-    exact_approval_map = _load_exact_approval_map(root, "B24_RL1")
-    if records and exact_approval_map is not None:
-        template = root / "templates" / "B24_RL1.docx"
-=======
     patch_outcome: PatchOutcome | None = None
+    exact_approval_map = _load_exact_approval_map(root, "B24_RL1")
     template_b24 = root / "templates" / B24_SHARED_TEMPLATE_DOCX
     structure_guard_report_path = run_dir / "structure_guard_report.json"
-    if records:
->>>>>>> b2490eb (Stage 6/7 hardening: maps, guardrails, semantic retrieval, evidence outputs)
+    if records and exact_approval_map is not None:
         candidate_filled_docx = filled_dir / "B24_RL1_filled.docx"
         patch_outcome = patch_docx_cells(
             template_b24,
@@ -818,12 +786,7 @@ def run_inbox_pipeline(
             field_confidences=merged_confidences,
             required_field_ids=set(active_required_fields),
             low_confidence_threshold=low_confidence_threshold,
-<<<<<<< HEAD
-            structure_guard_report_path=structure_guard_report,
-            approval_map=exact_approval_map,
-=======
             structure_guard_report_path=structure_guard_report_path,
->>>>>>> b2490eb (Stage 6/7 hardening: maps, guardrails, semantic retrieval, evidence outputs)
         )
         if patch_outcome.structure_guard_passed:
             filled_docx = patch_outcome.output_docx
