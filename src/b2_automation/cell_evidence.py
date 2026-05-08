@@ -3,13 +3,8 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
-<<<<<<< HEAD
-from enum import StrEnum
-from typing import Literal
-=======
 from enum import Enum
 from typing import Any, Literal
->>>>>>> b2490eb (Stage 6/7 hardening: maps, guardrails, semantic retrieval, evidence outputs)
 
 class DecisionState(str, Enum):
     FILL = "FILL"
@@ -112,7 +107,7 @@ def decide_cell(
     required: bool = False,
     conflict_detected: bool = False,
     cell_role: CellRole = "target",
-) -> DecisionState:
+) -> Decision:
     """Return the allowed decision for a mapped evidence cell.
 
     Rules:
@@ -134,21 +129,3 @@ def decide_cell(
     if cell_role == "notes":
         return DecisionState.REVIEW_REQUIRED
     return DecisionState.FILL
-<<<<<<< HEAD
-class DecisionState(StrEnum):
-    FILL = "FILL"
-    BLANK = "BLANK"
-    REVIEW_REQUIRED = "REVIEW_REQUIRED"
-    MISSING = "MISSING"
-    CONFLICT = "CONFLICT"
-    LOW_CONFIDENCE = "LOW_CONFIDENCE"
-
-
-def state_to_decision(state: DecisionState) -> Decision:
-    if state == DecisionState.FILL:
-        return "fill"
-    if state == DecisionState.BLANK:
-        return "blank"
-    return "review"
-=======
->>>>>>> b2490eb (Stage 6/7 hardening: maps, guardrails, semantic retrieval, evidence outputs)
