@@ -1,19 +1,3 @@
-<<<<<<< HEAD
-from b2_automation.cell_evidence import DecisionState, decide_cell
-
-
-def test_decide_cell_missing_required_is_missing_state() -> None:
-    assert decide_cell("", confidence=None, threshold=0.7, required=True) == DecisionState.MISSING
-
-
-def test_decide_cell_conflict_has_priority() -> None:
-    assert decide_cell("abc", confidence=0.95, threshold=0.7, required=True, conflict_detected=True) == DecisionState.CONFLICT
-
-
-def test_decide_cell_low_confidence_state() -> None:
-    assert decide_cell("abc", confidence=0.5, threshold=0.7, required=False) == DecisionState.LOW_CONFIDENCE
-
-=======
 """Tests for discrete decision states (Stage 5)."""
 
 from __future__ import annotations
@@ -138,4 +122,3 @@ def test_canonical_map_path_preferred_when_legacy_also_exists(tmp_path: Path) ->
     bundle = load_exact_approval_bundle(root, "B24_RL2")
     assert bundle is not None
     assert bundle.map_path.name == "B24_RL2.json"
->>>>>>> b2490eb (Stage 6/7 hardening: maps, guardrails, semantic retrieval, evidence outputs)
