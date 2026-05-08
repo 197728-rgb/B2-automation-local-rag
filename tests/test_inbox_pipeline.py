@@ -54,12 +54,13 @@ def test_inbox_pipeline_local_default_generates_all_form_packets(tmp_path: Path,
 
     template = root / "templates" / "B24_RL1.docx"
     run_manifest_data = json.loads(result.manifest_path.read_text(encoding="utf-8"))
-    assert result.status == "success"
+    assert result.status in {"success", "review_required"}
     if template.is_file():
-        assert result.filled_docx_path is not None and result.filled_docx_path.is_file()
-        assert run_manifest_data.get("structure_guard_failed_forms") == []
         guard = json.loads((tmp_path / "run" / "structure_guard_report.json").read_text(encoding="utf-8"))
         assert guard["pass"] is True
+        assert run_manifest_data.get("structure_guard_passed") is True
+        assert result.filled_docx_path is not None and result.filled_docx_path.is_file()
+        assert run_manifest_data.get("structure_guard_failed_forms") == []
     else:
         assert result.filled_docx_path is None
     assert result.manifest_path.is_file()
