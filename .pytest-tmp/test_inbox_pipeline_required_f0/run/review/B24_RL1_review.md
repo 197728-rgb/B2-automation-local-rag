@@ -1,7 +1,7 @@
 # Legacy DocuPipe / B24_RL1 Review Report
 
 Run status: **review_required**
-Generated: 2026-05-08T02:12:59+00:00
+Generated: 2026-05-08T02:17:20+00:00
 
 ## Inputs
 - packet_one.pdf — extracted

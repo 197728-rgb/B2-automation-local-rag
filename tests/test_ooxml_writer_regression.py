@@ -12,6 +12,7 @@ from b2_automation.b24_normalizer import normalize_docupipe_payload_for_b24_rl1
 from b2_automation.b24_pipeline import run_b24_rl1_from_docupipe
 from b2_automation.b24_rl1_filler import load_manifest
 from b2_automation.ooxml_writer import count_docx_structure, patch_docx_cells
+from b2_automation.paths import B24_SHARED_TEMPLATE_DOCX
 
 pytestmark = pytest.mark.legacy_rl1
 
@@ -36,7 +37,7 @@ def _doc_text(path: Path) -> str:
 
 def test_ooxml_patch_preserves_table_cell_structure(tmp_path: Path) -> None:
     root = _repo()
-    template = root / "templates" / "B24_RL1.docx"
+    template = root / "templates" / B24_SHARED_TEMPLATE_DOCX
     if not template.is_file():
         pytest.skip(f"missing template: {template}")
     manifest = load_manifest(root / "schemas" / "templates" / "B24_RL1.json")
@@ -67,7 +68,7 @@ def test_ooxml_patch_preserves_table_cell_structure(tmp_path: Path) -> None:
 
 def test_b24_production_path_uses_ooxml_flow_with_stable_structure(tmp_path: Path) -> None:
     root = _repo()
-    template = root / "templates" / "B24_RL1.docx"
+    template = root / "templates" / B24_SHARED_TEMPLATE_DOCX
     if not template.is_file():
         pytest.skip(f"missing template: {template}")
     out = tmp_path / "production_b24.docx"
@@ -91,7 +92,7 @@ def test_ooxml_production_path_uses_normalized_values(tmp_path: Path) -> None:
     manifest = load_manifest(root / "schemas" / "templates" / "B24_RL1.json")
     fields = normalize_docupipe_payload_for_b24_rl1(json.loads(_fixture().read_text(encoding="utf-8")))
     out = tmp_path / "normalized_values.docx"
-    outcome = patch_docx_cells(root / "templates" / "B24_RL1.docx", manifest, fields, out)
+    outcome = patch_docx_cells(root / "templates" / B24_SHARED_TEMPLATE_DOCX, manifest, fields, out)
 
     assert outcome.structure_guard_passed is True
     blob = _doc_text(out)
@@ -101,7 +102,7 @@ def test_ooxml_production_path_uses_normalized_values(tmp_path: Path) -> None:
 
 def test_exact_approval_map_coordinate_mismatch_fails_guard(tmp_path: Path) -> None:
     root = _repo()
-    template = root / "templates" / "B24_RL1.docx"
+    template = root / "templates" / B24_SHARED_TEMPLATE_DOCX
     if not template.is_file():
         pytest.skip(f"missing template: {template}")
     manifest = load_manifest(root / "schemas" / "templates" / "B24_RL1.json")

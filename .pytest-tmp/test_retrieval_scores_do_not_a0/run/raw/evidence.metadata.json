@@ -1,7 +1,7 @@
 {
   "characters": 686,
   "extension": ".txt",
-  "extracted_at": "2026-05-08T02:12:57+00:00",
+  "extracted_at": "2026-05-08T02:17:19+00:00",
   "extraction_method": "local_text",
   "ocr_json_path": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_retrieval_scores_do_not_a0\\run\\raw\\evidence.ocr.json",
   "paid_api_used": false,

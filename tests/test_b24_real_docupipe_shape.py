@@ -9,6 +9,7 @@ from docx import Document
 
 from b2_automation.b24_normalizer import normalize_docupipe_payload_for_b24_rl1
 from b2_automation.b24_pipeline import run_b24_rl1_from_docupipe
+from b2_automation.paths import B24_SHARED_TEMPLATE_DOCX
 
 pytestmark = pytest.mark.legacy_rl1
 
@@ -49,7 +50,7 @@ def test_normalizer_maps_realistic_docupipe_keys() -> None:
 
 def test_pipeline_writes_docx_with_evidence(tmp_path: Path) -> None:
     root = _repo()
-    tpl = root / "templates" / "B24_RL1.docx"
+    tpl = root / "templates" / B24_SHARED_TEMPLATE_DOCX
     if not tpl.is_file():
         pytest.skip(f"missing template: {tpl}")
     out = tmp_path / "b24_from_realistic_docupipe.docx"

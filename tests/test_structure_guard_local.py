@@ -8,6 +8,7 @@ from pathlib import Path
 import pytest
 
 from b2_automation.inbox_pipeline import run_inbox_pipeline
+from b2_automation.paths import B24_SHARED_TEMPLATE_DOCX
 
 
 def _repo_root() -> Path:
@@ -16,7 +17,7 @@ def _repo_root() -> Path:
 
 def test_inbox_local_structure_guard_failure_recorded(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     root = _repo_root()
-    template = root / "templates" / "B24_RL1.docx"
+    template = root / "templates" / B24_SHARED_TEMPLATE_DOCX
     if not template.is_file():
         pytest.skip(f"missing template: {template}")
 

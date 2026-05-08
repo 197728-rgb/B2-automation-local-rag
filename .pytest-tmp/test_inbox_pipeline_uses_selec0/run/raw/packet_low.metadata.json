@@ -1,8 +1,8 @@
 {
-  "completed_at": "2026-05-08T02:12:58+00:00",
+  "completed_at": "2026-05-08T02:17:20+00:00",
   "raw_json_path": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_pipeline_uses_selec0\\run\\raw\\packet_low.docupipe.json",
   "sha256": "e5c62df5dab5c87b6a015ef3d43597074d1eec433b15f51aec63b8582d0e4ab4",
   "source_file": "packet_low.pdf",
   "status": "completed",
-  "submitted_at": "2026-05-08T02:12:58+00:00"
+  "submitted_at": "2026-05-08T02:17:20+00:00"
 }

@@ -14,6 +14,7 @@ from b2_automation.approval_maps import (
 )
 from b2_automation.inbox_pipeline import run_inbox_pipeline
 from b2_automation.local_extraction import DEFAULT_REVIEW_FORMS
+from b2_automation.paths import B24_SHARED_TEMPLATE_DOCX
 
 FIRST_CLASS_FORMS = ("B24_RL2", "B81", "B89", "B90", "Cover_Page")
 
@@ -210,7 +211,7 @@ class TestNoFallbackMapping:
 class TestStructureGuardHandoff:
     def test_guard_pass_produces_filled_docx(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         root = _repo_root()
-        template = root / "templates" / "B24_RL1.docx"
+        template = root / "templates" / B24_SHARED_TEMPLATE_DOCX
         if not template.is_file():
             pytest.skip("missing template")
 
@@ -233,7 +234,7 @@ class TestStructureGuardHandoff:
 
     def test_guard_fail_discards_filled_docx(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         root = _repo_root()
-        template = root / "templates" / "B24_RL1.docx"
+        template = root / "templates" / B24_SHARED_TEMPLATE_DOCX
         if not template.is_file():
             pytest.skip("missing template")
 

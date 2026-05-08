@@ -12,6 +12,7 @@ from b2_automation.docupipe_client import DocuPipeConfigError, process_pdf
 from b2_automation.inbox_pipeline import run_inbox_pipeline
 from b2_automation.ooxml_writer import PatchOutcome
 from b2_automation.local_extraction import DEFAULT_REVIEW_FORMS
+from b2_automation.paths import B24_SHARED_TEMPLATE_DOCX
 
 
 def _repo_root() -> Path:
@@ -110,7 +111,7 @@ def test_inbox_pipeline_local_default_generates_all_form_packets(tmp_path: Path,
 @pytest.mark.legacy_rl1
 def test_inbox_pipeline_legacy_docupipe_stub_generates_traceable_outputs(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     root = _repo_root()
-    template = root / "templates" / "B24_RL1.docx"
+    template = root / "templates" / B24_SHARED_TEMPLATE_DOCX
     if not template.is_file():
         pytest.skip(f"missing template: {template}")
 
@@ -201,7 +202,7 @@ def test_docupipe_live_mode_missing_credentials_fails(monkeypatch: pytest.Monkey
 @pytest.mark.legacy_rl1
 def test_inbox_pipeline_uses_selected_confidence_for_low_confidence_flags(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     root = _repo_root()
-    template = root / "templates" / "B24_RL1.docx"
+    template = root / "templates" / B24_SHARED_TEMPLATE_DOCX
     if not template.is_file():
         pytest.skip(f"missing template: {template}")
 
@@ -250,7 +251,7 @@ def test_inbox_pipeline_uses_selected_confidence_for_low_confidence_flags(tmp_pa
 @pytest.mark.legacy_rl1
 def test_inbox_pipeline_required_field_from_manifest_enforced(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     root = _repo_root()
-    template = root / "templates" / "B24_RL1.docx"
+    template = root / "templates" / B24_SHARED_TEMPLATE_DOCX
     if not template.is_file():
         pytest.skip(f"missing template: {template}")
 

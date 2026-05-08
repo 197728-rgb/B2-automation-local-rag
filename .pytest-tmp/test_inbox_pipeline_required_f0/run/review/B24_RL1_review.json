@@ -293,7 +293,7 @@
       "status": "filled",
       "structure_guard_passed": true,
       "structure_guard_report": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_pipeline_required_f0\\run\\structure_guard_report.json",
-      "template": "C:\\Projects\\B2-automation-local-rag\\templates\\B24_RL1.docx"
+      "template": "C:\\Projects\\B2-automation-local-rag\\templates\\B24_RL2.docx"
     }
   ],
   "field_decisions": [
@@ -313,7 +313,7 @@
   ],
   "field_traceability": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_pipeline_required_f0\\run\\field_traceability.json",
   "filled_docx": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_pipeline_required_f0\\run\\filled\\B24_RL1_filled.docx",
-  "generated_at": "2026-05-08T02:12:59+00:00",
+  "generated_at": "2026-05-08T02:17:20+00:00",
   "inputs": [
     {
       "confidences": {
@@ -336,7 +336,7 @@
           "source_page": 0
         }
       },
-      "started_at": "2026-05-08T02:12:58+00:00",
+      "started_at": "2026-05-08T02:17:20+00:00",
       "status": "extracted"
     }
   ],

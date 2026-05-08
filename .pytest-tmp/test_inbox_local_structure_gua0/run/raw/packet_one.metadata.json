@@ -1,7 +1,7 @@
 {
   "characters": 126,
   "extension": ".txt",
-  "extracted_at": "2026-05-08T02:13:00+00:00",
+  "extracted_at": "2026-05-08T02:17:22+00:00",
   "extraction_method": "local_text",
   "ocr_json_path": "C:\\Projects\\B2-automation-local-rag\\.pytest-tmp\\test_inbox_local_structure_gua0\\run\\raw\\packet_one.ocr.json",
   "paid_api_used": false,
