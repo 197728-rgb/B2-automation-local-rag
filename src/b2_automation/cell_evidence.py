@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
+from enum import StrEnum
 from typing import Literal
 
 Decision = Literal["fill", "blank", "review"]
@@ -62,7 +63,7 @@ def decide_cell(
     required: bool = False,
     conflict_detected: bool = False,
     cell_role: CellRole = "target",
-) -> Decision:
+) -> DecisionState:
     """Return the allowed decision for a mapped evidence cell.
 
     Rules:
@@ -76,11 +77,26 @@ def decide_cell(
 
     missing = value is None or str(value).strip() == ""
     if missing:
-        return "review" if required else "blank"
+        return DecisionState.MISSING if required else DecisionState.BLANK
     if conflict_detected:
-        return "review"
+        return DecisionState.CONFLICT
     if confidence is not None and confidence < threshold:
-        return "review"
+        return DecisionState.LOW_CONFIDENCE
     if cell_role == "notes":
-        return "review"
-    return "fill"
+        return DecisionState.REVIEW_REQUIRED
+    return DecisionState.FILL
+class DecisionState(StrEnum):
+    FILL = "FILL"
+    BLANK = "BLANK"
+    REVIEW_REQUIRED = "REVIEW_REQUIRED"
+    MISSING = "MISSING"
+    CONFLICT = "CONFLICT"
+    LOW_CONFIDENCE = "LOW_CONFIDENCE"
+
+
+def state_to_decision(state: DecisionState) -> Decision:
+    if state == DecisionState.FILL:
+        return "fill"
+    if state == DecisionState.BLANK:
+        return "blank"
+    return "review"

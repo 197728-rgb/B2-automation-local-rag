@@ -1,0 +1,96 @@
+{
+  "cells": {
+    "aar_form_4_2_number": {
+      "col": 10,
+      "row": 9,
+      "table_index": 0
+    },
+    "attachment_material": {
+      "col": 0,
+      "row": 16,
+      "table_index": 0
+    },
+    "car_mark": {
+      "col": 0,
+      "row": 9,
+      "table_index": 0
+    },
+    "car_type": {
+      "col": 6,
+      "row": 9,
+      "table_index": 0
+    },
+    "evidence_notes": {
+      "col": 0,
+      "row": 18,
+      "table_index": 0
+    },
+    "four_two_drawing_number": {
+      "col": 5,
+      "row": 11,
+      "table_index": 0
+    },
+    "four_two_drawing_revision": {
+      "col": 12,
+      "row": 11,
+      "table_index": 0
+    },
+    "pitp_approved_by": {
+      "col": 8,
+      "row": 6,
+      "table_index": 0
+    },
+    "pitp_date_approved": {
+      "col": 11,
+      "row": 6,
+      "table_index": 0
+    },
+    "pitp_document_name": {
+      "col": 0,
+      "row": 6,
+      "table_index": 0
+    },
+    "pitp_id": {
+      "col": 4,
+      "row": 6,
+      "table_index": 0
+    },
+    "pitp_rev": {
+      "col": 15,
+      "row": 6,
+      "table_index": 0
+    },
+    "tank_design_spec": {
+      "col": 2,
+      "row": 9,
+      "table_index": 0
+    },
+    "tco_name": {
+      "col": 0,
+      "row": 4,
+      "table_index": 0
+    },
+    "tco_permission_date": {
+      "col": 2,
+      "row": 4,
+      "table_index": 0
+    },
+    "tco_written_instructions": {
+      "col": 7,
+      "row": 4,
+      "table_index": 0
+    },
+    "test_plate_tank_material": {
+      "col": 0,
+      "row": 14,
+      "table_index": 0
+    },
+    "test_plate_tank_mtr": {
+      "col": 3,
+      "row": 14,
+      "table_index": 0
+    }
+  },
+  "form_id": "B24_RL1",
+  "version": "legacy_sample"
+}

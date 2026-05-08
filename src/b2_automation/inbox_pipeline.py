@@ -14,7 +14,7 @@ from typing import Any
 
 from b2_automation.b24_normalizer import normalize_docupipe_payload_for_b24_rl1
 from b2_automation.b24_rl1_filler import REVIEW_REQUIRED_TEXT, load_manifest
-from b2_automation.cell_evidence import decide_cell
+from b2_automation.cell_evidence import DecisionState, decide_cell, state_to_decision
 from b2_automation.docupipe_client import process_pdf
 from b2_automation.local_extraction import (
     DEFAULT_REVIEW_FORMS,
@@ -56,6 +56,22 @@ def _sha256(path: Path) -> str:
 
 def _safe_stem(path: Path) -> str:
     return "".join(ch if ch.isalnum() or ch in ("-", "_") else "_" for ch in path.stem)[:120]
+
+
+def _load_exact_approval_map(root: Path, form_id: str) -> dict[str, dict[str, int]] | None:
+    path = root / "schemas" / "maps" / f"{form_id}.approval_map.json"
+    if not path.is_file():
+        return None
+    data = json.loads(path.read_text(encoding="utf-8"))
+    cells = data.get("cells") if isinstance(data, dict) else None
+    if not isinstance(cells, dict):
+        return None
+    out: dict[str, dict[str, int]] = {}
+    for fid, loc in cells.items():
+        if not isinstance(loc, dict):
+            continue
+        out[str(fid)] = {"table_index": int(loc["table_index"]), "row": int(loc["row"]), "col": int(loc["col"])}
+    return out or None
 
 
 def _truthy(value: Any) -> bool:
@@ -208,15 +224,18 @@ def _build_cell_inventory_report(
         confidence = field_confidences.get(fid)
         conflict = isinstance(value, str) and value.startswith(REVIEW_REQUIRED_TEXT)
         role = _cell_role(spec)
-        decision = decide_cell(value, confidence=confidence, threshold=threshold, required=required, conflict_detected=conflict, cell_role="target" if role == "notes" else role)
-        if decision == "fill":
+        decision_state = decide_cell(value, confidence=confidence, threshold=threshold, required=required, conflict_detected=conflict, cell_role="target" if role == "notes" else role)
+        decision = state_to_decision(decision_state)
+        if decision_state == DecisionState.FILL:
             status = "filled"
-        elif decision == "blank":
+        elif decision_state == DecisionState.BLANK:
             status = "blank_optional"
-        elif required and (value is None or str(value).strip() == ""):
+        elif decision_state == DecisionState.MISSING:
             status = "blank_required_MISSING"
-        elif conflict:
+        elif decision_state == DecisionState.CONFLICT:
             status = "review_required_conflict"
+        elif decision_state == DecisionState.LOW_CONFIDENCE:
+            status = "review_required_low_confidence"
         else:
             status = "review_required"
         src = field_sources.get(fid) or {}
@@ -230,6 +249,7 @@ def _build_cell_inventory_report(
                 "required": required,
                 "cell_role": role,
                 "decision": decision,
+                "decision_state": decision_state.value,
                 "status": status,
                 "value": value,
                 "confidence": confidence,
@@ -511,7 +531,8 @@ def run_inbox_pipeline(
         status = "review_required"
 
     filled_docx: Path | None = None
-    if records:
+    exact_approval_map = _load_exact_approval_map(root, "B24_RL1")
+    if records and exact_approval_map is not None:
         template = root / "templates" / "B24_RL1.docx"
         candidate_filled_docx = filled_dir / "B24_RL1_filled.docx"
         structure_guard_report = run_dir / "structure_guard_report.json"
@@ -524,12 +545,17 @@ def run_inbox_pipeline(
             required_field_ids=set(active_required_fields),
             low_confidence_threshold=low_confidence_threshold,
             structure_guard_report_path=structure_guard_report,
+            approval_map=exact_approval_map,
         )
         if patch_outcome.structure_guard_passed:
             filled_docx = patch_outcome.output_docx
         else:
+            if candidate_filled_docx.exists():
+                candidate_filled_docx.unlink()
             filled_docx = None
             status = "review_required"
+    elif records:
+        status = "review_required"
 
     review = {
         "generated_at": _utc_now(),
@@ -543,6 +569,7 @@ def run_inbox_pipeline(
         "low_confidence_fields": low_confidence,
         "filled_docx": str(filled_docx) if filled_docx else None,
         "structure_guard_report": str(run_dir / "structure_guard_report.json") if records else None,
+        "selected_approval_map": str(root / "schemas" / "maps" / "B24_RL1.approval_map.json") if exact_approval_map else None,
     }
     review_json = review_dir / "B24_RL1_review.json"
     review_md = review_dir / "B24_RL1_review.md"
