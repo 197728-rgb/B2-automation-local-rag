@@ -1,4 +1,4 @@
-"""Tests for discrete decision states (Stage 5)."""
+"""Tests for discrete decision states and field-level decision aggregation."""
 
 from __future__ import annotations
 
@@ -6,8 +6,23 @@ import json
 from pathlib import Path
 
 from b2_automation.approval_maps import load_exact_approval_bundle
-from b2_automation.cell_evidence import DecisionState, parse_decision_state
+from b2_automation.cell_evidence import DecisionState, decide_cell, parse_decision_state
 from b2_automation.decision_engine import decide_fields_for_local_packet, summarize_decisions
+
+
+def test_decide_cell_missing_required_is_missing_state() -> None:
+    assert decide_cell("", confidence=None, threshold=0.7, required=True) == DecisionState.MISSING
+
+
+def test_decide_cell_conflict_has_priority() -> None:
+    assert (
+        decide_cell("abc", confidence=0.95, threshold=0.7, required=True, conflict_detected=True)
+        == DecisionState.CONFLICT
+    )
+
+
+def test_decide_cell_low_confidence_state() -> None:
+    assert decide_cell("abc", confidence=0.5, threshold=0.7, required=False) == DecisionState.LOW_CONFIDENCE
 
 
 def test_parse_decision_state_strict() -> None:
