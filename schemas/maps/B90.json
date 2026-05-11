@@ -1,13 +1,12 @@
 {
   "form_id": "B90",
-  "form_version": "2026",
-  "manifest_path": "schemas/templates/B90.json",
-  "template_path": "templates/B90_RLS.docx",
-  "fields": {
+    "form_version": "2026",
+    "manifest_path": "schemas/templates/B90.json",
+    "template_path": "templates/B90_RLS.docx",
+    "fields": {
     "facility_name": {"field_id": "facility_name", "table_index": 0, "row": 4, "col": 0, "required": true, "cell_role": "target", "label": "Tank Car Owner (TCO) Name"},
     "date": {"field_id": "date", "table_index": 0, "row": 4, "col": 2, "required": true, "cell_role": "target", "label": "Date Permission Received from TCO"},
-    "auditor": {"field_id": "auditor", "table_index": 0, "row": 6, "col": 0, "required": true, "cell_role": "target", "label": "Auditor Name"},
-    "car_number": {"field_id": "car_number", "table_index": 0, "row": 9, "col": 0, "required": true, "cell_role": "target", "label": "Car Mark and Number"},
-    "evidence_notes": {"field_id": "evidence_notes", "table_index": 0, "row": 18, "col": 0, "required": false, "cell_role": "notes", "label": "Additional Auditor Objective Evidence/Comments/Notes"}
+    "car_number": {"field_id": "car_number", "table_index": 0, "row": 7, "col": 0, "required": true, "cell_role": "target", "label": "Car Mark and Number"},
+    "evidence_notes": {"field_id": "evidence_notes", "table_index": 0, "row": 15, "col": 0, "required": false, "cell_role": "notes", "label": "Additional Auditor Objective Evidence/Comments/Notes"}
   }
 }

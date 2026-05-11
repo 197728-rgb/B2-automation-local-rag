@@ -1,9 +1,9 @@
 {
   "template": "B89_INSULATION_TEST_PLATE.docx",
   "cells": [
-    {"field_id": "facility_name", "table_index": 0, "row": 4, "col": 0, "label": "Tank Car Owner (TCO) Name", "required": true},
-    {"field_id": "date", "table_index": 0, "row": 4, "col": 2, "label": "Date Permission Received from TCO", "required": true},
-    {"field_id": "car_number", "table_index": 0, "row": 9, "col": 0, "label": "Car Mark and Number", "required": true},
-    {"field_id": "evidence_notes", "table_index": 0, "row": 18, "col": 0, "label": "Additional Auditor Objective Evidence/Comments/Notes", "required": false}
+    {"field_id": "facility_name", "table_index": 0, "row": 2, "col": 0, "label": "Tank Car Owner (TCO) Name", "required": true},
+    {"field_id": "date", "table_index": 0, "row": 2, "col": 3, "label": "Date Permission Received from TCO", "required": true},
+    {"field_id": "car_number", "table_index": 0, "row": 5, "col": 0, "label": "Car Mark and Number", "required": true},
+    {"field_id": "evidence_notes", "table_index": 0, "row": 19, "col": 0, "label": "Additional Auditor Objective Evidence/Comments/Notes", "required": false}
   ]
 }

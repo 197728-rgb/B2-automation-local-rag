@@ -2,8 +2,7 @@
   "template": "Cover_Page.docx",
   "cells": [
     {"field_id": "facility_name", "table_index": 0, "row": 4, "col": 0, "label": "Facility / Company Name", "required": true},
-    {"field_id": "date", "table_index": 0, "row": 4, "col": 2, "label": "Audit Date", "required": true},
-    {"field_id": "auditor", "table_index": 0, "row": 6, "col": 0, "label": "Auditor Name", "required": true},
+    {"field_id": "date", "table_index": 0, "row": 4, "col": 3, "label": "Audit Date", "required": true},
     {"field_id": "evidence_notes", "table_index": 0, "row": 18, "col": 0, "label": "Additional Auditor Objective Evidence/Comments/Notes", "required": false}
   ]
 }

@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 import pytest
+from docx import Document
 
 from b2_automation.approval_maps import (
     ApprovalBundle,
@@ -65,6 +66,13 @@ class TestPerFormMapLoading:
         result = load_exact_approval_bundle_checked(root, form_id)
         dup_errors = [e for e in result.errors if "duplicate coordinate" in e]
         assert not dup_errors, f"{form_id}: {dup_errors}"
+
+    @pytest.mark.parametrize("form_id", FIRST_CLASS_FORMS)
+    def test_no_duplicate_merged_physical_cells_in_map(self, form_id: str) -> None:
+        root = _repo_root()
+        result = load_exact_approval_bundle_checked(root, form_id)
+        merged_errors = [e for e in result.errors if "duplicate physical cell" in e]
+        assert not merged_errors, f"{form_id}: {merged_errors}"
 
 
 # ---------------------------------------------------------------------------
@@ -224,6 +232,24 @@ class TestStructureGuardHandoff:
         assert manifest["structure_guard_passed"] is True
         assert result.filled_docx_path is not None
         assert result.filled_docx_path.is_file()
+
+    def test_cover_page_smoke_values_land_in_separate_cells(self, tmp_path: Path) -> None:
+        root = _repo_root()
+        inbox = tmp_path / "inbox"
+        inbox.mkdir()
+        (inbox / "evidence.txt").write_text(
+            "Cover Page Facility: Midwest Tank Rail Inc\n"
+            "B24 RL2 objective evidence Date: 2026-05-07\n",
+            encoding="utf-8",
+        )
+
+        run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run")
+
+        doc = Document(tmp_path / "run" / "filled" / "Cover_Page_filled.docx")
+        facility_cell = doc.tables[0].rows[4].cells[0].text
+        date_cell = doc.tables[0].rows[4].cells[3].text
+        assert facility_cell == "Midwest Tank Rail Inc"
+        assert date_cell == "2026-05-07"
 
     def test_guard_fail_discards_filled_docx(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         root = _repo_root()

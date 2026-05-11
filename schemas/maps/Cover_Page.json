@@ -5,8 +5,7 @@
   "template_path": "templates/Cover_Page.docx",
   "fields": {
     "facility_name": {"field_id": "facility_name", "table_index": 0, "row": 4, "col": 0, "required": true, "cell_role": "target", "label": "Facility / Company Name"},
-    "date": {"field_id": "date", "table_index": 0, "row": 4, "col": 2, "required": true, "cell_role": "target", "label": "Audit Date"},
-    "auditor": {"field_id": "auditor", "table_index": 0, "row": 6, "col": 0, "required": true, "cell_role": "target", "label": "Auditor Name"},
+    "date": {"field_id": "date", "table_index": 0, "row": 4, "col": 3, "required": true, "cell_role": "target", "label": "Audit Date"},
     "evidence_notes": {"field_id": "evidence_notes", "table_index": 0, "row": 18, "col": 0, "required": false, "cell_role": "notes", "label": "Additional Auditor Objective Evidence/Comments/Notes"}
   }
 }

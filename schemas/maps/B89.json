@@ -4,9 +4,9 @@
   "manifest_path": "schemas/templates/B89.json",
   "template_path": "templates/B89_INSULATION_TEST_PLATE.docx",
   "fields": {
-    "facility_name": {"field_id": "facility_name", "table_index": 0, "row": 4, "col": 0, "required": true, "cell_role": "target", "label": "Tank Car Owner (TCO) Name"},
-    "date": {"field_id": "date", "table_index": 0, "row": 4, "col": 2, "required": true, "cell_role": "target", "label": "Date Permission Received from TCO"},
-    "car_number": {"field_id": "car_number", "table_index": 0, "row": 9, "col": 0, "required": true, "cell_role": "target", "label": "Car Mark and Number"},
-    "evidence_notes": {"field_id": "evidence_notes", "table_index": 0, "row": 18, "col": 0, "required": false, "cell_role": "notes", "label": "Additional Auditor Objective Evidence/Comments/Notes"}
+    "facility_name": {"field_id": "facility_name", "table_index": 0, "row": 2, "col": 0, "required": true, "cell_role": "target", "label": "Tank Car Owner (TCO) Name"},
+    "date": {"field_id": "date", "table_index": 0, "row": 2, "col": 3, "required": true, "cell_role": "target", "label": "Date Permission Received from TCO"},
+    "car_number": {"field_id": "car_number", "table_index": 0, "row": 5, "col": 0, "required": true, "cell_role": "target", "label": "Car Mark and Number"},
+    "evidence_notes": {"field_id": "evidence_notes", "table_index": 0, "row": 19, "col": 0, "required": false, "cell_role": "notes", "label": "Additional Auditor Objective Evidence/Comments/Notes"}
   }
 }
