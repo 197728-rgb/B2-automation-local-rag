@@ -105,6 +105,22 @@ def test_fill_when_single_high_candidate() -> None:
     assert summary["fill_eligible_field_ids"] == ["facility_name"]
 
 
+def test_non_allowlisted_suggestion_field_gets_decision() -> None:
+    retrieved = [{"chunk_id": 1, "score": 3, "text": "x", "source_file": "a.txt"}]
+    suggestions = [
+        {"field_id": "carrier_code", "candidate_value": "BNSF", "confidence": 0.93, "source_file": "a.txt", "chunk_id": 1},
+    ]
+    decisions = decide_fields_for_local_packet(
+        retrieved=retrieved,
+        suggestions=suggestions,
+        required_field_ids=(),
+        low_confidence_threshold=0.70,
+    )
+    assert len(decisions) == 1
+    assert decisions[0].field_id == "carrier_code"
+    assert decisions[0].state == DecisionState.FILL
+
+
 def test_canonical_map_path_preferred_when_legacy_also_exists(tmp_path: Path) -> None:
     root = tmp_path
     (root / "schemas" / "maps").mkdir(parents=True)
