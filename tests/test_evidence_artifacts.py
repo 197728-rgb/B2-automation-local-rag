@@ -16,7 +16,7 @@ def _repo_root() -> Path:
     return Path(__file__).resolve().parents[1]
 
 
-def test_canonical_and_traceability_exist_after_local_run(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_canonical_and_traceability_exist_after_local_run(tmp_path: Path) -> None:
     root = _repo_root()
     inbox = tmp_path / "inbox"
     inbox.mkdir()
@@ -25,11 +25,6 @@ def test_canonical_and_traceability_exist_after_local_run(tmp_path: Path, monkey
         "B81 Car: XX 99999\nB89 insulation plate\nB90 Auditor: Pat\n",
         encoding="utf-8",
     )
-
-    def _block_docupipe(_pdf: Path) -> None:
-        raise AssertionError("no docupipe")
-
-    monkeypatch.setattr("b2_automation.inbox_pipeline.process_pdf", _block_docupipe)
 
     run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run")
 
@@ -52,17 +47,13 @@ def test_canonical_and_traceability_exist_after_local_run(tmp_path: Path, monkey
     assert len(tr["entries"]) >= 1
 
 
-def test_traceability_has_approval_map_fields(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_traceability_has_approval_map_fields(tmp_path: Path) -> None:
     root = _repo_root()
     inbox = tmp_path / "inbox"
     inbox.mkdir()
     (inbox / "evidence.txt").write_text(
         "Cover Page Facility: Midwest\nB24 RL2 evidence Date: 2026-01-01\n",
         encoding="utf-8",
-    )
-    monkeypatch.setattr(
-        "b2_automation.inbox_pipeline.process_pdf",
-        lambda _pdf: (_ for _ in ()).throw(AssertionError("no docupipe")),
     )
     run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run")
 
@@ -187,17 +178,13 @@ def test_fallback_keyword_when_semantic_empty(monkeypatch: pytest.MonkeyPatch, t
     assert method == "keyword_fallback"
 
 
-def test_retrieval_scores_do_not_authorize_writes_in_trace(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_retrieval_scores_do_not_authorize_writes_in_trace(tmp_path: Path) -> None:
     root = _repo_root()
     inbox = tmp_path / "inbox"
     inbox.mkdir()
     (inbox / "evidence.txt").write_text(
         "facility: HIGH_WEIGHT_B24_SIGNAL " * 20 + "\nB24 RL2 Date: 2099-01-01\n",
         encoding="utf-8",
-    )
-    monkeypatch.setattr(
-        "b2_automation.inbox_pipeline.process_pdf",
-        lambda _pdf: (_ for _ in ()).throw(AssertionError("no docupipe")),
     )
     run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run")
 
@@ -209,17 +196,13 @@ def test_retrieval_scores_do_not_authorize_writes_in_trace(tmp_path: Path, monke
             assert row.get("approval_map_target") is not None
 
 
-def test_map_missing_still_emits_artifacts_with_fill_blocked(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_map_missing_still_emits_artifacts_with_fill_blocked(tmp_path: Path) -> None:
     fake_root = tmp_path / "bare"
     (fake_root / "schemas" / "maps").mkdir(parents=True)
     (fake_root / "templates").mkdir(parents=True)
     inbox = tmp_path / "inbox"
     inbox.mkdir()
     (inbox / "evidence.txt").write_text("Cover Page Facility: X\nB24 RL2 evidence\n", encoding="utf-8")
-    monkeypatch.setattr(
-        "b2_automation.inbox_pipeline.process_pdf",
-        lambda _pdf: (_ for _ in ()).throw(AssertionError("no docupipe")),
-    )
     run_inbox_pipeline(root=fake_root, inbox=inbox, out_dir=tmp_path / "run")
 
     assert (tmp_path / "run" / "canonical_evidence.json").is_file()

@@ -25,15 +25,12 @@ def test_b2_help():
     assert r.returncode == 0
     assert "discover" in r.stdout
     assert "sample-pipeline" in r.stdout
-    assert "fill-b24-rl1-sample" in r.stdout
-    assert "fill-b24-rl1-from-docupipe" in r.stdout
     assert "inbox" in r.stdout
 
 
 def test_b2_inbox_help_defaults_to_local_review():
     r = _run_cli(["inbox", "--help"])
     assert r.returncode == 0
-    assert "--legacy-docupipe" in r.stdout
     assert "B24_RL2" in r.stdout
     assert "B81" in r.stdout
     assert "B89" in r.stdout
