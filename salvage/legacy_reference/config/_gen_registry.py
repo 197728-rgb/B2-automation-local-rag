@@ -12,7 +12,6 @@ KAREN = Path(
 pairs = [
     ("A19", "M-1002 Exhibit B-2 Activity Code A19 - (4-1-2024).docx"),
     ("A19C", "M-1002 Exhibit B-2 Activity Code A19c - (4-1-2024).docx"),
-    ("B24_RL1", "M-1002 Exhibit B-2 Activity Code B24 (RL1) - (4-1-2024).docx"),
     ("B24_RL2", "M-1002 Exhibit B-2 Activity Code B24 (RL2) - (4-1-2024).docx"),
     ("B24_RLC", "M-1002 Exhibit B-2 Activity Code B24 (RLC) - (4-1-2024).docx"),
     ("B78", "M-1002 Exhibit B-2 Activity Code B78 - (4-1-2024).docx"),

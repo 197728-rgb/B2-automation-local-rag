@@ -38,7 +38,7 @@
       {
         "field_key": "TCOWrittenInstructions",
         "normalized_key": "tco_written_instructions",
-        "value": "RL1 repair authorized per email 2025-11-18.",
+        "value": "Repair authorized per email 2025-11-18.",
         "confidence": 0.81,
         "provenance": [{ "page_index": 0, "region": "tco_permission_block" }]
       },

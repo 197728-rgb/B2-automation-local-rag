@@ -119,7 +119,7 @@ def test_inbox_pipeline_local_rejects_unknown_review_form(tmp_path: Path) -> Non
     inbox = tmp_path / "inbox"
     inbox.mkdir()
     (inbox / "evidence.txt").write_text("local evidence", encoding="utf-8")
-    with pytest.raises(ValueError, match="legacy/sample-only"):
+    with pytest.raises(ValueError, match="Unknown review form"):
         run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run", review_forms=("B24_RL1",))
 
 

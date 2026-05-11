@@ -31,15 +31,6 @@
       "options": {
         "cwd": "${workspaceFolder}"
       }
-    },
-    {
-      "label": "B2: Legacy DocuPipe Review",
-      "type": "shell",
-      "command": ".\\.venv\\Scripts\\b2.exe inbox --legacy-docupipe --inbox .\\inbox --out .\\outputs\\legacy_docupipe_run",
-      "problemMatcher": [],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      }
     }
   ]
 }

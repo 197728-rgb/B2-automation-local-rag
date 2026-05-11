@@ -132,11 +132,6 @@ class TestApprovalMapValidation:
         assert result.bundle is None
         assert any("duplicate coordinate" in e for e in result.errors)
 
-    def test_b24_rl1_has_no_production_map(self) -> None:
-        root = _repo_root()
-        bundle = load_exact_approval_bundle(root, "B24_RL1")
-        assert bundle is None, "B24_RL1 must not have a production approval map"
-
 
 # ---------------------------------------------------------------------------
 # No fallback mapping regression
