@@ -81,19 +81,25 @@ def normalize_review_forms(forms: Iterable[str] | None) -> tuple[str, ...]:
     normalized: list[str] = []
     for item in forms:
         original = str(item).strip()
-        key = original.replace("-", "_")
-        form = aliases.get(key.upper(), key)
-        if form == "B24_RL1":
-            raise ValueError(
-                "B24_RL1 is legacy/sample-only and cannot be selected via local inbox --review-forms. "
-                "Use `b2 inbox --legacy-docupipe` with a PDF inbox for the DocuPipe/B24_RL1 adapter, "
-                "or legacy commands `b2 fill-b24-rl1-sample` / `b2 fill-b24-rl1-from-docupipe`."
-            )
-        if form not in ALLOWED_REVIEW_FORMS:
-            allowed = ", ".join(ALLOWED_REVIEW_FORMS)
-            raise ValueError(f"Unknown review form {original!r}. Allowed values: {allowed}")
-        if form not in normalized:
-            normalized.append(form)
+        if not original:
+            continue
+        # Accept comma-separated form lists in a single token, e.g. "B81,B89".
+        pieces = [p.strip() for p in original.split(",") if p.strip()]
+        for piece in pieces:
+            key = piece.replace("-", "_")
+            key = re.sub(r"\s+", " ", key)
+            form = aliases.get(key.upper(), key)
+            if form == "B24_RL1":
+                raise ValueError(
+                    "B24_RL1 is legacy/sample-only and cannot be selected via local inbox --review-forms. "
+                    "Use `b2 inbox --legacy-docupipe` with a PDF inbox for the DocuPipe/B24_RL1 adapter, "
+                    "or legacy commands `b2 fill-b24-rl1-sample` / `b2 fill-b24-rl1-from-docupipe`."
+                )
+            if form not in ALLOWED_REVIEW_FORMS:
+                allowed = ", ".join(ALLOWED_REVIEW_FORMS)
+                raise ValueError(f"Unknown review form {piece!r}. Allowed values: {allowed}")
+            if form not in normalized:
+                normalized.append(form)
     return tuple(normalized or DEFAULT_REVIEW_FORMS)
 
 
