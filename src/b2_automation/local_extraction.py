@@ -30,6 +30,7 @@ ALLOWED_REVIEW_FORMS = DEFAULT_REVIEW_FORMS
 LOCAL_EVIDENCE_EXTENSIONS = (".pdf", ".txt", ".md", ".markdown", ".json", ".csv")
 DEFAULT_REQUIRED_SUGGESTION_FIELDS = ("facility_name", "date")
 DEFAULT_LOW_CONFIDENCE_THRESHOLD = 0.70
+SAMPLE_EVIDENCE_STEMS = {"evidence_sample", "sample_evidence"}
 
 @dataclass(frozen=True)
 class LocalEvidenceDocument:
@@ -104,7 +105,18 @@ def normalize_review_forms(forms: Iterable[str] | None) -> tuple[str, ...]:
 
 
 def supported_evidence_files(inbox: Path) -> list[Path]:
-    return sorted(p for p in inbox.iterdir() if p.is_file() and p.suffix.lower() in LOCAL_EVIDENCE_EXTENSIONS)
+    return sorted(
+        p
+        for p in inbox.iterdir()
+        if p.is_file()
+        and p.suffix.lower() in LOCAL_EVIDENCE_EXTENSIONS
+        and not _is_sample_evidence_file(p)
+    )
+
+
+def _is_sample_evidence_file(path: Path) -> bool:
+    stem = path.stem.lower()
+    return stem in SAMPLE_EVIDENCE_STEMS or "dry_run" in stem or "dry-run" in stem
 
 
 def extract_local_document(path: Path) -> LocalEvidenceDocument:
@@ -154,16 +166,49 @@ def _read_csv_text(path: Path) -> str:
 def _read_pdf_text(path: Path) -> tuple[str, str]:
     try:
         import fitz  # type: ignore[import-not-found]
+    except Exception:
+        return "", "local_pdf_text_unavailable"
 
+    try:
         pages: list[str] = []
         with fitz.open(path) as doc:
             for page_index, page in enumerate(doc, start=1):
-                page_text = page.get_text("text")
-                pages.append(f"[page {page_index}]\n{page_text}")
-        return "\n\n".join(pages), "local_pymupdf"
+                page_text = page.get_text("text").strip()
+                if page_text:
+                    pages.append(f"[page {page_index}]\n{page_text}")
+        if pages:
+            return "\n\n".join(pages), "local_pymupdf"
     except Exception:
-        raw = path.read_bytes()
-        return raw.decode("utf-8", errors="ignore"), "local_pdf_bytes_fallback"
+        return "", "local_pdf_text_unavailable"
+
+    ocr_text, ocr_method = _ocr_pdf_text(path, fitz)
+    if ocr_text:
+        return ocr_text, ocr_method
+    return "", "local_pdf_no_text"
+
+
+def _ocr_pdf_text(path: Path, fitz_module: Any) -> tuple[str, str]:
+    try:
+        from PIL import Image  # type: ignore[import-not-found]
+        import pytesseract  # type: ignore[import-not-found]
+    except Exception:
+        return "", "local_pdf_no_text"
+
+    pages: list[str] = []
+    try:
+        matrix = fitz_module.Matrix(2, 2)
+        with fitz_module.open(path) as doc:
+            for page_index, page in enumerate(doc, start=1):
+                pix = page.get_pixmap(matrix=matrix, alpha=False)
+                image = Image.frombytes("RGB", (pix.width, pix.height), pix.samples)
+                page_text = pytesseract.image_to_string(image).strip()
+                if page_text:
+                    pages.append(f"[page {page_index}]\n{page_text}")
+    except Exception:
+        return "", "local_pdf_ocr_unavailable"
+    if not pages:
+        return "", "local_pdf_no_text"
+    return "\n\n".join(pages), "local_tesseract_ocr"
 
 
 def chunk_text(text: str, *, target_chars: int = 900) -> list[dict[str, Any]]:
@@ -238,13 +283,15 @@ def _field_suggestions(retrieved: list[dict[str, Any]], form: str = "") -> list[
 
     seen: set[tuple[str, str]] = set()
     for item in retrieved:
-        text = str(item["text"])
+        text = str(item.get("full_text") or item["text"])
         for field, pattern in patterns:
             match = re.search(pattern, text, flags=re.IGNORECASE)
             if not match:
                 continue
             value = match.group(1).strip()
             value = _trim_before_next_field_marker(value)
+            if not _is_plausible_candidate_value(field, value):
+                continue
             key = (field, value)
             if key in seen:
                 continue
@@ -353,7 +400,34 @@ def _trim_before_next_field_marker(value: str) -> str:
     canonical_marker = re.search(r"\s+[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z0-9_]+)+\s*[:=-]", value)
     if canonical_marker:
         value = value[: canonical_marker.start()]
+    label_marker = re.search(
+        r"\s+(?:"
+        r"B24\s+RL2|B81|B89|B90|Cover\s+Page|"
+        r"Inspection\s+Date|Date|Auditor|Inspector|"
+        r"Car(?:\s+No\.?|\s+Number)?|Facility|Company|Shop"
+        r")\s*[:=-]?",
+        value,
+        flags=re.IGNORECASE,
+    )
+    if label_marker:
+        value = value[: label_marker.start()]
     return value.strip()
+
+
+def _is_plausible_candidate_value(field: str, value: str) -> bool:
+    cleaned = re.sub(r"\s+", " ", value).strip()
+    if not cleaned:
+        return False
+    if field != "facility_name":
+        return True
+    lower = cleaned.lower()
+    if lower.startswith(("assigned ", "code ", "the ")):
+        return False
+    if lower.endswith(" for"):
+        return False
+    if lower in {"aar", "assigned code", "assigned code for"}:
+        return False
+    return True
 
 
 def _truthy(value: Any) -> bool:
@@ -471,7 +545,8 @@ def _write_packet_md(path: Path, packet: dict[str, Any]) -> None:
     retrieved = packet.get("retrieved_context", [])
     if retrieved:
         for item in retrieved:
-            lines.append(f"- {item['source_file']} chunk {item['chunk_id']} score {item['score']}: {item['text']}")
+            excerpt = item.get("chunk_excerpt") or item.get("text") or ""
+            lines.append(f"- {item['source_file']} chunk {item['chunk_id']} score {item['score']}: {excerpt}")
     else:
         lines.append("- None")
     lines.extend(["", "## Field suggestions"])

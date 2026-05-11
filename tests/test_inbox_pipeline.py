@@ -45,6 +45,14 @@ def test_inbox_pipeline_local_default_generates_all_form_packets(tmp_path: Path,
         ),
         encoding="utf-8",
     )
+    (inbox / "evidence_sample.txt").write_text(
+        "Sample audit evidence line for local inbox dry run. Company: Example Railroad Year: 2025",
+        encoding="utf-8",
+    )
+    (inbox / "procedure.txt").write_text(
+        "Cover Page procedure note. The Facility: assigned code for AAR and internal action tracking.",
+        encoding="utf-8",
+    )
 
     def _blocked_docupipe(_pdf: Path):
         raise AssertionError("DocuPipe must not be called by default")
@@ -84,6 +92,21 @@ def test_inbox_pipeline_local_default_generates_all_form_packets(tmp_path: Path,
     assert manifest["legacy_adapter_used"] is False
     assert set(review["forms"]) == set(DEFAULT_REVIEW_FORMS)
     assert review["production_scope_forms"] == list(DEFAULT_REVIEW_FORMS)
+    assert "evidence_sample.txt" not in {row["source_file"] for row in review["inputs"]}
+    canonical = json.loads((run_dir / "canonical_evidence.json").read_text(encoding="utf-8"))
+    facility_values = [
+        str(row.get("selected_value") or "")
+        for row in canonical["fields"]
+        if row.get("field_id") == "facility_name" and row.get("selected_value")
+    ]
+    assert facility_values
+    assert set(facility_values) == {"Midwest Tank Rail Inc"}
+    cover_packet = json.loads((run_dir / "review" / "Cover_Page_evidence_packet.json").read_text(encoding="utf-8"))
+    assert not [
+        row
+        for row in cover_packet["field_suggestions"]
+        if row["field_id"] == "facility_name" and row["candidate_value"] == "assigned code for"
+    ]
     for form in DEFAULT_REVIEW_FORMS:
         packet_path = run_dir / "review" / f"{form}_evidence_packet.json"
         assert packet_path.is_file()

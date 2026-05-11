@@ -35,6 +35,8 @@ python -m venv .venv
 .\.venv\Scripts\b2.exe --help
 ```
 
+For scanned/image PDFs, install the Tesseract OCR engine on Windows and make sure `tesseract.exe` is on `PATH`. The Python OCR dependencies are installed with the project, but the OCR engine itself is a system dependency.
+
 ## Run the local inbox command
 
 ```powershell

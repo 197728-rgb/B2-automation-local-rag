@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import sys
+import types
 import pytest
 
 from b2_automation.inbox_pipeline import run_inbox_pipeline
@@ -71,6 +73,72 @@ def test_traceability_has_approval_map_fields(tmp_path: Path, monkeypatch: pytes
         assert "filled" in row
         if row.get("suggested_value") or row.get("decision_state") == "FILL":
             assert isinstance(row["authorized_for_write"], bool)
+
+
+def test_unreadable_pdf_does_not_fall_back_to_raw_binary_chunks(tmp_path: Path) -> None:
+    from b2_automation.local_extraction import chunk_text, extract_local_document
+
+    pdf = tmp_path / "scan.pdf"
+    pdf.write_bytes(b"%PDF-1.4\n1 0 obj\n<< /Length 4 >>\nstream\n\xff\xd8\x00\x00\nendstream\n")
+    doc = extract_local_document(pdf)
+    assert doc.extraction_method in {"local_pdf_text_unavailable", "local_pdf_no_text", "local_pdf_ocr_unavailable"}
+    assert doc.text == ""
+    assert chunk_text(doc.text) == []
+
+
+def test_pdf_ocr_fallback_uses_local_tesseract_when_available(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    from b2_automation.local_extraction import extract_local_document
+
+    class FakePixmap:
+        width = 1
+        height = 1
+        samples = b"\xff\xff\xff"
+
+    class FakePage:
+        def get_text(self, _mode: str) -> str:
+            return ""
+
+        def get_pixmap(self, *, matrix: object, alpha: bool) -> FakePixmap:
+            assert matrix is not None
+            assert alpha is False
+            return FakePixmap()
+
+    class FakeDoc:
+        def __enter__(self) -> "FakeDoc":
+            return self
+
+        def __exit__(self, *args: object) -> None:
+            return None
+
+        def __iter__(self):
+            return iter([FakePage()])
+
+    fake_fitz = types.ModuleType("fitz")
+    fake_fitz.open = lambda _path: FakeDoc()  # type: ignore[attr-defined]
+    fake_fitz.Matrix = lambda _x, _y: object()  # type: ignore[attr-defined]
+
+    fake_image = types.ModuleType("PIL.Image")
+    fake_image.frombytes = lambda *_args, **_kwargs: object()  # type: ignore[attr-defined]
+    fake_pil = types.ModuleType("PIL")
+    fake_pil.Image = fake_image  # type: ignore[attr-defined]
+
+    fake_tesseract = types.ModuleType("pytesseract")
+    fake_tesseract.image_to_string = lambda _image: "Facility: OCR Rail\nDate: 2026-05-07"  # type: ignore[attr-defined]
+
+    monkeypatch.setitem(sys.modules, "fitz", fake_fitz)
+    monkeypatch.setitem(sys.modules, "PIL", fake_pil)
+    monkeypatch.setitem(sys.modules, "PIL.Image", fake_image)
+    monkeypatch.setitem(sys.modules, "pytesseract", fake_tesseract)
+
+    pdf = tmp_path / "scan.pdf"
+    pdf.write_bytes(b"%PDF-1.4\n")
+    doc = extract_local_document(pdf)
+
+    assert doc.extraction_method == "local_tesseract_ocr"
+    assert "Facility: OCR Rail" in doc.text
 
 
 def test_semantic_retrieval_mock_sklearn(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:

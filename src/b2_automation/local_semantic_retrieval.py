@@ -140,7 +140,8 @@ def _keyword_retrieval(
                         "source_file": doc.source_file,
                         "chunk_id": int(chunk["chunk_id"]),
                         "score": kw,
-                        "text": _preview(text_full),
+                        "text": text_full,
+                        "chunk_excerpt": _preview(text_full),
                     }
                 )
     scored.sort(key=lambda item: (-int(item["score"]), str(item["source_file"]), int(item["chunk_id"])))
@@ -178,6 +179,8 @@ def retrieve_chunks_for_form(
         sem = float(semantic_scores[i]) if i < len(semantic_scores) else 0.0
         kw = _keyword_score_for_chunk(form, full_text)
         combined = int(round(sem * 1000)) + kw * 2
+        if combined <= 0:
+            continue
         excerpt = _preview(full_text)
         out.append(
             {
@@ -187,8 +190,9 @@ def retrieve_chunks_for_form(
                 "semantic_score": round(sem, 6),
                 "keyword_score": kw,
                 "retrieval_score": combined,
-                "text": excerpt,
+                "text": full_text,
                 "chunk_excerpt": excerpt,
+                "full_text": full_text,
                 "chunk_hash": _chunk_hash(full_text),
                 "retrieval_method": method,
             }
@@ -199,14 +203,16 @@ def retrieve_chunks_for_form(
 
 
 def _with_telemetry_from_keyword_row(form: str, row: dict[str, Any], method: str) -> dict[str, Any]:
-    # row has text as preview only — re-hash preview for stability
-    excerpt = str(row.get("text") or "")
+    full_text = str(row.get("text") or "")
+    excerpt = str(row.get("chunk_excerpt") or _preview(full_text))
     return {
         **row,
         "semantic_score": 0.0,
         "keyword_score": int(row.get("score") or 0),
         "retrieval_score": int(row.get("score") or 0),
         "chunk_excerpt": excerpt,
-        "chunk_hash": _chunk_hash(excerpt),
+        "full_text": full_text,
+        "text": full_text,
+        "chunk_hash": _chunk_hash(full_text),
         "retrieval_method": method,
     }
