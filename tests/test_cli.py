@@ -62,25 +62,6 @@ def test_b2_inbox_accepts_comma_separated_review_forms(tmp_path):
     inbox = tmp_path / "inbox"
     inbox.mkdir()
     (inbox / "evidence.txt").write_text("facility: Demo Shop\ndate: 2026-01-05", encoding="utf-8")
-    r = _run_cli(
-        [
-            "inbox",
-            "--inbox",
-            str(inbox),
-            "--out",
-            str(tmp_path / "out"),
-            "--review-forms",
-            "B81,B89",
-        ]
-    )
-    assert r.returncode in {0, 1}
-    assert "Status:" in r.stdout
-
-
-def test_b2_inbox_accepts_comma_separated_review_forms(tmp_path):
-    inbox = tmp_path / "inbox"
-    inbox.mkdir()
-    (inbox / "evidence.txt").write_text("facility: Demo Shop\ndate: 2026-01-05", encoding="utf-8")
     r = _run_cli([
         "inbox",
         "--inbox",

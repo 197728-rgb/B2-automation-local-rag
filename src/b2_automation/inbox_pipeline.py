@@ -39,6 +39,7 @@ class InboxPipelineResult:
     review_json_path: Path
     review_md_path: Path
     filled_docx_path: Path | None
+    filled_docx_paths: tuple[Path, ...]
     status: str
 
 
@@ -60,6 +61,16 @@ def _blocking_reasons(packet: dict[str, Any]) -> list[str]:
             reason = str(decision.get("reason") or "").strip()
             out.append(f"{field_id}:{state}" + (f" ({reason})" if reason else ""))
     return out
+
+
+def _clear_scoped_filled_docx(filled_dir: Path, forms: tuple[str, ...]) -> None:
+    """Remove prior {form}_filled.docx for this run's forms so a blocked re-run cannot leave stale outputs."""
+    for form in forms:
+        stale = filled_dir / f"{form}_filled.docx"
+        try:
+            stale.unlink()
+        except FileNotFoundError:
+            pass
 
 
 def _field_values_from_packet(packet: dict[str, Any]) -> tuple[dict[str, str], dict[str, float]]:
@@ -205,6 +216,7 @@ def _run_local_rag_inbox_pipeline(*, root: Path, inbox: Path, out_dir: Path, rev
         raise FileNotFoundError(f"No supported local evidence files found in inbox: {inbox} ({allowed})")
 
     forms = normalize_review_forms(review_forms)
+    _clear_scoped_filled_docx(filled_dir, forms)
     documents = [extract_local_document(path) for path in inputs]
     chunks_by_source = {doc.source_file: chunk_text(doc.text) for doc in documents}
     packets = build_form_packets(documents, chunks_by_source, forms, low_confidence_threshold=low_confidence_threshold)
@@ -221,6 +233,20 @@ def _run_local_rag_inbox_pipeline(*, root: Path, inbox: Path, out_dir: Path, rev
     failed_docx = [item for item in docx_results if item.get("attempted") and not item.get("structure_guard_passed")]
     review_states = {decision.get("state") for packet in packets.values() for decision in packet.get("field_decisions", []) if decision.get("state") in BLOCKING_STATES}
     status = "review_required" if missing_context or failed_docx or blocked_docx or review_states else "success"
+    blocked_forms = [str(item["form_id"]) for item in blocked_docx]
+    blocking_review_reasons = {
+        str(item["form_id"]): list(item.get("blocking_review_reasons") or [])
+        for item in blocked_docx
+    }
+    structure_guard_discard_detail = [
+        {
+            "form_id": item["form_id"],
+            "failure_reason": item.get("failure_reason"),
+            "structure_guard_errors": item.get("structure_guard_errors"),
+        }
+        for item in docx_results
+        if item.get("failure_reason") == "structure_guard_failed"
+    ]
 
     canonical_path = run_dir / "canonical_evidence.json"
     trace_path = run_dir / "field_traceability.json"
@@ -241,8 +267,11 @@ def _run_local_rag_inbox_pipeline(*, root: Path, inbox: Path, out_dir: Path, rev
         "decision_summary_by_form": {fid: packets[fid].get("decision_summary") for fid in forms},
         "write_authority": "exact approval maps required; only FILL decisions are passed to DOCX patching",
         "docx_generation": docx_results,
-        "review_blocked_forms": [item["form_id"] for item in blocked_docx],
+        "review_blocked_forms": blocked_forms,
+        "blocking_review_reasons": blocking_review_reasons,
+        "skipped_review_required": blocked_forms,
         "structure_guard_failed_forms": [item["form_id"] for item in failed_docx],
+        "structure_guard_discard_detail": structure_guard_discard_detail,
         "approval_map_and_fill_errors": [{"form_id": item["form_id"], "errors": list(item.get("errors") or [])} for item in docx_results if item.get("errors")],
         "canonical_evidence": str(canonical_path),
         "field_traceability": str(trace_path),
@@ -259,7 +288,22 @@ def _run_local_rag_inbox_pipeline(*, root: Path, inbox: Path, out_dir: Path, rev
     if blocked_docx:
         lines.extend(["", "## DOCX handoff blocked by review controls"])
         lines.extend(f"- **{item['form_id']}**: reviewer-blocking decisions remain unresolved." for item in blocked_docx)
+    if structure_guard_discard_detail:
+        lines.extend(["", "## DOCX structure guard failures (filled output discarded)"])
+        for item in structure_guard_discard_detail:
+            lines.append(f"- **{item['form_id']}**: structure guard did not pass; candidate DOCX removed.")
+            for msg in (item.get("structure_guard_errors") or [])[:8]:
+                lines.append(f"  - {msg}")
     lines.append("- RAG evidence did not authorize write locations; exact approval maps did.")
+    n_filled_this_run = sum(1 for item in docx_results if item.get("filled_docx"))
+    if n_filled_this_run == 0:
+        lines.extend(
+            [
+                "",
+                "## Filled DOCX (this run)",
+                "**No filled DOCX was produced this run.** Prior `filled/*_filled.docx` for the scoped forms were removed before writing so an older run cannot be mistaken for this one.",
+            ]
+        )
     review_md.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
     rag_selection = {
@@ -291,7 +335,9 @@ def _run_local_rag_inbox_pipeline(*, root: Path, inbox: Path, out_dir: Path, rev
         "review_markdown": str(review_md),
         "rag_selection_report": str(rag_selection_path),
         "docx_generation": docx_results,
-        "review_blocked_forms": [item["form_id"] for item in blocked_docx],
+        "review_blocked_forms": blocked_forms,
+        "blocking_review_reasons": blocking_review_reasons,
+        "skipped_review_required": blocked_forms,
         "structure_guard_failed_forms": [item["form_id"] for item in failed_docx],
         "structure_guard_report": str(guard_summary_path),
         "structure_guard_passed": bool(guard_summary.get("pass")),
@@ -300,8 +346,19 @@ def _run_local_rag_inbox_pipeline(*, root: Path, inbox: Path, out_dir: Path, rev
     }
     manifest_path.write_text(json.dumps(run_manifest, indent=2, sort_keys=True), encoding="utf-8")
 
-    first_filled = next((Path(str(item["filled_docx"])) for item in docx_results if item.get("filled_docx")), None)
-    return InboxPipelineResult(run_dir, manifest_path, review_json, review_md, first_filled, status)
+    filled_paths = tuple(
+        Path(str(item["filled_docx"])) for item in docx_results if item.get("filled_docx")
+    )
+    first_filled = filled_paths[0] if filled_paths else None
+    return InboxPipelineResult(
+        run_dir,
+        manifest_path,
+        review_json,
+        review_md,
+        first_filled,
+        filled_paths,
+        status,
+    )
 
 
 def run_inbox_pipeline(*, root: Path, inbox: Path, out_dir: Path, low_confidence_threshold: float = DEFAULT_LOW_CONFIDENCE_THRESHOLD, review_forms: tuple[str, ...] | None = None) -> InboxPipelineResult:

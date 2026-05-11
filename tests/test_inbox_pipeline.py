@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 from b2_automation.docupipe_client import DocuPipeConfigError, process_pdf
-from b2_automation.inbox_pipeline import run_inbox_pipeline
+from b2_automation.inbox_pipeline import _clear_scoped_filled_docx, run_inbox_pipeline
 from b2_automation.local_extraction import DEFAULT_REVIEW_FORMS, supported_evidence_files
 from b2_automation.paths import B24_SHARED_TEMPLATE_DOCX
 
@@ -53,9 +53,12 @@ def test_inbox_pipeline_local_default_generates_all_form_packets(tmp_path: Path)
         assert run_manifest_data.get("structure_guard_passed") is True
         assert result.filled_docx_path is not None and result.filled_docx_path.is_file()
         assert result.filled_docx_path.name.endswith("_filled.docx")
+        assert result.filled_docx_paths
+        assert all(p.is_file() for p in result.filled_docx_paths)
         assert run_manifest_data.get("structure_guard_failed_forms") == []
     else:
         assert result.filled_docx_path is None
+        assert result.filled_docx_paths == ()
     assert result.manifest_path.is_file()
     assert result.review_json_path.is_file()
     assert result.review_md_path.is_file()
@@ -112,6 +115,64 @@ def test_inbox_pipeline_local_default_generates_all_form_packets(tmp_path: Path)
                 "LOW_CONFIDENCE",
             }
         assert packet["field_suggestions"]
+
+
+def test_clear_scoped_filled_docx_removes_stale_outputs(tmp_path: Path) -> None:
+    filled = tmp_path / "filled"
+    filled.mkdir()
+    stale = filled / "B81_filled.docx"
+    stale.write_bytes(b"PK\x03\x04")
+    untouched = filled / "B89_filled.docx"
+    untouched.write_bytes(b"PK\x03\x04")
+    _clear_scoped_filled_docx(filled, ("B81",))
+    assert not stale.is_file()
+    assert untouched.is_file()
+
+
+def test_inbox_pipeline_blocks_b81_fill_when_review_state_remains(tmp_path: Path) -> None:
+    root = _repo_root()
+    inbox = tmp_path / "inbox"
+    inbox.mkdir()
+    (inbox / "b81_noise.txt").write_text(
+        "\n".join(
+            [
+                "B81 stub sill evidence and side sill review for tank car repair.",
+                "Facility: Demo Rail Shop",
+                "This packet intentionally omits the required date.",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    out_dir = tmp_path / "run"
+    filled_dir = out_dir / "filled"
+    filled_dir.mkdir(parents=True)
+    stale = filled_dir / "B81_filled.docx"
+    stale.write_bytes(b"PK\x03\x04")
+
+    result = run_inbox_pipeline(
+        root=root,
+        inbox=inbox,
+        out_dir=out_dir,
+        review_forms=("B81",),
+        low_confidence_threshold=0.0,
+    )
+
+    manifest = json.loads(result.manifest_path.read_text(encoding="utf-8"))
+    review = json.loads(result.review_json_path.read_text(encoding="utf-8"))
+    b81_docx = next(item for item in manifest["docx_generation"] if item["form_id"] == "B81")
+    b81_decisions = review["form_packets"]["B81"]["field_decisions"]
+
+    assert result.status == "review_required"
+    assert any(row["state"] == "FILL" for row in b81_decisions)
+    assert any(row["state"] in {"MISSING", "CONFLICT", "LOW_CONFIDENCE", "REVIEW_REQUIRED"} for row in b81_decisions)
+    assert b81_docx["status"] == "skipped_review_required"
+    assert b81_docx["filled_docx"] is None
+    assert "B81" in manifest["review_blocked_forms"]
+    assert manifest["skipped_review_required"] == ["B81"]
+    assert manifest["blocking_review_reasons"]["B81"]
+    assert result.filled_docx_path is None
+    assert result.filled_docx_paths == ()
+    assert not stale.exists()
 
 
 def test_inbox_pipeline_local_rejects_unknown_review_form(tmp_path: Path) -> None:

@@ -77,8 +77,21 @@ def _cmd_inbox(args: argparse.Namespace) -> int:
     print(f"Run manifest: {result.manifest_path}")
     print(f"Review JSON: {result.review_json_path}")
     print(f"Review MD: {result.review_md_path}")
-    if result.filled_docx_path:
-        print(f"Filled DOCX: {result.filled_docx_path}")
+    paths = result.filled_docx_paths
+    if paths:
+        if len(paths) == 1:
+            print(f"Filled DOCX (1 this run): {paths[0]}")
+        else:
+            print(f"Filled DOCX ({len(paths)} this run):")
+            for p in paths:
+                print(f"  {p}")
+    else:
+        print("Filled DOCX: none produced this run.")
+        if result.status == "review_required":
+            print(
+                "hint: review_required - evidence did not reach safe FILL for every required field; "
+                "scoped *_filled.docx from earlier runs were cleared before this run."
+            )
     return 0 if result.status in {"success", "review_required"} else 1
 
 
