@@ -9,8 +9,11 @@ description = "Local AAR audit evidence review for multi-form B-2 DOCX workflows
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "Pillow>=10.0.0",
+    "PyMuPDF>=1.24.0",
     "python-docx>=1.0.0",
     "python-dotenv>=1.0.0",
+    "pytesseract>=0.3.10",
     "requests>=2.28.0",
 ]
 
