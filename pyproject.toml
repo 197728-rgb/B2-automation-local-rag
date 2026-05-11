@@ -31,6 +31,3 @@ where = ["src"]
 testpaths = ["tests"]
 pythonpath = ["src"]
 addopts = ["-p", "no:cacheprovider"]
-markers = [
-    "legacy_rl1: legacy B24_RL1 / DocuPipe adapter tests",
-]

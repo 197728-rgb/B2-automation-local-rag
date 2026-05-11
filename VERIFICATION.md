@@ -1,12 +1,14 @@
 # Verification Report
 
-Ran and verified the uploaded `B2-automation-local-rag-main.zip`.
+Historical verification notes for the uploaded `B2-automation-local-rag-main.zip`.
 
-## Results
+Current validation: run the commands in the repo README / CI (pytest, `b2 --version`, `b2 inbox --help`, and a small local inbox dry run). Test counts change as the suite grows.
+
+## Example results (snapshot)
 
 ```text
 Install: passed
-Tests: 24 passed
+Tests: (run `pytest -q` for current count)
 Version: b2 0.1.0
 Inbox help: passed
 Local inbox run: passed
@@ -16,7 +18,6 @@ Local inbox run: passed
 
 ```text
 DocuPipe is NOT default
---legacy-docupipe is explicit only
 Default forms:
 B24_RL2
 B81

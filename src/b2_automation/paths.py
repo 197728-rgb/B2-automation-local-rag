@@ -5,8 +5,7 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-# Physical Word package kept under templates/: RL2 is canonical; legacy RL1 sample/DocuPipe
-# helpers use this same file (shared table layout—no separate B24_RL1.docx in templates/).
+# Physical Word package kept under templates/: shared B24 table layout for RL2 production fills.
 B24_SHARED_TEMPLATE_DOCX = "B24_RL2.docx"
 
 

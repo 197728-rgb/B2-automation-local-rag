@@ -23,9 +23,6 @@ from b2_automation.local_semantic_retrieval import retrieve_chunks_for_form
 from b2_automation.paths import resolve_project_root
 
 DEFAULT_REVIEW_FORMS = ("B24_RL2", "B81", "B89", "B90", "Cover_Page")
-# B24_RL1 is legacy/sample only; not a valid `b2 inbox --review-forms` value (use legacy commands
-# or `b2 inbox --legacy-docupipe` for the DocuPipe adapter).
-LEGACY_SAMPLE_FORM_IDS = ("B24_RL1",)
 ALLOWED_REVIEW_FORMS = DEFAULT_REVIEW_FORMS
 LOCAL_EVIDENCE_EXTENSIONS = (".pdf", ".txt", ".md", ".markdown", ".json", ".csv")
 DEFAULT_REQUIRED_SUGGESTION_FIELDS = ("facility_name", "date")
@@ -67,10 +64,6 @@ def normalize_review_forms(forms: Iterable[str] | None) -> tuple[str, ...]:
         "B24_RL2": "B24_RL2",
         "B24RL2": "B24_RL2",
         "B24 RL2": "B24_RL2",
-        "B24_RL1": "B24_RL1",
-        "B24-RL1": "B24_RL1",
-        "B24RL1": "B24_RL1",
-        "B24 RL1": "B24_RL1",
         "B81": "B81",
         "B89": "B89",
         "B90": "B90",
@@ -90,12 +83,6 @@ def normalize_review_forms(forms: Iterable[str] | None) -> tuple[str, ...]:
             key = piece.replace("-", "_")
             key = re.sub(r"\s+", " ", key)
             form = aliases.get(key.upper(), key)
-            if form == "B24_RL1":
-                raise ValueError(
-                    "B24_RL1 is legacy/sample-only and cannot be selected via local inbox --review-forms. "
-                    "Use `b2 inbox --legacy-docupipe` with a PDF inbox for the DocuPipe/B24_RL1 adapter, "
-                    "or legacy commands `b2 fill-b24-rl1-sample` / `b2 fill-b24-rl1-from-docupipe`."
-                )
             if form not in ALLOWED_REVIEW_FORMS:
                 allowed = ", ".join(ALLOWED_REVIEW_FORMS)
                 raise ValueError(f"Unknown review form {piece!r}. Allowed values: {allowed}")

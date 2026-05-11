@@ -24,8 +24,6 @@ First-class review forms:
 - `B90`
 - `Cover_Page`
 
-`B24_RL1` remains legacy/sample coverage only.
-
 ## Install locally
 
 ```powershell
@@ -60,19 +58,7 @@ outputs/local_rag_run/review/*_evidence_packet.json
 outputs/local_rag_run/review/*_review.md
 ```
 
-The local inbox command is review-first. It does not fill DOCX files unless an exact per-form/version approval map and safe raw OOXML patch step are added for that form.
-
-## Legacy DocuPipe adapter
-
-DocuPipe is not part of the default workflow. Use it only when explicitly required:
-
-```powershell
-$env:B2_DOCUPIPE_STUB="1"
-$env:B2_DOCUPIPE_FIXTURE=(Resolve-Path .\samples\docupipe\realistic_b24_response.json)
-.\.venv\Scripts\b2.exe inbox --legacy-docupipe --inbox .\inbox --out .\outputs\legacy_docupipe_run
-```
-
-Live DocuPipe mode never falls back to fixture data. Missing credentials fail immediately.
+The local inbox command is review-first when evidence is missing or guarded. When exact per-form approval maps and templates exist, it may emit filled DOCX under the run’s `filled/` directory only if the structure guard passes.
 
 ## Other commands
 
@@ -80,8 +66,6 @@ Live DocuPipe mode never falls back to fixture data. Missing credentials fail im
 .\.venv\Scripts\b2.exe discover
 .\.venv\Scripts\b2.exe demo
 .\.venv\Scripts\b2.exe sample-pipeline
-.\.venv\Scripts\b2.exe fill-b24-rl1-sample
-.\.venv\Scripts\b2.exe fill-b24-rl1-from-docupipe
 ```
 
 ## Safety rules
@@ -93,4 +77,3 @@ Live DocuPipe mode never falls back to fixture data. Missing credentials fail im
 - Do not hand off a filled DOCX unless `structure_guard_report.json` passes.
 - Keep conflicts, missing values, and low-confidence values in review artifacts.
 - Keep raw extraction and metadata artifacts for traceability.
-- DocuPipe is legacy-only and must be explicitly requested.

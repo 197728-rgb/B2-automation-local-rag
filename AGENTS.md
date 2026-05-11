@@ -20,7 +20,7 @@ local OCR/text extraction
 -> safe raw OOXML DOCX patching
 ```
 
-DocuPipe is not part of the normal workflow. Keep `docupipe_client.py` only as a legacy adapter behind an explicit `--legacy-docupipe` option.
+DocuPipe is not part of the normal workflow. Keep `docupipe_client.py` only for optional scripted extraction tests or experiments.
 
 ## First-class form scope
 
@@ -31,8 +31,6 @@ Treat these forms equally:
 - `B89`
 - `B90`
 - `Cover_Page`
-
-`B24_RL1` is legacy/sample only. Do not design new default behavior around B24 RL1.
 
 ## Build rules
 
@@ -68,9 +66,7 @@ python -m venv .venv
 | CLI version | `.\.venv\Scripts\b2.exe --version` |
 | CLI help | `.\.venv\Scripts\b2.exe inbox --help` |
 | Local inbox review | `.\.venv\Scripts\b2.exe inbox --inbox .\inbox --out .\outputs\local_rag_run` |
-| Legacy DocuPipe path | `.\.venv\Scripts\b2.exe inbox --legacy-docupipe --inbox .\inbox --out .\outputs\legacy_docupipe_run` |
 | Table maps | `.\.venv\Scripts\b2.exe discover` |
-| Legacy sample fill | `.\.venv\Scripts\b2.exe fill-b24-rl1-sample` |
 
 ## Project layout
 

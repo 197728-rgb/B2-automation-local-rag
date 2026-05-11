@@ -4,6 +4,9 @@ __pycache__/
 .pytest_tmp/
 .pytest_tmp_*/
 .pytest_tmp_root/
+.pytest-tmp/
+.pytest-stage56/
+pytest-cache-files-*/
 .ruff_cache/
 .coverage
 .coverage.*
@@ -41,3 +44,10 @@ logs/
 
 # Accidental nested copy of this repo (do not track)
 /B2-automation/
+
+# Cursor / VS Code: ignore local editor state; keep intentional tracked files via negation
+.cursor/**
+!.cursor/rules/
+!.cursor/rules/**
+.vscode/**
+!.vscode/tasks.json
