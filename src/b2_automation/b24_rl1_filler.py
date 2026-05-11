@@ -181,7 +181,7 @@ def fill_b24_rl1_partial_legacy(
         )
         if decision == DecisionState.BLANK:
             _write_cell_preserving_format(cell, "")
-        elif decision in {DecisionState.REVIEW_REQUIRED, DecisionState.MISSING, DecisionState.CONFLICT, DecisionState.LOW_CONFIDENCE}:
+        elif decision != DecisionState.FILL:
             reason = "requires review"
             if value is None or str(value).strip() == "":
                 reason = "missing required value"

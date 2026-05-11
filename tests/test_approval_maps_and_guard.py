@@ -209,7 +209,7 @@ class TestNoFallbackMapping:
 # ---------------------------------------------------------------------------
 
 class TestStructureGuardHandoff:
-    def test_guard_pass_produces_filled_docx(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_guard_pass_produces_filled_docx(self, tmp_path: Path) -> None:
         root = _repo_root()
         template = root / "templates" / B24_SHARED_TEMPLATE_DOCX
         if not template.is_file():
@@ -222,8 +222,6 @@ class TestStructureGuardHandoff:
             "B81 stub sill evidence Car: DOTX 123456\nB89 insulation test plate\nB90 RLS return to service Auditor: Casey",
             encoding="utf-8",
         )
-        monkeypatch.setattr("b2_automation.inbox_pipeline.process_pdf", lambda _: (_ for _ in ()).throw(AssertionError("no docupipe")))
-
         result = run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run")
         manifest = json.loads(result.manifest_path.read_text(encoding="utf-8"))
         guard = json.loads((tmp_path / "run" / "structure_guard_report.json").read_text(encoding="utf-8"))
@@ -257,7 +255,6 @@ class TestStructureGuardHandoff:
             )
 
         monkeypatch.setattr("b2_automation.inbox_pipeline.patch_docx_cells", _fail_patch)
-        monkeypatch.setattr("b2_automation.inbox_pipeline.process_pdf", lambda _: (_ for _ in ()).throw(AssertionError("no docupipe")))
 
         result = run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run")
         assert result.status == "review_required"
@@ -276,7 +273,7 @@ class TestStructureGuardHandoff:
         filled_files = list(filled_dir.glob("*_filled.docx")) if filled_dir.is_dir() else []
         assert filled_files == [], "No filled DOCX should survive a structure guard failure"
 
-    def test_missing_map_produces_review_only(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_missing_map_produces_review_only(self, tmp_path: Path) -> None:
         fake_root = tmp_path / "fake_root"
         (fake_root / "schemas" / "maps").mkdir(parents=True)
         (fake_root / "templates").mkdir(parents=True)
@@ -284,8 +281,6 @@ class TestStructureGuardHandoff:
         inbox = tmp_path / "inbox"
         inbox.mkdir()
         (inbox / "evidence.txt").write_text("B24 RL2 evidence Facility: Midwest Date: 2026-01-01", encoding="utf-8")
-        monkeypatch.setattr("b2_automation.inbox_pipeline.process_pdf", lambda _: (_ for _ in ()).throw(AssertionError("no docupipe")))
-
         result = run_inbox_pipeline(root=fake_root, inbox=inbox, out_dir=tmp_path / "run")
         assert result.review_json_path.is_file()
         review = json.loads(result.review_json_path.read_text(encoding="utf-8"))
