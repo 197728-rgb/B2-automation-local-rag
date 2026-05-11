@@ -9,6 +9,8 @@ from pathlib import Path
 from typing import Any, Mapping
 
 from b2_automation.approval_maps import ApprovalBundle, load_exact_approval_bundle_checked
+from b2_automation.b24_pipeline import run_b24_rl1_from_docupipe
+from b2_automation.docupipe_client import process_pdf as process_docupipe_pdf
 from b2_automation.evidence_outputs import (
     build_canonical_evidence_document,
     build_field_traceability_document,
@@ -388,7 +390,10 @@ def run_inbox_pipeline(
     out_dir: Path,
     low_confidence_threshold: float = DEFAULT_LOW_CONFIDENCE_THRESHOLD,
     review_forms: tuple[str, ...] | None = None,
+    legacy_docupipe: bool = False,
 ) -> InboxPipelineResult:
+    if legacy_docupipe:
+        return _run_legacy_docupipe_inbox_pipeline(root=root, inbox=inbox, out_dir=out_dir)
     return _run_local_rag_inbox_pipeline(
         root=root,
         inbox=inbox,
@@ -396,3 +401,67 @@ def run_inbox_pipeline(
         review_forms=review_forms,
         low_confidence_threshold=low_confidence_threshold,
     )
+
+
+def _run_legacy_docupipe_inbox_pipeline(*, root: Path, inbox: Path, out_dir: Path) -> InboxPipelineResult:
+    inbox = inbox.resolve()
+    run_dir = out_dir.resolve()
+    review_dir = run_dir / "review"
+    filled_dir = run_dir / "filled"
+    raw_dir = run_dir / "raw"
+    for p in (raw_dir, review_dir, filled_dir):
+        p.mkdir(parents=True, exist_ok=True)
+
+    inputs = [path for path in supported_evidence_files(inbox) if path.suffix.lower() == ".pdf"]
+    if not inputs:
+        raise FileNotFoundError(f"No PDF files found in inbox for --legacy-docupipe mode: {inbox}")
+
+    source_pdf = inputs[0]
+    payload = process_docupipe_pdf(source_pdf)
+    payload_path = raw_dir / "docupipe_payload.json"
+    payload_path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
+
+    filled_docx = filled_dir / "B24_RL1_filled.docx"
+    run_b24_rl1_from_docupipe(payload_path, root, filled_docx)
+
+    review_json = review_dir / "legacy_docupipe_review.json"
+    review_md = review_dir / "legacy_docupipe_review.md"
+    manifest_path = run_dir / "run_manifest.json"
+    generated_at = _utc_now()
+    review = {
+        "generated_at": generated_at,
+        "status": "success",
+        "mode": "legacy_docupipe",
+        "docupipe_used": True,
+        "legacy_adapter_used": True,
+        "forms": ["B24_RL1"],
+        "inputs": [{"source_file": source_pdf.name, "status": "processed"}],
+        "outputs": {"docupipe_payload": str(payload_path), "filled_docx": str(filled_docx)},
+    }
+    review_json.write_text(json.dumps(review, indent=2, sort_keys=True), encoding="utf-8")
+    review_md.write_text(
+        "\n".join(
+            [
+                "# Legacy DocuPipe Inbox Review",
+                "",
+                f"Generated: {generated_at}",
+                "",
+                f"- Mode: legacy_docupipe",
+                f"- Source PDF: {source_pdf.name}",
+                f"- Filled DOCX: {filled_docx}",
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    manifest = {
+        "status": "success",
+        "mode": "legacy_docupipe",
+        "docupipe_used": True,
+        "legacy_adapter_used": True,
+        "review_json": str(review_json),
+        "review_markdown": str(review_md),
+        "outputs": [str(payload_path), str(filled_docx)],
+    }
+    manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True), encoding="utf-8")
+    return InboxPipelineResult(run_dir, manifest_path, review_json, review_md, filled_docx, "success")

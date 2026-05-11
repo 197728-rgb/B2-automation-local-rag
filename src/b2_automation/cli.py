@@ -64,6 +64,7 @@ def _cmd_inbox(args: argparse.Namespace) -> int:
             out_dir=out,
             low_confidence_threshold=float(args.low_confidence_threshold),
             review_forms=tuple(args.review_forms),
+            legacy_docupipe=bool(args.legacy_docupipe),
         )
     except ValueError as exc:
         valid = ", ".join(ALLOWED_REVIEW_FORMS)
@@ -108,6 +109,11 @@ def build_parser() -> argparse.ArgumentParser:
     ib.add_argument("--root", type=str, default=None, help="Project root (default: auto-detect)")
     ib.add_argument("--inbox", type=str, default="inbox", help="Folder containing local evidence files")
     ib.add_argument("--out", type=str, default="outputs/inbox_run", help="Output run folder")
+    ib.add_argument(
+        "--legacy-docupipe",
+        action="store_true",
+        help="Run legacy DocuPipe adapter (B24_RL1 from PDF) instead of local-first review pipeline.",
+    )
     ib.add_argument("--low-confidence-threshold", type=float, default=0.70, help="Review threshold for extraction confidence")
     ib.add_argument(
         "--review-forms",
