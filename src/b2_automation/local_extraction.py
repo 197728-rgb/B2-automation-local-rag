@@ -28,6 +28,7 @@ LOCAL_EVIDENCE_EXTENSIONS = (".pdf", ".txt", ".md", ".markdown", ".json", ".csv"
 DEFAULT_REQUIRED_SUGGESTION_FIELDS = ("facility_name", "date")
 DEFAULT_LOW_CONFIDENCE_THRESHOLD = 0.70
 SAMPLE_EVIDENCE_STEMS = {"evidence_sample", "sample_evidence"}
+PDF_RUN_SAMPLE_EVIDENCE_STEMS = SAMPLE_EVIDENCE_STEMS | {"evidence"}
 
 @dataclass(frozen=True)
 class LocalEvidenceDocument:
@@ -92,18 +93,27 @@ def normalize_review_forms(forms: Iterable[str] | None) -> tuple[str, ...]:
 
 
 def supported_evidence_files(inbox: Path) -> list[Path]:
-    return sorted(
+    files = sorted(
         p
         for p in inbox.iterdir()
         if p.is_file()
         and p.suffix.lower() in LOCAL_EVIDENCE_EXTENSIONS
-        and not _is_sample_evidence_file(p)
     )
+    files = [p for p in files if not _is_sample_evidence_file(p)]
+    has_real_evidence = any(p.suffix.lower() == ".pdf" for p in files)
+    if has_real_evidence:
+        files = [p for p in files if not _is_pdf_run_sample_evidence_file(p)]
+    return files
 
 
 def _is_sample_evidence_file(path: Path) -> bool:
     stem = path.stem.lower()
     return stem in SAMPLE_EVIDENCE_STEMS or "dry_run" in stem or "dry-run" in stem
+
+
+def _is_pdf_run_sample_evidence_file(path: Path) -> bool:
+    stem = path.stem.lower()
+    return stem in PDF_RUN_SAMPLE_EVIDENCE_STEMS or "dry_run" in stem or "dry-run" in stem
 
 
 def extract_local_document(path: Path) -> LocalEvidenceDocument:

@@ -9,7 +9,7 @@ import pytest
 
 from b2_automation.docupipe_client import DocuPipeConfigError, process_pdf
 from b2_automation.inbox_pipeline import run_inbox_pipeline
-from b2_automation.local_extraction import DEFAULT_REVIEW_FORMS
+from b2_automation.local_extraction import DEFAULT_REVIEW_FORMS, supported_evidence_files
 from b2_automation.paths import B24_SHARED_TEMPLATE_DOCX
 
 
@@ -129,6 +129,20 @@ def test_inbox_pipeline_missing_pdf_folder_content_fails_clearly(tmp_path: Path)
     inbox.mkdir()
     with pytest.raises(FileNotFoundError, match="No supported local evidence files found"):
         run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run")
+
+
+def test_pdf_inbox_ignores_tracked_smoke_evidence_txt(tmp_path: Path) -> None:
+    inbox = tmp_path / "inbox"
+    inbox.mkdir()
+    pdf = inbox / "real.pdf"
+    pdf.write_bytes(b"%PDF-1.4\n")
+    (inbox / "evidence.txt").write_text(
+        "Cover Page Facility: Smoke Fixture\nB24 RL2 Date: 2099-01-01\n",
+        encoding="utf-8",
+    )
+    (inbox / "evidence_sample.txt").write_text("sample only", encoding="utf-8")
+
+    assert [p.name for p in supported_evidence_files(inbox)] == [pdf.name]
 
 
 def test_docupipe_live_mode_missing_credentials_fails(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:

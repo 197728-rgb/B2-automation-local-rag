@@ -12,11 +12,13 @@ diff only if needed).
 from __future__ import annotations
 
 import json
+import zipfile
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Mapping
 
 from b2_automation.local_extraction import DEFAULT_REVIEW_FORMS
+from b2_automation.ooxml_writer import _cell_range_for_spec, _find_elements
 
 
 @dataclass(frozen=True)
@@ -92,6 +94,9 @@ def load_exact_approval_bundle_checked(
         return ApprovalMapLoadResult(bundle=None, errors=("approval map has no template_path",))
 
     template_path = (root / str(template_rel)).resolve()
+    physical_cell_errors = _check_duplicate_physical_cells(template_path, fields)
+    if physical_cell_errors:
+        return ApprovalMapLoadResult(bundle=None, errors=tuple(physical_cell_errors))
 
     if not manifest_rel:
         if form_id in DEFAULT_REVIEW_FORMS:
@@ -187,6 +192,34 @@ def _check_duplicate_coordinates(fields: dict[str, Any]) -> list[str]:
             errors.append(f"duplicate coordinate {coord}: {prior!r} and {fid!r} target the same cell")
         else:
             seen[coord] = fid
+    return errors
+
+
+def _check_duplicate_physical_cells(template_path: Path, fields: dict[str, Any]) -> list[str]:
+    """Reject maps where different visual coordinates resolve into one merged DOCX cell."""
+    try:
+        with zipfile.ZipFile(template_path, "r") as z:
+            document_xml = z.read("word/document.xml").decode("utf-8")
+    except Exception:
+        return []
+
+    tables = _find_elements(document_xml, "w:tbl")
+    seen: dict[tuple[int, int], str] = {}
+    errors: list[str] = []
+    for fid, spec in fields.items():
+        if not isinstance(spec, Mapping):
+            continue
+        try:
+            cell_start, cell_end = _cell_range_for_spec(document_xml, tables, spec)
+        except (KeyError, TypeError, ValueError, IndexError) as exc:
+            errors.append(f"{fid}: invalid target cell ({exc})")
+            continue
+        cell_key = (cell_start, cell_end)
+        prior = seen.get(cell_key)
+        if prior is not None and prior != fid:
+            errors.append(f"duplicate physical cell: {prior!r} and {fid!r} resolve to the same merged DOCX cell")
+        else:
+            seen[cell_key] = fid
     return errors
 
 
