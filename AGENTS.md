@@ -46,6 +46,24 @@ Treat these forms equally:
 - Keep raw extraction, chunk, retrieval, and metadata artifacts for traceability.
 - Keep `inputs/`, `outputs/`, `.env`, and `.venv/` out of git.
 
+## Current filled-DOCX baseline
+
+- Treat `c43e215` (`Make filled DOCX values visibly readable`) or any later `main` commit containing it as the minimum baseline for handoff-quality filled DOCX output.
+- Do not use `7adc4f2` alone as the "good filled templates" reference. That commit can write values into DOCX XML while leaving some values inside Word placeholder/content controls, which can make table cells look blank in Word.
+- The current local handoff workflow is:
+
+```powershell
+.\.venv\Scripts\b2.exe inbox --inbox .\inbox --out .\outputs
+```
+
+- The canonical current filled templates are the five `*_filled.docx` files in:
+
+```text
+C:\Projects\B2-automation-local-rag\outputs\filled\
+```
+
+- A good handoff run must report `Status: success`, `Filled DOCX (5 this run)`, passing structure guards, and no required visible table-cell blanks for `B24_RL2`, `B81`, `B89`, `B90`, and `Cover_Page`.
+
 ## Development environment
 
 Python 3.12 preferred.
@@ -65,7 +83,8 @@ python -m venv .venv
 | Run tests | `.\.venv\Scripts\python.exe -m pytest -q --basetemp .pytest-tmp` |
 | CLI version | `.\.venv\Scripts\b2.exe --version` |
 | CLI help | `.\.venv\Scripts\b2.exe inbox --help` |
-| Local inbox review | `.\.venv\Scripts\b2.exe inbox --inbox .\inbox --out .\outputs\local_rag_run` |
+| Current filled B2 handoff | `.\.venv\Scripts\b2.exe inbox --inbox .\inbox --out .\outputs` |
+| Named/debug inbox review | `.\.venv\Scripts\b2.exe inbox --inbox .\inbox --out .\outputs\local_rag_run` |
 | Table maps | `.\.venv\Scripts\b2.exe discover` |
 
 ## Project layout
