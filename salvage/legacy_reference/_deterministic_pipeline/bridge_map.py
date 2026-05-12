@@ -7,7 +7,7 @@ column target with insertion rules. Does NOT extract files or write to Word.
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Literal
 
 import docx
