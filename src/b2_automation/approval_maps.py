@@ -94,6 +94,9 @@ def load_exact_approval_bundle_checked(
         return ApprovalMapLoadResult(bundle=None, errors=("approval map has no template_path",))
 
     template_path = (root / str(template_rel)).resolve()
+    if not template_path.is_file():
+        return ApprovalMapLoadResult(bundle=None, errors=(f"template not found: {template_path}",))
+
     physical_cell_errors = _check_duplicate_physical_cells(template_path, fields)
     if physical_cell_errors:
         return ApprovalMapLoadResult(bundle=None, errors=tuple(physical_cell_errors))
@@ -200,8 +203,12 @@ def _check_duplicate_physical_cells(template_path: Path, fields: dict[str, Any])
     try:
         with zipfile.ZipFile(template_path, "r") as z:
             document_xml = z.read("word/document.xml").decode("utf-8")
-    except Exception:
+    except FileNotFoundError:
+        return [f"template not found: {template_path}"]
+    except (KeyError, zipfile.BadZipFile, UnicodeDecodeError):
         return []
+    except Exception as exc:
+        return [f"unable to inspect template for merged-cell conflicts: {exc}"]
 
     tables = _find_elements(document_xml, "w:tbl")
     seen: dict[tuple[int, int], str] = {}

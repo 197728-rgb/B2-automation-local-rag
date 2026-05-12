@@ -120,6 +120,33 @@ class TestApprovalMapValidation:
         assert result.bundle is None
         assert any("version mismatch" in e for e in result.errors)
 
+
+    def test_missing_template_path_rejects_bundle(self, tmp_path: Path) -> None:
+        (tmp_path / "schemas" / "maps").mkdir(parents=True)
+        (tmp_path / "schemas" / "templates").mkdir(parents=True)
+        (tmp_path / "schemas" / "templates" / "m.json").write_text(
+            json.dumps(
+                {
+                    "template": "t.docx",
+                    "cells": [{"field_id": "x", "table_index": 0, "row": 0, "col": 0, "label": "y"}],
+                }
+            ),
+            encoding="utf-8",
+        )
+        (tmp_path / "schemas" / "maps" / "B24_RL2.json").write_text(
+            json.dumps({
+                "form_id": "B24_RL2",
+                "form_version": "2026",
+                "manifest_path": "schemas/templates/m.json",
+                "template_path": "templates/missing.docx",
+                "fields": {"x": {"field_id": "x", "table_index": 0, "row": 0, "col": 0}},
+            }),
+            encoding="utf-8",
+        )
+        result = load_exact_approval_bundle_checked(tmp_path, "B24_RL2")
+        assert result.bundle is None
+        assert any("template not found" in e for e in result.errors)
+
     def test_duplicate_coordinates_reported(self, tmp_path: Path) -> None:
         (tmp_path / "schemas" / "maps").mkdir(parents=True)
         (tmp_path / "templates").mkdir(parents=True)
