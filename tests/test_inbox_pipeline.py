@@ -175,7 +175,7 @@ def test_inbox_pipeline_blocks_b81_fill_when_review_state_remains(tmp_path: Path
     assert not stale.exists()
 
 
-def test_inbox_pipeline_fills_b81_from_bilingual_station_and_date(tmp_path: Path) -> None:
+def test_inbox_pipeline_blocks_b81_docx_when_only_basic_fields_are_present(tmp_path: Path) -> None:
     root = _repo_root()
     inbox = tmp_path / "inbox"
     inbox.mkdir()
@@ -199,12 +199,16 @@ def test_inbox_pipeline_fills_b81_from_bilingual_station_and_date(tmp_path: Path
     assert selected["facility_name"] == "Taller Mexico FTVM"
     assert selected["date"] == "2025-05-06"
     assert packet["missing_fields"] == []
-    assert result.status == "success"
-    assert result.filled_docx_path is not None
-    assert result.filled_docx_path.name == "B81_filled.docx"
+    manifest = json.loads(result.manifest_path.read_text(encoding="utf-8"))
+    docx = manifest["docx_generation"][0]
+    assert result.status == "review_required"
+    assert docx["status"] == "skipped_review_required"
+    assert "car.mark:MISSING" in "\n".join(docx["blocking_review_reasons"])
+    assert result.filled_docx_path is None
+    assert result.filled_docx_paths == ()
 
 
-def test_inbox_pipeline_fills_b81_from_run_level_required_evidence(tmp_path: Path) -> None:
+def test_inbox_pipeline_blocks_b81_run_level_evidence_when_required_map_fields_are_missing(tmp_path: Path) -> None:
     root = _repo_root()
     inbox = tmp_path / "inbox"
     inbox.mkdir()
@@ -225,8 +229,154 @@ def test_inbox_pipeline_fills_b81_from_run_level_required_evidence(tmp_path: Pat
     assert selected["facility_name"] == "Taller Mexico FTVM"
     assert selected["date"] == "2026-05-05"
     assert packet["missing_fields"] == []
+    manifest = json.loads(result.manifest_path.read_text(encoding="utf-8"))
+    docx = manifest["docx_generation"][0]
+    assert result.status == "review_required"
+    assert docx["status"] == "skipped_review_required"
+    assert "B81" in manifest["review_blocked_forms"]
+    assert result.filled_docx_path is None
+
+
+def test_inbox_pipeline_patches_multiple_b24_mapped_fields(tmp_path: Path) -> None:
+    root = _repo_root()
+    inbox = tmp_path / "inbox"
+    inbox.mkdir()
+    (inbox / "b24_mapped.txt").write_text(
+        "\n".join(
+            [
+                "B24 RL2 MANTENIMIENTO Y MODIFICACION DE LOS CARROS TANQUE RL2",
+                "Estacion/ Station: Taller Mexico FTVM",
+                "Fecha I Date: 06-Mayo-2025",
+                "Car Mark: PROBETA MUESTRA",
+                "Car Number: PAWCT-824",
+                "Car Type: TANK CAR",
+                "pitp_document_name: PC-TC-01",
+                "pitp_id: PC-TC-01",
+                "pitp_approved_by: Casey",
+                "pitp_date_approved: 2026-05-05",
+                "aar_form_4_2_number: AAR-42-001",
+                "four_two_drawing_number: DWG-100",
+                "Specimen plate A516 Grado 70",
+                "test_plate_tank_mtr: MTR-777",
+                "attachment_material: A36",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run", review_forms=("B24_RL2",))
+
+    manifest = json.loads(result.manifest_path.read_text(encoding="utf-8"))
+    docx = manifest["docx_generation"][0]
     assert result.status == "success"
-    assert result.filled_docx_path is not None
+    assert {
+        "facility_name",
+        "tco_permission_date",
+        "tco_written_instructions",
+        "car_mark",
+        "tank_design_spec",
+        "test_plate_tank_material",
+    }.issubset(set(docx["patched_fields"]))
+    review = json.loads(result.review_json_path.read_text(encoding="utf-8"))
+    selected = {row["field_id"]: row["selected_value"] for row in review["form_packets"]["B24_RL2"]["field_decisions"]}
+    assert selected["car_mark"] == "PROBETA MUESTRA PAWCT-824"
+    assert selected["tank_design_spec"] == "TANK CAR"
+
+
+def test_inbox_pipeline_patches_b89_from_docupipe_schema_json(tmp_path: Path) -> None:
+    root = _repo_root()
+    inbox = tmp_path / "inbox"
+    inbox.mkdir()
+    (inbox / "Adobe Scan May 05, 2026.json").write_text(
+        json.dumps(
+            {
+                "activity": {
+                    "code": "B89",
+                    "repairLevel": "RLJ",
+                    "scope": "MANTENIMIENTO, MODIFICACION y CALIFICACION DE SISTEMAS DE SEGURIDAD",
+                },
+                "demonstration": {
+                    "carNumber": "PAWCT-RLJ",
+                    "carType": "TANK CAR",
+                    "station": "Taller Mexico FTVM",
+                },
+                "aar": {"form42Number": "AAR-89-001"},
+                "jacketPatch": {
+                    "specimenPlate": "A36 1/8 in o A1110 cal. 11",
+                    "patchPlateSize": "12 in X 12 in",
+                    "targetFilletSize": "3/16 in filete",
+                },
+                "pitp": "PC-TC-01",
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run", review_forms=("B89",))
+
+    manifest = json.loads(result.manifest_path.read_text(encoding="utf-8"))
+    docx = manifest["docx_generation"][0]
+    assert result.status == "success"
+    assert docx["status"] == "filled"
+    assert {
+        "tco.name",
+        "tco.permission_date",
+        "tco.instructions",
+        "car.mark",
+        "car.design_spec",
+        "safety_system.type",
+        "aar.form_4_2.number",
+        "materials.insulation.spec",
+        "materials.jacket.spec",
+        "test_fixture.patch_plate.size",
+        "test_fixture.weld.length",
+        "pitp.name",
+        "pitp.id",
+    }.issubset(set(docx["patched_fields"]))
+
+
+def test_inbox_pipeline_patches_b90_from_stub_sill_packet_text(tmp_path: Path) -> None:
+    root = _repo_root()
+    inbox = tmp_path / "inbox"
+    inbox.mkdir()
+    (inbox / "b90_packet.txt").write_text(
+        "\n".join(
+            [
+                "B90 Maintenance, Alteration, and Qualification of Tank Car Stub Sills",
+                "Estacion/ Station: Taller Mexico FTVM",
+                "Fecha I Date: 06-Mayo-2025",
+                "MANTENIMIENTO Y MODIFICACION DE STUB SILLS",
+                "Car Mark: PROBETA MUESTRA",
+                "Car Number: PAWCT-B90",
+                "Car Type: TANK CAR",
+                "General Arrangement - D-41759 L056040A",
+                "Specimen plate A572 Grado 50",
+                "Junta de soldaura en T/T-weld joint",
+                "Plan de control PC-TC-01",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run", review_forms=("B90",))
+
+    manifest = json.loads(result.manifest_path.read_text(encoding="utf-8"))
+    docx = manifest["docx_generation"][0]
+    assert result.status == "success"
+    assert docx["status"] == "filled"
+    assert {
+        "tco.name",
+        "tco.permission_date",
+        "tco.instructions",
+        "car.mark",
+        "car.design_spec",
+        "stub_sill.type",
+        "aar.form_4_2.number",
+        "materials.stub_sill.spec",
+        "pitp.name",
+        "pitp.id",
+        "stub_sill.procedure.id",
+    }.issubset(set(docx["patched_fields"]))
 
 
 def test_inbox_pipeline_local_rejects_unknown_review_form(tmp_path: Path) -> None:

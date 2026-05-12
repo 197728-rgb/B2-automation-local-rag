@@ -1,9 +1,110 @@
 {
   "template": "B89_INSULATION_TEST_PLATE.docx",
   "cells": [
-    {"field_id": "facility_name", "table_index": 0, "row": 2, "col": 0, "label": "Tank Car Owner (TCO) Name", "required": true},
-    {"field_id": "date", "table_index": 0, "row": 2, "col": 3, "label": "Date Permission Received from TCO", "required": true},
-    {"field_id": "car_number", "table_index": 0, "row": 5, "col": 0, "label": "Car Mark and Number", "required": true},
-    {"field_id": "evidence_notes", "table_index": 0, "row": 19, "col": 0, "label": "Additional Auditor Objective Evidence/Comments/Notes", "required": false}
+    {
+      "field_id": "tco.name",
+      "table_index": 0,
+      "row": 2,
+      "col": 0,
+      "label": "Tank Car Owner (TCO) Name",
+      "required": true
+    },
+    {
+      "field_id": "tco.permission_date",
+      "table_index": 0,
+      "row": 2,
+      "col": 3,
+      "label": "Date Permission Received from TCO",
+      "required": true
+    },
+    {
+      "field_id": "tco.instructions",
+      "table_index": 0,
+      "row": 2,
+      "col": 5,
+      "label": "Written Instructions from TCO",
+      "required": true
+    },
+    {
+      "field_id": "car.mark",
+      "table_index": 0,
+      "row": 5,
+      "col": 0,
+      "label": "Car Mark and Number",
+      "required": true
+    },
+    {
+      "field_id": "car.design_spec",
+      "table_index": 0,
+      "row": 5,
+      "col": 1,
+      "label": "Tank Car Design Spec/Stencil Spec",
+      "required": true
+    },
+    {
+      "field_id": "safety_system.type",
+      "table_index": 0,
+      "row": 5,
+      "col": 6,
+      "label": "Safety System Type",
+      "required": true
+    },
+    {
+      "field_id": "aar.form_4_2.number",
+      "table_index": 0,
+      "row": 5,
+      "col": 9,
+      "label": "AAR Form 4-2 (AAR No.)",
+      "required": true
+    },
+    {
+      "field_id": "materials.insulation.spec",
+      "table_index": 0,
+      "row": 10,
+      "col": 7,
+      "label": "Insulation Material Specification",
+      "required": true
+    },
+    {
+      "field_id": "materials.jacket.spec",
+      "table_index": 0,
+      "row": 11,
+      "col": 7,
+      "label": "Jacket Material Specification",
+      "required": true
+    },
+    {
+      "field_id": "test_fixture.patch_plate.size",
+      "table_index": 0,
+      "row": 14,
+      "col": 0,
+      "label": "Observed Size of Patch Plate",
+      "required": true
+    },
+    {
+      "field_id": "test_fixture.weld.length",
+      "table_index": 0,
+      "row": 16,
+      "col": 8,
+      "label": "Observed Weld Length",
+      "required": true
+    },
+    {
+      "field_id": "pitp.name",
+      "table_index": 1,
+      "row": 5,
+      "col": 0,
+      "label": "PITP Document Name",
+      "required": true
+    },
+    {
+      "field_id": "pitp.id",
+      "table_index": 1,
+      "row": 5,
+      "col": 14,
+      "label": "PITP ID",
+      "required": true
+    }
   ]
 }
+

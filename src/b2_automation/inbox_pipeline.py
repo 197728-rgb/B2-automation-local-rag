@@ -100,6 +100,20 @@ def _manifest_cells_for_fill(bundle: ApprovalBundle, values: Mapping[str, str]) 
     return {**dict(bundle.manifest), "cells": cells}
 
 
+def _missing_required_approved_fields(bundle: ApprovalBundle, values: Mapping[str, str]) -> list[str]:
+    raw_fields = bundle.approval_map.get("fields") or {}
+    if not isinstance(raw_fields, Mapping):
+        return []
+    missing: list[str] = []
+    for field_id, spec in raw_fields.items():
+        if not isinstance(spec, Mapping) or not bool(spec.get("required")):
+            continue
+        fid = str(field_id)
+        if not str(values.get(fid) or "").strip():
+            missing.append(fid)
+    return sorted(missing)
+
+
 def _write_local_filled_docx(
     *,
     root: Path,
@@ -132,6 +146,13 @@ def _write_local_filled_docx(
             "blocking_review_reasons": blocking,
             "errors": list(load_result.errors),
         }
+        if bundle is not None:
+            missing_required = _missing_required_approved_fields(bundle, values)
+            blocking.extend(
+                f"{field_id}:MISSING (required approval-map field has no FILL decision)"
+                for field_id in missing_required
+            )
+            result["blocking_review_reasons"] = blocking
         if blocking:
             result["status"] = "skipped_review_required"
             result["errors"] = result["errors"] + ["DOCX handoff blocked because reviewer-blocking decisions remain."]
