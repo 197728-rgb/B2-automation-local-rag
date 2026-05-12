@@ -66,6 +66,7 @@ def patch_docx_cells(
     patches: list[tuple[int, int, str, str]] = []
     errors: list[str] = []
     intentional_text_node_creations = 0
+    written_values: set[str] = set()
 
     with zipfile.ZipFile(template_path, "r") as zin:
         document_xml = zin.read("word/document.xml").decode("utf-8")
@@ -93,6 +94,7 @@ def patch_docx_cells(
         )
         if write_value is None:
             continue
+        written_values.add(str(write_value))
 
         try:
             cell_start, cell_end = _cell_range_for_spec(document_xml, tables, spec)
@@ -118,6 +120,7 @@ def patch_docx_cells(
     for start, end, replacement, fid in sorted(patches, key=lambda item: item[0], reverse=True):
         patched_xml = patched_xml[:start] + replacement + patched_xml[end:]
         patched_fields.append(fid)
+    patched_xml = _unwrap_filled_content_controls(patched_xml, written_values)
 
     with zipfile.ZipFile(template_path, "r") as zin, zipfile.ZipFile(
         output_path,
@@ -342,6 +345,27 @@ def _text_ranges(xml: str, cell_start: int, cell_end: int) -> list[tuple[int, in
     if not matches:
         raise ValueError("target cell has no existing w:t text node")
     return [(cell_start + match.start(1), cell_start + match.end(1)) for match in matches]
+
+
+def _unwrap_filled_content_controls(xml: str, written_values: set[str]) -> str:
+    """Keep filled values as ordinary visible runs instead of placeholder SDTs."""
+    values = {_xml_text(value) for value in written_values if value}
+    if not values:
+        return xml
+
+    def replace(match: re.Match[str]) -> str:
+        block = match.group(0)
+        if not any(value in block for value in values):
+            return block
+        content = match.group(1)
+        return re.sub(r"<w:rStyle\b[^>]*\bw:val=\"PlaceholderText\"[^>]*/>", "", content)
+
+    return re.sub(
+        r"<w:sdt(?:\s[^>]*)?>.*?<w:sdtContent>(.*?)</w:sdtContent></w:sdt>",
+        replace,
+        xml,
+        flags=re.DOTALL,
+    )
 
 
 def _paragraph_text_insert_at(xml: str, cell_start: int, cell_end: int) -> int:

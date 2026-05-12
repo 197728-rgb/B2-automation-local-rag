@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 import pytest
+from docx import Document
 
 from b2_automation.docupipe_client import DocuPipeConfigError, process_pdf
 from b2_automation.inbox_pipeline import _clear_scoped_filled_docx, run_inbox_pipeline
@@ -281,6 +282,8 @@ def test_inbox_pipeline_patches_multiple_b24_mapped_fields(tmp_path: Path) -> No
     selected = {row["field_id"]: row["selected_value"] for row in review["form_packets"]["B24_RL2"]["field_decisions"]}
     assert selected["car_mark"] == "PROBETA MUESTRA PAWCT-824"
     assert selected["tank_design_spec"] == "TANK CAR"
+    filled_doc = Document(str(result.filled_docx_path))
+    assert "MANTENIMIENTO Y MODIFICACION" in filled_doc.tables[0].rows[4].cells[8].text
 
 
 def test_inbox_pipeline_patches_b89_from_docupipe_schema_json(tmp_path: Path) -> None:
@@ -333,6 +336,8 @@ def test_inbox_pipeline_patches_b89_from_docupipe_schema_json(tmp_path: Path) ->
         "pitp.name",
         "pitp.id",
     }.issubset(set(docx["patched_fields"]))
+    filled_doc = Document(str(result.filled_docx_path))
+    assert "MANTENIMIENTO, MODIFICACION" in filled_doc.tables[0].rows[2].cells[5].text
 
 
 def test_inbox_pipeline_patches_b90_from_stub_sill_packet_text(tmp_path: Path) -> None:
@@ -377,6 +382,8 @@ def test_inbox_pipeline_patches_b90_from_stub_sill_packet_text(tmp_path: Path) -
         "pitp.id",
         "stub_sill.procedure.id",
     }.issubset(set(docx["patched_fields"]))
+    filled_doc = Document(str(result.filled_docx_path))
+    assert "MANTENIMIENTO Y MODIFICACION" in filled_doc.tables[0].rows[4].cells[5].text
 
 
 def test_inbox_pipeline_local_rejects_unknown_review_form(tmp_path: Path) -> None:
