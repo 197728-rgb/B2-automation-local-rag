@@ -78,3 +78,21 @@ python -m venv .venv
 - `templates/` DOCX form templates
 - `schemas/` template maps and extraction schemas
 - `salvage/` old-tool reference material only
+
+## Cursor Cloud specific instructions
+
+On Linux/Cloud VMs the venv and CLI live under `.venv/bin/` (not `.venv/Scripts/`).
+
+| Task | Command |
+|---|---|
+| Run tests | `.venv/bin/python -m pytest -q` |
+| CLI version | `.venv/bin/b2 --version` |
+| CLI help | `.venv/bin/b2 inbox --help` |
+| Local inbox review | `.venv/bin/b2 inbox --inbox ./inbox --out ./outputs/local_rag_run` |
+| Table maps | `.venv/bin/b2 discover` |
+| Demo output | `.venv/bin/b2 demo` |
+
+- No database, Docker, or external services are required. The entire tool is a local CLI.
+- Tesseract OCR is optional; text-based files (.txt, .md, .json, .csv) and text-layer PDFs work without it. Only scanned/image PDFs need the `tesseract` system binary.
+- The update script creates `.venv` and installs `.[dev]` automatically. After that, all `b2` and `pytest` commands are available immediately.
+- `outputs/` and `inbox/` are gitignored; create them as needed for testing.
