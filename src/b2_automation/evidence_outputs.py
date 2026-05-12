@@ -6,9 +6,8 @@ This module never infers coordinates from retrieval scores.
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any
 
 from b2_automation.approval_maps import load_exact_approval_bundle_checked
 from b2_automation.cell_evidence import DecisionState

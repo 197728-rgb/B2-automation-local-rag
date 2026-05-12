@@ -8,13 +8,8 @@ from pathlib import Path
 import pytest
 from docx import Document
 
-from b2_automation.approval_maps import (
-    ApprovalBundle,
-    load_exact_approval_bundle,
-    load_exact_approval_bundle_checked,
-)
+from b2_automation.approval_maps import load_exact_approval_bundle, load_exact_approval_bundle_checked
 from b2_automation.inbox_pipeline import run_inbox_pipeline
-from b2_automation.local_extraction import DEFAULT_REVIEW_FORMS
 from b2_automation.paths import B24_SHARED_TEMPLATE_DOCX
 
 FIRST_CLASS_FORMS = ("B24_RL2", "B81", "B89", "B90", "Cover_Page")

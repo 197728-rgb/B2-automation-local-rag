@@ -18,7 +18,6 @@ from typing import Any, Iterable
 
 from b2_automation.cell_evidence import DecisionState, FieldDecision
 from b2_automation.decision_engine import decide_fields_for_local_packet, summarize_decisions
-from b2_automation.local_retrieval_constants import FORM_KEYWORDS
 from b2_automation.local_semantic_retrieval import retrieve_chunks_for_form
 from b2_automation.paths import resolve_project_root
 

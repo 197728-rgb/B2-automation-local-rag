@@ -11,7 +11,6 @@ from docx import Document
 from b2_automation.docupipe_client import DocuPipeConfigError, process_pdf
 from b2_automation.inbox_pipeline import _clear_scoped_filled_docx, run_inbox_pipeline
 from b2_automation.local_extraction import DEFAULT_REVIEW_FORMS, supported_evidence_files
-from b2_automation.paths import B24_SHARED_TEMPLATE_DOCX
 
 
 def _repo_root() -> Path:
