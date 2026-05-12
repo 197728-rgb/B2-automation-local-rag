@@ -175,6 +175,60 @@ def test_inbox_pipeline_blocks_b81_fill_when_review_state_remains(tmp_path: Path
     assert not stale.exists()
 
 
+def test_inbox_pipeline_fills_b81_from_bilingual_station_and_date(tmp_path: Path) -> None:
+    root = _repo_root()
+    inbox = tmp_path / "inbox"
+    inbox.mkdir()
+    (inbox / "b81_bilingual.txt").write_text(
+        "\n".join(
+            [
+                "B81 stub sill evidence for tank car repair.",
+                "Estacion/ Station:",
+                "Taller Mexico FTVM",
+                "Fecha I Date: 06-Mayo-2025",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run", review_forms=("B81",))
+
+    review = json.loads(result.review_json_path.read_text(encoding="utf-8"))
+    packet = review["form_packets"]["B81"]
+    selected = {row["field_id"]: row["selected_value"] for row in packet["field_decisions"]}
+    assert selected["facility_name"] == "Taller Mexico FTVM"
+    assert selected["date"] == "2025-05-06"
+    assert packet["missing_fields"] == []
+    assert result.status == "success"
+    assert result.filled_docx_path is not None
+    assert result.filled_docx_path.name == "B81_filled.docx"
+
+
+def test_inbox_pipeline_fills_b81_from_run_level_required_evidence(tmp_path: Path) -> None:
+    root = _repo_root()
+    inbox = tmp_path / "inbox"
+    inbox.mkdir()
+    (inbox / "Adobe Scan May 05, 2026.txt").write_text(
+        "B81 stub sill evidence for tank car repair.",
+        encoding="utf-8",
+    )
+    (inbox / "b24.1.txt").write_text(
+        "B24 RL2 evidence\nEstacion/ Station: Taller Mexico FTVM\n",
+        encoding="utf-8",
+    )
+
+    result = run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run", review_forms=("B81",))
+
+    review = json.loads(result.review_json_path.read_text(encoding="utf-8"))
+    packet = review["form_packets"]["B81"]
+    selected = {row["field_id"]: row["selected_value"] for row in packet["field_decisions"]}
+    assert selected["facility_name"] == "Taller Mexico FTVM"
+    assert selected["date"] == "2026-05-05"
+    assert packet["missing_fields"] == []
+    assert result.status == "success"
+    assert result.filled_docx_path is not None
+
+
 def test_inbox_pipeline_local_rejects_unknown_review_form(tmp_path: Path) -> None:
     root = _repo_root()
     inbox = tmp_path / "inbox"

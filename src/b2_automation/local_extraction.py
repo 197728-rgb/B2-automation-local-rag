@@ -237,9 +237,11 @@ def build_form_packets(
     low_confidence_threshold: float = DEFAULT_LOW_CONFIDENCE_THRESHOLD,
 ) -> dict[str, dict[str, Any]]:
     packets: dict[str, dict[str, Any]] = {}
+    run_level_required = _run_level_required_suggestions(documents, chunks_by_source)
     for form in review_forms:
         retrieved, retrieval_method = retrieve_chunks_for_form(form, documents, chunks_by_source)
         suggestions = _field_suggestions(retrieved, form)
+        suggestions = _with_run_level_required_suggestions(suggestions, run_level_required)
         decisions = decide_fields_for_local_packet(
             retrieved=retrieved,
             suggestions=suggestions,
@@ -266,12 +268,102 @@ def build_form_packets(
     return packets
 
 
+def _with_run_level_required_suggestions(
+    suggestions: list[dict[str, Any]],
+    run_level_required: dict[str, dict[str, Any]],
+) -> list[dict[str, Any]]:
+    present = {str(item.get("field_id")) for item in suggestions}
+    merged = list(suggestions)
+    for field_id in DEFAULT_REQUIRED_SUGGESTION_FIELDS:
+        if field_id not in present and field_id in run_level_required:
+            merged.append(dict(run_level_required[field_id]))
+    return merged
+
+
+def _run_level_required_suggestions(
+    documents: list[LocalEvidenceDocument],
+    chunks_by_source: dict[str, list[dict[str, Any]]],
+) -> dict[str, dict[str, Any]]:
+    candidates: dict[str, list[dict[str, Any]]] = {field: [] for field in DEFAULT_REQUIRED_SUGGESTION_FIELDS}
+    for doc in documents:
+        source_date = _date_from_source_name(doc.source_file)
+        if source_date:
+            candidates["date"].append(
+                {
+                    "field_id": "date",
+                    "candidate_value": source_date,
+                    "confidence": 0.98,
+                    "source_file": doc.source_file,
+                    "chunk_id": 0,
+                    "chunk_hash": None,
+                    "chunk_excerpt": doc.source_file,
+                    "retrieval_score": 6,
+                    "semantic_score": None,
+                    "review_required": True,
+                }
+            )
+        for chunk in chunks_by_source.get(doc.source_file, []):
+            item = {
+                "source_file": doc.source_file,
+                "chunk_id": int(chunk["chunk_id"]),
+                "score": 5,
+                "text": str(chunk.get("text") or ""),
+                "full_text": str(chunk.get("text") or ""),
+                "chunk_excerpt": _preview(str(chunk.get("text") or "")),
+            }
+            for suggestion in _field_suggestions([item]):
+                field_id = str(suggestion.get("field_id"))
+                if field_id in candidates:
+                    candidates[field_id].append(suggestion)
+    return {
+        field_id: _select_run_level_suggestion(field_id, rows)
+        for field_id, rows in candidates.items()
+        if rows
+    }
+
+
+def _select_run_level_suggestion(field_id: str, rows: list[dict[str, Any]]) -> dict[str, Any]:
+    def rank(row: dict[str, Any]) -> tuple[float, int, int, str]:
+        value = str(row.get("candidate_value") or "")
+        source = str(row.get("source_file") or "").lower()
+        confidence = float(row.get("confidence") or 0.0)
+        source_bonus = 2 if any(token in source for token in ("b24", "b81", "b89", "b90", "adobe_scan")) else 0
+        clean_bonus = sum(ch.isalnum() or ch.isspace() or ch == "-" for ch in value)
+        return (confidence, source_bonus, clean_bonus, value)
+
+    best = max(rows, key=rank)
+    return dict(best)
+
+
+def _date_from_source_name(source_file: str) -> str | None:
+    month = (
+        r"jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|"
+        r"jul(?:y)?|aug(?:ust)?|sep(?:t(?:ember)?)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?|"
+        r"ene(?:ro)?|feb(?:rero)?|mar(?:zo)?|abr(?:il)?|mayo|jun(?:io)?|jul(?:io)?|"
+        r"ago(?:sto)?|sept(?:iembre)?|oct(?:ubre)?|nov(?:iembre)?|dic(?:iembre)?"
+    )
+    match = re.search(rf"\b({month})\s+([0-9]{{1,2}}),?\s+([0-9]{{4}})\b", source_file, flags=re.IGNORECASE)
+    if not match:
+        return None
+    return _normalize_date_value(f"{match.group(2)} {match.group(1)} {match.group(3)}")
+
+
 def _field_suggestions(retrieved: list[dict[str, Any]], form: str = "") -> list[dict[str, Any]]:
     suggestions: list[dict[str, Any]] = []
     patterns: list[tuple[str, str]] = [
-        ("facility_name", r"\b(?:facility|company|shop)\s*[:=-]\s*([^\n\r;]{2,80})"),
+        (
+            "facility_name",
+            r"\b(?:facility|company|shop|estaci[oó]n\s*/?\s*station|station|taller|planta)\s*[:=-]\s*([^\n\r;]{2,80})",
+        ),
         ("auditor", r"\b(?:auditor|inspector)\s*[:=-]\s*([^\n\r;]{2,80})"),
-        ("date", r"\b(?:date|inspection date)\s*[:=-]\s*([0-9]{4}-[0-9]{2}-[0-9]{2}|[0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4})"),
+        (
+            "date",
+            r"\b(?:date|inspection date|fecha\s*(?:/|i)?\s*date|fecha)\s*[:=-]\s*"
+            r"([0-9]{4}-[0-9]{2}-[0-9]{2}|[0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4}|"
+            r"[0-9]{1,2}[-\s](?:ene|enero|jan|january|feb|febrero|mar|marzo|apr|abril|abr|"
+            r"may|mayo|jun|junio|jul|julio|aug|agosto|ago|sep|sept|septiembre|oct|octubre|"
+            r"nov|noviembre|dec|dic|diciembre)[-\s][0-9]{2,4})",
+        ),
         ("car_number", r"\b(?:car|car no\.?|car number)\s*[:=-]\s*([A-Z]{2,5}\s*[0-9]{3,8})"),
     ]
     for field in _form_field_definitions(form):
@@ -281,12 +373,14 @@ def _field_suggestions(retrieved: list[dict[str, Any]], form: str = "") -> list[
     seen: set[tuple[str, str]] = set()
     for item in retrieved:
         text = str(item.get("full_text") or item["text"])
+        texts = (text, _compact_match_text(text))
         for field, pattern in patterns:
-            match = re.search(pattern, text, flags=re.IGNORECASE)
+            match = next((m for t in texts if (m := re.search(pattern, t, flags=re.IGNORECASE))), None)
             if not match:
                 continue
             value = match.group(1).strip()
             value = _trim_before_next_field_marker(value)
+            value = _normalize_candidate_value(field, value)
             if not _is_plausible_candidate_value(field, value):
                 continue
             key = (field, value)
@@ -308,6 +402,65 @@ def _field_suggestions(retrieved: list[dict[str, Any]], form: str = "") -> list[
                 }
             )
     return suggestions
+
+
+def _compact_match_text(text: str) -> str:
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def _normalize_candidate_value(field: str, value: str) -> str:
+    cleaned = re.sub(r"\s+", " ", value).strip(" \t\r\n,.;")
+    if field == "date":
+        return _normalize_date_value(cleaned)
+    return cleaned
+
+
+def _normalize_date_value(value: str) -> str:
+    text = re.sub(r"\s+", " ", value).strip()
+    month_map = {
+        "ene": "01",
+        "enero": "01",
+        "jan": "01",
+        "january": "01",
+        "feb": "02",
+        "febrero": "02",
+        "mar": "03",
+        "marzo": "03",
+        "apr": "04",
+        "abril": "04",
+        "abr": "04",
+        "may": "05",
+        "mayo": "05",
+        "jun": "06",
+        "junio": "06",
+        "jul": "07",
+        "julio": "07",
+        "aug": "08",
+        "agosto": "08",
+        "ago": "08",
+        "sep": "09",
+        "sept": "09",
+        "septiembre": "09",
+        "oct": "10",
+        "octubre": "10",
+        "nov": "11",
+        "noviembre": "11",
+        "dec": "12",
+        "dic": "12",
+        "diciembre": "12",
+    }
+    match = re.fullmatch(r"([0-9]{1,2})[-\s]([A-Za-zÁÉÍÓÚáéíóúñÑ]+)[-\s]([0-9]{2,4})", text)
+    if not match:
+        return text
+    day = int(match.group(1))
+    month = month_map.get(match.group(2).lower())
+    if month is None:
+        return text
+    year_raw = match.group(3)
+    year = int(year_raw)
+    if len(year_raw) == 2:
+        year += 2000
+    return f"{year:04d}-{int(month):02d}-{day:02d}"
 
 
 def _deterministic_confidence(field: str, value: str, retrieval_score: int) -> float:
@@ -400,8 +553,9 @@ def _trim_before_next_field_marker(value: str) -> str:
     label_marker = re.search(
         r"\s+(?:"
         r"B24\s+RL2|B81|B89|B90|Cover\s+Page|"
-        r"Inspection\s+Date|Date|Auditor|Inspector|"
-        r"Car(?:\s+No\.?|\s+Number)?|Facility|Company|Shop"
+        r"Inspection\s+Date|Date|Fecha|Auditor|Inspector|"
+        r"Car(?:\s+No\.?|\s+Number|(?:ro)?\s*/\s*Car)?|Tipo\s+de\s+Carro|"
+        r"Facility|Company|Shop|Estaci[oó]n|Station|Taller|Planta"
         r")\s*[:=-]?",
         value,
         flags=re.IGNORECASE,
@@ -415,10 +569,19 @@ def _is_plausible_candidate_value(field: str, value: str) -> bool:
     cleaned = re.sub(r"\s+", " ", value).strip()
     if not cleaned:
         return False
+    if field == "date":
+        return bool(
+            re.fullmatch(
+                r"[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}|[0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4}",
+                cleaned,
+            )
+        )
     if field != "facility_name":
         return True
     lower = cleaned.lower()
     if lower.startswith(("assigned ", "code ", "the ")):
+        return False
+    if lower in {"tank car", "car type", "description", "nominal", "actual"}:
         return False
     if lower.endswith(" for"):
         return False
