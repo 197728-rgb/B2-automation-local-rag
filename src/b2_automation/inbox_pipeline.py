@@ -10,6 +10,7 @@ from typing import Any, Mapping
 
 from b2_automation.approval_maps import ApprovalBundle, load_exact_approval_bundle_checked
 from b2_automation.cell_evidence import DecisionState, parse_decision_state
+from b2_automation.evidence_assistant import build_delta_report, build_role_views, enrich_chunk_metadata, ensure_clause_map_db, write_eval_seed
 from b2_automation.evidence_outputs import build_canonical_evidence_document, build_field_traceability_document
 from b2_automation.local_extraction import (
     DEFAULT_REVIEW_FORMS,
@@ -239,9 +240,34 @@ def _run_local_rag_inbox_pipeline(*, root: Path, inbox: Path, out_dir: Path, rev
     forms = normalize_review_forms(review_forms)
     _clear_scoped_filled_docx(filled_dir, forms)
     documents = [extract_local_document(path) for path in inputs]
-    chunks_by_source = {doc.source_file: chunk_text(doc.text) for doc in documents}
+    chunks_by_source = {}
+    for doc in documents:
+        base_chunks = chunk_text(doc.text)
+        rows = [
+            enrich_chunk_metadata(
+                source_file=doc.source_file,
+                source_sha256=doc.sha256,
+                extracted_at=str(doc.metadata.get("extracted_at") or ""),
+                chunk=c,
+            )
+            for c in base_chunks
+        ]
+        chunks_by_source[doc.source_file] = rows
     packets = build_form_packets(documents, chunks_by_source, forms, low_confidence_threshold=low_confidence_threshold)
     artifact_index = write_local_artifacts(raw_dir=raw_dir, review_dir=review_dir, documents=documents, chunks_by_source=chunks_by_source, packets=packets)
+
+    # Audit-ready indexes and governance artifacts
+    current_doc_index = {doc.source_file: doc.sha256 for doc in documents}
+    index_path = review_dir / "document_index.json"
+    previous_doc_index: dict[str, str] = {}
+    if index_path.is_file():
+        previous_doc_index = json.loads(index_path.read_text(encoding="utf-8"))
+    delta = build_delta_report(previous_index=previous_doc_index, current_index=current_doc_index)
+    (review_dir / "delta_report.json").write_text(json.dumps(delta, indent=2, sort_keys=True), encoding="utf-8")
+    index_path.write_text(json.dumps(current_doc_index, indent=2, sort_keys=True), encoding="utf-8")
+
+    ensure_clause_map_db(review_dir / "regulation_clause_map.sqlite")
+    write_eval_seed(review_dir / "evaluation_seed.json")
 
     review_json = review_dir / "local_rag_review.json"
     review_md = review_dir / "local_rag_review.md"
@@ -271,8 +297,12 @@ def _run_local_rag_inbox_pipeline(*, root: Path, inbox: Path, out_dir: Path, rev
 
     canonical_path = run_dir / "canonical_evidence.json"
     trace_path = run_dir / "field_traceability.json"
-    canonical_path.write_text(json.dumps(build_canonical_evidence_document(forms=forms, packets=packets, docx_results=docx_results, root=root), indent=2, sort_keys=True), encoding="utf-8")
-    trace_path.write_text(json.dumps(build_field_traceability_document(forms=forms, packets=packets, docx_results=docx_results, root=root), indent=2, sort_keys=True), encoding="utf-8")
+    canonical_doc = build_canonical_evidence_document(forms=forms, packets=packets, docx_results=docx_results, root=root)
+    trace_doc = build_field_traceability_document(forms=forms, packets=packets, docx_results=docx_results, root=root)
+    canonical_path.write_text(json.dumps(canonical_doc, indent=2, sort_keys=True), encoding="utf-8")
+    trace_path.write_text(json.dumps(trace_doc, indent=2, sort_keys=True), encoding="utf-8")
+    role_views = build_role_views(canonical=canonical_doc, run_logs=artifact_index)
+    (review_dir / "role_views.json").write_text(json.dumps(role_views, indent=2, sort_keys=True), encoding="utf-8")
 
     review = {
         "generated_at": _utc_now(),
