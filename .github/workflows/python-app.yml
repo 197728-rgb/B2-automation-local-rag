@@ -13,6 +13,9 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      # Opt into Node.js 24 for JS-based actions; avoids Node 20 deprecation warnings.
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - uses: actions/checkout@v5
@@ -32,8 +35,8 @@ jobs:
 
       - name: Lint with flake8
         run: |
-          flake8 . --count --select=E9,F63,F7,F82,F401 --show-source --statistics
-          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+          flake8 src tests scripts --count --select=E9,F63,F7,F82,F401 --show-source --statistics
+          flake8 src tests scripts --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
       - name: Test with pytest when tests exist
         run: |
