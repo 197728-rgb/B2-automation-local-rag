@@ -1,3 +1,0 @@
-Sample audit evidence line for local inbox dry run.
-Company: Example Railroad
-Year: 2025
