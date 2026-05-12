@@ -11,6 +11,10 @@ import csv
 import hashlib
 import json
 import re
+import zipfile
+from email import policy
+from email.parser import BytesParser
+from xml.etree import ElementTree as ET
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -23,7 +27,7 @@ from b2_automation.paths import resolve_project_root
 
 DEFAULT_REVIEW_FORMS = ("B24_RL2", "B81", "B89", "B90", "Cover_Page")
 ALLOWED_REVIEW_FORMS = DEFAULT_REVIEW_FORMS
-LOCAL_EVIDENCE_EXTENSIONS = (".pdf", ".txt", ".md", ".markdown", ".json", ".csv")
+LOCAL_EVIDENCE_EXTENSIONS = (".pdf", ".txt", ".md", ".markdown", ".json", ".csv", ".docx", ".xlsx", ".eml", ".msg", ".log")
 DEFAULT_REQUIRED_SUGGESTION_FIELDS = ("facility_name", "date")
 DEFAULT_LOW_CONFIDENCE_THRESHOLD = 0.70
 SAMPLE_EVIDENCE_STEMS = {"evidence_sample", "sample_evidence"}
@@ -172,6 +176,18 @@ def extract_local_document(path: Path) -> LocalEvidenceDocument:
         method = "local_csv"
     elif suffix == ".pdf":
         text, method = _read_pdf_text(path)
+    elif suffix == ".docx":
+        text = _read_docx_text(path)
+        method = "local_docx"
+    elif suffix == ".xlsx":
+        text = _read_xlsx_text(path)
+        method = "local_xlsx"
+    elif suffix in {".eml", ".msg"}:
+        text = _read_email_text(path)
+        method = "local_email"
+    elif suffix == ".log":
+        text = path.read_text(encoding="utf-8", errors="replace")
+        method = "local_log"
     else:
         raise ValueError(f"Unsupported local evidence file: {path}")
 
@@ -242,6 +258,66 @@ def _ocr_pdf_text(path: Path, fitz_module: Any) -> tuple[str, str]:
         return "", "local_pdf_no_text"
     return "\n\n".join(pages), "local_tesseract_ocr"
 
+
+
+def _read_docx_text(path: Path) -> str:
+    parts: list[str] = []
+    with zipfile.ZipFile(path) as zf:
+        xml = zf.read("word/document.xml")
+    root = ET.fromstring(xml)
+    for node in root.iter():
+        if node.tag.endswith("}t") and node.text:
+            parts.append(node.text)
+    return "\n".join(parts)
+
+
+def _read_xlsx_text(path: Path) -> str:
+    out: list[str] = []
+    with zipfile.ZipFile(path) as zf:
+        shared: list[str] = []
+        if "xl/sharedStrings.xml" in zf.namelist():
+            sroot = ET.fromstring(zf.read("xl/sharedStrings.xml"))
+            for t in sroot.iter():
+                if t.tag.endswith("}t") and t.text:
+                    shared.append(t.text)
+        for name in zf.namelist():
+            if not name.startswith("xl/worksheets/") or not name.endswith(".xml"):
+                continue
+            root = ET.fromstring(zf.read(name))
+            for c in root.iter():
+                if not c.tag.endswith("}c"):
+                    continue
+                ctype = c.attrib.get("t")
+                v = None
+                for child in c:
+                    if child.tag.endswith("}v") and child.text is not None:
+                        v = child.text
+                        break
+                if v is None:
+                    continue
+                if ctype == "s" and v.isdigit() and int(v) < len(shared):
+                    out.append(shared[int(v)])
+                else:
+                    out.append(v)
+    return "\n".join(out)
+
+
+def _read_email_text(path: Path) -> str:
+    with path.open("rb") as f:
+        msg = BytesParser(policy=policy.default).parse(f)
+    parts: list[str] = []
+    if msg.get("subject"):
+        parts.append(f"Subject: {msg.get('subject')}")
+    if msg.get("from"):
+        parts.append(f"From: {msg.get('from')}")
+    if msg.get("to"):
+        parts.append(f"To: {msg.get('to')}")
+    body = msg.get_body(preferencelist=("plain", "html"))
+    if body is not None:
+        parts.append(body.get_content())
+    else:
+        parts.append(msg.as_string())
+    return "\n".join(parts)
 
 def chunk_text(text: str, *, target_chars: int = 900) -> list[dict[str, Any]]:
     cleaned = re.sub(r"\n{3,}", "\n\n", text).strip()
