@@ -10,7 +10,7 @@ from typing import Any, Mapping
 
 from b2_automation.approval_maps import ApprovalBundle, load_exact_approval_bundle_checked
 from b2_automation.cell_evidence import DecisionState, parse_decision_state
-from b2_automation.evidence_assistant import build_delta_report, build_role_views, ensure_clause_map_db, write_eval_seed
+from b2_automation.evidence_assistant import build_delta_report, build_role_views, enrich_chunk_metadata, ensure_clause_map_db, write_eval_seed
 from b2_automation.evidence_outputs import build_canonical_evidence_document, build_field_traceability_document
 from b2_automation.local_extraction import (
     DEFAULT_REVIEW_FORMS,
@@ -243,11 +243,15 @@ def _run_local_rag_inbox_pipeline(*, root: Path, inbox: Path, out_dir: Path, rev
     chunks_by_source = {}
     for doc in documents:
         base_chunks = chunk_text(doc.text)
-        rows = []
-        for c in base_chunks:
-            text = str(c.get("text") or "")
-            import hashlib
-            rows.append({**c, "source_file": doc.source_file, "timestamp": doc.metadata.get("extracted_at"), "confidence": 1.0, "chunk_hash": hashlib.sha256(text.encode("utf-8", errors="replace")).hexdigest()})
+        rows = [
+            enrich_chunk_metadata(
+                source_file=doc.source_file,
+                source_sha256=doc.sha256,
+                extracted_at=str(doc.metadata.get("extracted_at") or ""),
+                chunk=c,
+            )
+            for c in base_chunks
+        ]
         chunks_by_source[doc.source_file] = rows
     packets = build_form_packets(documents, chunks_by_source, forms, low_confidence_threshold=low_confidence_threshold)
     artifact_index = write_local_artifacts(raw_dir=raw_dir, review_dir=review_dir, documents=documents, chunks_by_source=chunks_by_source, packets=packets)
