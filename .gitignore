@@ -32,8 +32,11 @@ Thumbs.db
 
 # Project outputs (keep out of git)
 outputs/
+outputs*.zip
 inputs/
 inbox/
+inbox_txt_only/
+*.log
 
 # Build / packaging
 dist/
