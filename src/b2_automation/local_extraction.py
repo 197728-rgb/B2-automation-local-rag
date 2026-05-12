@@ -258,7 +258,9 @@ def chunk_text(text: str, *, target_chars: int = 900) -> list[dict[str, Any]]:
                 end = boundary
         snippet = cleaned[start:end].strip()
         if snippet:
-            chunks.append({"chunk_id": chunk_id, "start": start, "end": end, "text": snippet})
+            page_match = re.search(r"\[page\s+([0-9]+)\]", snippet, flags=re.IGNORECASE)
+            page = int(page_match.group(1)) if page_match else None
+            chunks.append({"chunk_id": chunk_id, "start": start, "end": end, "text": snippet, "page": page, "section": "body"})
             chunk_id += 1
         start = max(end, start + 1)
     return chunks
