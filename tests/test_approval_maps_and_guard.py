@@ -309,8 +309,9 @@ class TestStructureGuardHandoff:
 
         review = json.loads(result.review_json_path.read_text(encoding="utf-8"))
         assert review.get("structure_guard_failed_forms")
-        discard_detail = review.get("structure_guard_discard_detail") or []
-        assert len(discard_detail) >= 1
+        failed_rows = [item for item in manifest["docx_generation"] if item.get("failure_reason") == "structure_guard_failed"]
+        assert failed_rows
+        assert any("injected" in " ".join(item.get("errors") or ()) for item in failed_rows)
 
         filled_dir = tmp_path / "run" / "filled"
         filled_files = list(filled_dir.glob("*_filled.docx")) if filled_dir.is_dir() else []

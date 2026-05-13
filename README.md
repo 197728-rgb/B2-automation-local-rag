@@ -58,7 +58,7 @@ outputs/local_rag_run/review/*_evidence_packet.json
 outputs/local_rag_run/review/*_review.md
 ```
 
-The local inbox command is review-first when evidence is missing or guarded. When exact per-form approval maps and templates exist, it may emit filled DOCX under the run’s `filled/` directory only if the structure guard passes.
+The inbox command **fills the best extracted value** per approved cell and inserts **`REVIEW_REQUIRED:` text markers** into the DOCX for required map fields that still lack evidence. The run is **`review_required`** when those **manual markers** remain (see `manual_fields` in `run_manifest.json`) or when the **structure guard** fails; it is **`success`** only when there are no manual follow-ups and the guard passes. Filled outputs live under **`<out>/filled/`** (for example `outputs/local_rag_run/filled/`), not a repo-wide `outputs/filled/` folder.
 
 ## Other commands
 
