@@ -111,7 +111,24 @@ def ensure_clause_map_db(path: Path) -> None:
             )
             """
         )
-        con.execute("CREATE VIRTUAL TABLE IF NOT EXISTS requirement_clauses_fts USING fts5(requirement_id, source, clause, obligation, evidence_needed, risk_level, related_docs)")
+        try:
+            con.execute("CREATE VIRTUAL TABLE IF NOT EXISTS requirement_clauses_fts USING fts5(requirement_id, source, clause, obligation, evidence_needed, risk_level, related_docs)")
+        except sqlite3.OperationalError as exc:
+            if "fts5" not in str(exc).lower():
+                raise
+            con.execute(
+                """
+                CREATE TABLE IF NOT EXISTS requirement_clauses_search (
+                    requirement_id TEXT,
+                    source TEXT,
+                    clause TEXT,
+                    obligation TEXT,
+                    evidence_needed TEXT,
+                    risk_level TEXT,
+                    related_docs TEXT
+                )
+                """
+            )
         con.commit()
     finally:
         con.close()
@@ -119,12 +136,17 @@ def ensure_clause_map_db(path: Path) -> None:
 
 def build_role_views(*, canonical: dict[str, Any], run_logs: dict[str, Any]) -> dict[str, Any]:
     fields = canonical.get("fields", [])
+    schema = canonical.get("schema")
+    schema_forms = schema.get("forms") if isinstance(schema, dict) else []
+    forms = canonical.get("forms") or schema_forms or []
+    if not forms:
+        forms = sorted({field.get("form") for field in fields if field.get("form")})
     gaps = [f for f in fields if str(f.get("reviewer_status")) in {"missing", "conflict", "low_confidence", "review_required"}]
     return {
         "auditor": {"citations": canonical.get("citation_evidence", []), "gaps": gaps, "evidence_map": fields},
         "operator": {"instructions": "Use selected values only where reviewer_status is ok.", "fields": [f for f in fields if f.get("reviewer_status") == "ok"]},
-        "admin": {"ingestion_logs": run_logs, "index_health": {"forms": len(canonical.get("forms", [])), "field_count": len(fields)}},
-        "management": {"risk_summary": {"gap_count": len(gaps), "forms": canonical.get("forms", [])}},
+        "admin": {"ingestion_logs": run_logs, "index_health": {"forms": len(forms), "field_count": len(fields)}},
+        "management": {"risk_summary": {"gap_count": len(gaps), "forms": forms}},
     }
 
 

@@ -182,9 +182,12 @@ def extract_local_document(path: Path) -> LocalEvidenceDocument:
     elif suffix == ".xlsx":
         text = _read_xlsx_text(path)
         method = "local_xlsx"
-    elif suffix in {".eml", ".msg"}:
-        text = _read_email_text(path)
-        method = "local_email"
+    elif suffix == ".eml":
+        text = _read_eml_text(path)
+        method = "local_eml"
+    elif suffix == ".msg":
+        text = _read_msg_text(path)
+        method = "local_msg"
     elif suffix == ".log":
         text = path.read_text(encoding="utf-8", errors="replace")
         method = "local_log"
@@ -261,25 +264,38 @@ def _ocr_pdf_text(path: Path, fitz_module: Any) -> tuple[str, str]:
 
 
 def _read_docx_text(path: Path) -> str:
-    parts: list[str] = []
+    paragraphs: list[str] = []
     with zipfile.ZipFile(path) as zf:
         xml = zf.read("word/document.xml")
     root = ET.fromstring(xml)
     for node in root.iter():
-        if node.tag.endswith("}t") and node.text:
-            parts.append(node.text)
-    return "\n".join(parts)
+        if not node.tag.endswith("}p"):
+            continue
+        text = "".join(part.text or "" for part in node.iter() if part.tag.endswith("}t")).strip()
+        if text:
+            paragraphs.append(text)
+    return "\n".join(paragraphs)
+
+
+def _shared_strings(zf: zipfile.ZipFile) -> list[str]:
+    shared: list[str] = []
+    try:
+        root = ET.fromstring(zf.read("xl/sharedStrings.xml"))
+    except KeyError:
+        return shared
+
+    for si in root:
+        if si.tag.endswith("}si"):
+            text_parts = [node.text for node in si.iter() if node.tag.endswith("}t") and node.text]
+            shared.append("".join(text_parts))
+
+    return shared
 
 
 def _read_xlsx_text(path: Path) -> str:
     out: list[str] = []
     with zipfile.ZipFile(path) as zf:
-        shared: list[str] = []
-        if "xl/sharedStrings.xml" in zf.namelist():
-            sroot = ET.fromstring(zf.read("xl/sharedStrings.xml"))
-            for t in sroot.iter():
-                if t.tag.endswith("}t") and t.text:
-                    shared.append(t.text)
+        shared = _shared_strings(zf)
         for name in zf.namelist():
             if not name.startswith("xl/worksheets/") or not name.endswith(".xml"):
                 continue
@@ -287,22 +303,29 @@ def _read_xlsx_text(path: Path) -> str:
             for c in root.iter():
                 if not c.tag.endswith("}c"):
                     continue
-                ctype = c.attrib.get("t")
+                cell_type = c.attrib.get("t")
                 v = None
                 for child in c:
                     if child.tag.endswith("}v") and child.text is not None:
                         v = child.text
                         break
-                if v is None:
-                    continue
-                if ctype == "s" and v.isdigit() and int(v) < len(shared):
-                    out.append(shared[int(v)])
+                if cell_type == "inlineStr":
+                    value = "".join(node.text or "" for node in c.iter() if node.tag.endswith("}t"))
+                elif cell_type == "s" and v is not None:
+                    try:
+                        idx = int(v)
+                    except ValueError:
+                        idx = -1
+                    value = shared[idx] if 0 <= idx < len(shared) else ""
                 else:
-                    out.append(v)
+                    value = v or ""
+                if not value:
+                    continue
+                out.append(value)
     return "\n".join(out)
 
 
-def _read_email_text(path: Path) -> str:
+def _read_eml_text(path: Path) -> str:
     with path.open("rb") as f:
         msg = BytesParser(policy=policy.default).parse(f)
     parts: list[str] = []
@@ -318,6 +341,17 @@ def _read_email_text(path: Path) -> str:
     else:
         parts.append(msg.as_string())
     return "\n".join(parts)
+
+
+def _read_msg_text(path: Path) -> str:
+    try:
+        import extract_msg  # type: ignore[import-not-found]
+    except ImportError as exc:
+        raise RuntimeError("Reading .msg files requires optional local dependency: extract-msg") from exc
+
+    msg = extract_msg.Message(str(path))
+    parts = [msg.subject or "", msg.sender or "", msg.date or "", msg.body or ""]
+    return "\n".join(part for part in parts if part)
 
 def chunk_text(text: str, *, target_chars: int = 900) -> list[dict[str, Any]]:
     cleaned = re.sub(r"\n{3,}", "\n\n", text).strip()
