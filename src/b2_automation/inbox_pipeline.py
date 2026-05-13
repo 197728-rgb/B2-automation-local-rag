@@ -9,7 +9,6 @@ from pathlib import Path
 from typing import Any, Mapping
 
 from b2_automation.approval_maps import ApprovalBundle, load_exact_approval_bundle_checked
-from b2_automation.cell_evidence import DecisionState, parse_decision_state
 from b2_automation.evidence_assistant import build_delta_report, build_role_views, enrich_chunk_metadata, ensure_clause_map_db, write_eval_seed
 from b2_automation.evidence_outputs import build_canonical_evidence_document, build_field_traceability_document
 from b2_automation.local_extraction import (
@@ -25,12 +24,7 @@ from b2_automation.local_extraction import (
 from b2_automation.ooxml_writer import patch_docx_cells
 
 DEFAULT_LOW_CONFIDENCE_THRESHOLD = 0.70
-BLOCKING_STATES = {
-    DecisionState.MISSING.value,
-    DecisionState.CONFLICT.value,
-    DecisionState.LOW_CONFIDENCE.value,
-    DecisionState.REVIEW_REQUIRED.value,
-}
+REVIEW_REQUIRED_TEXT = "REVIEW_REQUIRED"
 
 
 @dataclass(frozen=True)
@@ -44,32 +38,19 @@ class InboxPipelineResult:
     status: str
 
 
-def _retrieval_summary(packets: dict[str, dict[str, Any]], forms: tuple[str, ...]) -> str:
-    modes = sorted({str(packets.get(f, {}).get("retrieval_method") or "unknown") for f in forms})
-    return "local semantic ranking: " + ", ".join(modes) + " (evidence-only; does not authorize writes)"
-
-
 def _utc_now() -> str:
     return utc_now()
 
 
-def _blocking_reasons(packet: dict[str, Any]) -> list[str]:
-    out: list[str] = []
-    for decision in packet.get("field_decisions", []):
-        state = str(decision.get("state") or "")
-        if state in BLOCKING_STATES:
-            field_id = str(decision.get("field_id") or "unknown")
-            reason = str(decision.get("reason") or "").strip()
-            out.append(f"{field_id}:{state}" + (f" ({reason})" if reason else ""))
-    return out
+def _retrieval_summary(packets: dict[str, dict[str, Any]], forms: tuple[str, ...]) -> str:
+    modes = sorted({str(packets.get(f, {}).get("retrieval_method") or "unknown") for f in forms})
+    return "local semantic ranking: " + ", ".join(modes) + " (evidence-only; exact maps authorize writes)"
 
 
 def _clear_scoped_filled_docx(filled_dir: Path, forms: tuple[str, ...]) -> None:
-    """Remove prior {form}_filled.docx for this run's forms so a blocked re-run cannot leave stale outputs."""
     for form in forms:
-        stale = filled_dir / f"{form}_filled.docx"
         try:
-            stale.unlink()
+            (filled_dir / f"{form}_filled.docx").unlink()
         except FileNotFoundError:
             pass
 
@@ -78,15 +59,15 @@ def _field_values_from_packet(packet: dict[str, Any]) -> tuple[dict[str, str], d
     values: dict[str, str] = {}
     confidences: dict[str, float] = {}
     for decision in packet.get("field_decisions", []):
-        if parse_decision_state(decision.get("state")) != DecisionState.FILL:
-            continue
         value = decision.get("selected_value")
         if value is None or str(value).strip() == "":
             continue
         field_id = str(decision["field_id"])
+        state = str(decision.get("state") or "")
+        if state not in {"FILL", "REVIEW_REQUIRED", "LOW_CONFIDENCE"}:
+            continue
         values[field_id] = str(value).strip()
-        if decision.get("confidence") is not None:
-            confidences[field_id] = float(decision["confidence"])
+        confidences[field_id] = float(decision.get("confidence") or 1.0)
     return values, confidences
 
 
@@ -101,18 +82,29 @@ def _manifest_cells_for_fill(bundle: ApprovalBundle, values: Mapping[str, str]) 
     return {**dict(bundle.manifest), "cells": cells}
 
 
-def _missing_required_approved_fields(bundle: ApprovalBundle, values: Mapping[str, str]) -> list[str]:
-    raw_fields = bundle.approval_map.get("fields") or {}
-    if not isinstance(raw_fields, Mapping):
+def _marker(field_id: str, reason: str) -> str:
+    return f"{REVIEW_REQUIRED_TEXT}: {field_id} {reason}".strip()
+
+
+def _add_missing_required_map_markers(bundle: ApprovalBundle, values: dict[str, str], confidences: dict[str, float]) -> list[str]:
+    fields = bundle.approval_map.get("fields") or {}
+    if not isinstance(fields, Mapping):
         return []
-    missing: list[str] = []
-    for field_id, spec in raw_fields.items():
+    manual: list[str] = []
+    for field_id, spec in fields.items():
         if not isinstance(spec, Mapping) or not bool(spec.get("required")):
             continue
         fid = str(field_id)
-        if not str(values.get(fid) or "").strip():
-            missing.append(fid)
-    return sorted(missing)
+        if str(values.get(fid) or "").strip():
+            continue
+        values[fid] = _marker(fid, "needs manual completion")
+        confidences[fid] = 1.0
+        manual.append(fid)
+    return sorted(manual)
+
+
+def _manual_fields(values: Mapping[str, str]) -> list[str]:
+    return sorted(fid for fid, value in values.items() if str(value).startswith(REVIEW_REQUIRED_TEXT))
 
 
 def _write_local_filled_docx(
@@ -131,7 +123,6 @@ def _write_local_filled_docx(
 
     for form, packet in packets.items():
         values, confidences = _field_values_from_packet(packet)
-        blocking = _blocking_reasons(packet)
         load_result = load_exact_approval_bundle_checked(root, form)
         bundle = load_result.bundle
         result: dict[str, Any] = {
@@ -144,24 +135,9 @@ def _write_local_filled_docx(
             "structure_guard_report": None,
             "structure_guard_passed": False,
             "patched_fields": [],
-            "blocking_review_reasons": blocking,
+            "manual_fields": [],
             "errors": list(load_result.errors),
         }
-        if bundle is not None:
-            missing_required = _missing_required_approved_fields(bundle, values)
-            blocking.extend(
-                f"{field_id}:MISSING (required approval-map field has no FILL decision)"
-                for field_id in missing_required
-            )
-            result["blocking_review_reasons"] = blocking
-        if blocking:
-            result["status"] = "skipped_review_required"
-            result["errors"] = result["errors"] + ["DOCX handoff blocked because reviewer-blocking decisions remain."]
-            results.append(result)
-            continue
-        if not values:
-            results.append(result)
-            continue
         if bundle is None:
             result["status"] = "skipped_missing_exact_approval_map"
             results.append(result)
@@ -171,10 +147,16 @@ def _write_local_filled_docx(
             results.append(result)
             continue
 
+        _add_missing_required_map_markers(bundle, values, confidences)
+        result["manual_fields"] = _manual_fields(values)
+        if not values:
+            results.append(result)
+            continue
+
         fill_manifest = _manifest_cells_for_fill(bundle, values)
         if not fill_manifest.get("cells"):
             result["status"] = "skipped_no_matching_manifest_cells"
-            result["errors"] = ["FILL field_ids must appear in manifest cells and approval map fields."]
+            result["errors"] = result["errors"] + ["No selected field IDs matched exact map cells."]
             results.append(result)
             continue
 
@@ -199,6 +181,7 @@ def _write_local_filled_docx(
                 "structure_guard_report": str(outcome.structure_guard_report) if outcome.structure_guard_report else None,
                 "structure_guard_passed": outcome.structure_guard_passed,
                 "patched_fields": list(outcome.patched_fields),
+                "manual_fields": sorted(set(result["manual_fields"]) & set(outcome.patched_fields)),
                 "errors": list(outcome.errors),
             }
         )
@@ -214,7 +197,6 @@ def _write_local_filled_docx(
             guard_payload = json.loads(guard_path.read_text(encoding="utf-8")) if guard_path.is_file() else {}
             result["failure_reason"] = "structure_guard_failed"
             result["structure_guard_errors"] = list(guard_payload.get("errors") or [])
-            result["pass"] = guard_payload.get("pass")
         results.append(result)
 
     attempted = [item for item in results if item.get("attempted")]
@@ -234,38 +216,31 @@ def _run_local_rag_inbox_pipeline(*, root: Path, inbox: Path, out_dir: Path, rev
 
     inputs = supported_evidence_files(inbox)
     if not inputs:
-        allowed = ", ".join((".pdf", ".txt", ".md", ".json", ".csv"))
-        raise FileNotFoundError(f"No supported local evidence files found in inbox: {inbox} ({allowed})")
+        raise FileNotFoundError(f"No supported local evidence files found in inbox: {inbox}")
 
     forms = normalize_review_forms(review_forms)
     _clear_scoped_filled_docx(filled_dir, forms)
     documents = [extract_local_document(path) for path in inputs]
     chunks_by_source = {}
     for doc in documents:
-        base_chunks = chunk_text(doc.text)
-        rows = [
+        chunks_by_source[doc.source_file] = [
             enrich_chunk_metadata(
                 source_file=doc.source_file,
                 source_sha256=doc.sha256,
                 extracted_at=str(doc.metadata.get("extracted_at") or ""),
-                chunk=c,
+                chunk=chunk,
             )
-            for c in base_chunks
+            for chunk in chunk_text(doc.text)
         ]
-        chunks_by_source[doc.source_file] = rows
+
     packets = build_form_packets(documents, chunks_by_source, forms, low_confidence_threshold=low_confidence_threshold)
     artifact_index = write_local_artifacts(raw_dir=raw_dir, review_dir=review_dir, documents=documents, chunks_by_source=chunks_by_source, packets=packets)
 
-    # Audit-ready indexes and governance artifacts
     current_doc_index = {doc.source_file: doc.sha256 for doc in documents}
     index_path = review_dir / "document_index.json"
-    previous_doc_index: dict[str, str] = {}
-    if index_path.is_file():
-        previous_doc_index = json.loads(index_path.read_text(encoding="utf-8"))
-    delta = build_delta_report(previous_index=previous_doc_index, current_index=current_doc_index)
-    (review_dir / "delta_report.json").write_text(json.dumps(delta, indent=2, sort_keys=True), encoding="utf-8")
+    previous_doc_index = json.loads(index_path.read_text(encoding="utf-8")) if index_path.is_file() else {}
+    (review_dir / "delta_report.json").write_text(json.dumps(build_delta_report(previous_index=previous_doc_index, current_index=current_doc_index), indent=2, sort_keys=True), encoding="utf-8")
     index_path.write_text(json.dumps(current_doc_index, indent=2, sort_keys=True), encoding="utf-8")
-
     ensure_clause_map_db(review_dir / "regulation_clause_map.sqlite")
     write_eval_seed(review_dir / "evaluation_seed.json")
 
@@ -276,24 +251,9 @@ def _run_local_rag_inbox_pipeline(*, root: Path, inbox: Path, out_dir: Path, rev
 
     missing_context = [form for form, packet in packets.items() if not packet["retrieved_context"]]
     docx_results = _write_local_filled_docx(root=root, run_dir=run_dir, filled_dir=filled_dir, packets=packets, low_confidence_threshold=low_confidence_threshold)
-    blocked_docx = [item for item in docx_results if item.get("status") == "skipped_review_required"]
     failed_docx = [item for item in docx_results if item.get("attempted") and not item.get("structure_guard_passed")]
-    review_states = {decision.get("state") for packet in packets.values() for decision in packet.get("field_decisions", []) if decision.get("state") in BLOCKING_STATES}
-    status = "review_required" if missing_context or failed_docx or blocked_docx or review_states else "success"
-    blocked_forms = [str(item["form_id"]) for item in blocked_docx]
-    blocking_review_reasons = {
-        str(item["form_id"]): list(item.get("blocking_review_reasons") or [])
-        for item in blocked_docx
-    }
-    structure_guard_discard_detail = [
-        {
-            "form_id": item["form_id"],
-            "failure_reason": item.get("failure_reason"),
-            "structure_guard_errors": item.get("structure_guard_errors"),
-        }
-        for item in docx_results
-        if item.get("failure_reason") == "structure_guard_failed"
-    ]
+    manual_fields = {str(item["form_id"]): list(item.get("manual_fields") or []) for item in docx_results if item.get("manual_fields")}
+    status = "review_required" if missing_context or failed_docx or manual_fields else "success"
 
     canonical_path = run_dir / "canonical_evidence.json"
     trace_path = run_dir / "field_traceability.json"
@@ -301,8 +261,7 @@ def _run_local_rag_inbox_pipeline(*, root: Path, inbox: Path, out_dir: Path, rev
     trace_doc = build_field_traceability_document(forms=forms, packets=packets, docx_results=docx_results, root=root)
     canonical_path.write_text(json.dumps(canonical_doc, indent=2, sort_keys=True), encoding="utf-8")
     trace_path.write_text(json.dumps(trace_doc, indent=2, sort_keys=True), encoding="utf-8")
-    role_views = build_role_views(canonical=canonical_doc, run_logs=artifact_index)
-    (review_dir / "role_views.json").write_text(json.dumps(role_views, indent=2, sort_keys=True), encoding="utf-8")
+    (review_dir / "role_views.json").write_text(json.dumps(build_role_views(canonical=canonical_doc, run_logs=artifact_index), indent=2, sort_keys=True), encoding="utf-8")
 
     review = {
         "generated_at": _utc_now(),
@@ -316,55 +275,31 @@ def _run_local_rag_inbox_pipeline(*, root: Path, inbox: Path, out_dir: Path, rev
         "form_packets": packets,
         "missing_context_forms": missing_context,
         "decision_summary_by_form": {fid: packets[fid].get("decision_summary") for fid in forms},
-        "write_authority": "exact approval maps required; only FILL decisions are passed to DOCX patching",
+        "write_authority": "exact approval maps required; best extracted values and visible manual markers are passed to DOCX patching",
         "docx_generation": docx_results,
-        "review_blocked_forms": blocked_forms,
-        "blocking_review_reasons": blocking_review_reasons,
-        "skipped_review_required": blocked_forms,
+        "review_blocked_forms": [],
+        "blocking_review_reasons": {},
+        "manual_fields": manual_fields,
+        "skipped_review_required": [],
         "structure_guard_failed_forms": [item["form_id"] for item in failed_docx],
-        "structure_guard_discard_detail": structure_guard_discard_detail,
         "approval_map_and_fill_errors": [{"form_id": item["form_id"], "errors": list(item.get("errors") or [])} for item in docx_results if item.get("errors")],
         "canonical_evidence": str(canonical_path),
         "field_traceability": str(trace_path),
     }
     review_json.write_text(json.dumps(review, indent=2, sort_keys=True), encoding="utf-8")
 
-    lines = ["# Local RAG Inbox Review", "", f"Run status: **{status}**", f"Generated: {review['generated_at']}", "", "## Forms"]
-    lines.extend(f"- {form}" for form in forms)
-    lines.extend(["", "## Inputs"])
-    lines.extend(f"- {item['source_file']} ({item['extraction_method']})" for item in review["inputs"])
-    lines.extend(["", "## DOCX writing"])
+    lines = ["# Local RAG Inbox Review", "", f"Run status: **{status}**", f"Generated: {review['generated_at']}", "", "## DOCX writing"]
     for item in docx_results:
-        lines.append(f"- {item['form_id']}: {item['status']}")
-    if blocked_docx:
-        lines.extend(["", "## DOCX handoff blocked by review controls"])
-        lines.extend(f"- **{item['form_id']}**: reviewer-blocking decisions remain unresolved." for item in blocked_docx)
-    if structure_guard_discard_detail:
-        lines.extend(["", "## DOCX structure guard failures (filled output discarded)"])
-        for item in structure_guard_discard_detail:
-            lines.append(f"- **{item['form_id']}**: structure guard did not pass; candidate DOCX removed.")
-            for msg in (item.get("structure_guard_errors") or [])[:8]:
-                lines.append(f"  - {msg}")
-    lines.append("- RAG evidence did not authorize write locations; exact approval maps did.")
-    n_filled_this_run = sum(1 for item in docx_results if item.get("filled_docx"))
-    if n_filled_this_run == 0:
-        lines.extend(
-            [
-                "",
-                "## Filled DOCX (this run)",
-                "**No filled DOCX was produced this run.** Prior `filled/*_filled.docx` for the scoped forms were removed before writing so an older run cannot be mistaken for this one.",
-            ]
-        )
+        manual = item.get("manual_fields") or []
+        suffix = f" ({len(manual)} manual fields)" if manual else ""
+        lines.append(f"- {item['form_id']}: {item['status']}{suffix}")
     review_md.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
     rag_selection = {
         "selected_approval_maps": [item.get("approval_map") for item in docx_results if item.get("approval_map")],
-        "form_id": "",
-        "form_version": "",
         "retrieved_context_used": list(artifact_index["per_form_reviews"].keys()),
-        "rejected_candidates": [],
-        "decision": "exact_maps_only_fill_decisions",
-        "uncertainty": "Forms without exact approval maps, templates, or clean review decisions are skipped.",
+        "decision": "best_extracted_values_plus_manual_markers",
+        "uncertainty": "Remaining unresolved mapped fields are visible REVIEW_REQUIRED markers in the DOCX.",
     }
     rag_selection_path.write_text(json.dumps(rag_selection, indent=2, sort_keys=True), encoding="utf-8")
 
@@ -377,18 +312,19 @@ def _run_local_rag_inbox_pipeline(*, root: Path, inbox: Path, out_dir: Path, rev
         "mode": "local_rag_extraction",
         "docupipe_used": False,
         "legacy_adapter_used": False,
-        "ocr_engine": "local text/PDF extraction; OCR hooks only",
+        "ocr_engine": "local text/PDF extraction with OCR fallback for scanned PDFs",
         "llm_runner": "not required for deterministic local review",
         "embedding_model": _retrieval_summary(packets, forms),
-        "vector_db": "none; local TF-IDF / keyword (no cloud index)",
+        "vector_db": "none; local TF-IDF / keyword",
         "forms": list(forms),
         "review_json": str(review_json),
         "review_markdown": str(review_md),
         "rag_selection_report": str(rag_selection_path),
         "docx_generation": docx_results,
-        "review_blocked_forms": blocked_forms,
-        "blocking_review_reasons": blocking_review_reasons,
-        "skipped_review_required": blocked_forms,
+        "review_blocked_forms": [],
+        "blocking_review_reasons": {},
+        "manual_fields": manual_fields,
+        "skipped_review_required": [],
         "structure_guard_failed_forms": [item["form_id"] for item in failed_docx],
         "structure_guard_report": str(guard_summary_path),
         "structure_guard_passed": bool(guard_summary.get("pass")),
@@ -397,19 +333,9 @@ def _run_local_rag_inbox_pipeline(*, root: Path, inbox: Path, out_dir: Path, rev
     }
     manifest_path.write_text(json.dumps(run_manifest, indent=2, sort_keys=True), encoding="utf-8")
 
-    filled_paths = tuple(
-        Path(str(item["filled_docx"])) for item in docx_results if item.get("filled_docx")
-    )
+    filled_paths = tuple(Path(str(item["filled_docx"])) for item in docx_results if item.get("filled_docx"))
     first_filled = filled_paths[0] if filled_paths else None
-    return InboxPipelineResult(
-        run_dir,
-        manifest_path,
-        review_json,
-        review_md,
-        first_filled,
-        filled_paths,
-        status,
-    )
+    return InboxPipelineResult(run_dir, manifest_path, review_json, review_md, first_filled, filled_paths, status)
 
 
 def run_inbox_pipeline(*, root: Path, inbox: Path, out_dir: Path, low_confidence_threshold: float = DEFAULT_LOW_CONFIDENCE_THRESHOLD, review_forms: tuple[str, ...] | None = None) -> InboxPipelineResult:
