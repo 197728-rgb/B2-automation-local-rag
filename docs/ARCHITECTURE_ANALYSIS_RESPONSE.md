@@ -154,8 +154,8 @@ Design quality: strong separation between raw extraction and downstream interpre
 
 Modes:
 
-1. Lexical matching (default)
-2. Semantic similarity (optional extra dependencies)
+1. TF-IDF ranking by default (`sklearn_tfidf` or local TF-IDF cosine)
+2. Keyword/lexical retrieval as fallback when scores are empty or non-positive
 
 Optional dependencies:
 
@@ -179,7 +179,7 @@ Improvement opportunities:
 States:
 
 - FILL
-- REVIEW_REQUIRED
+- LOW_CONFIDENCE
 - CONFLICT
 - MISSING
 - BLANK
@@ -187,7 +187,7 @@ States:
 Example decision logic:
 
 - Multiple high-confidence conflicting values → CONFLICT
-- Low-confidence suggestion → REVIEW_REQUIRED
+- Low-confidence suggestion → LOW_CONFIDENCE
 - No evidence for required field → MISSING
 - Single high-confidence value → FILL
 
