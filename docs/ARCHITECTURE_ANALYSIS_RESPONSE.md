@@ -188,6 +188,7 @@ Example decision logic:
 
 - Multiple high-confidence conflicting values → CONFLICT
 - Low-confidence suggestion → REVIEW_REQUIRED
+- Low-confidence suggestion → LOW_CONFIDENCE
 - No evidence for required field → MISSING
 - Single high-confidence value → FILL
 
