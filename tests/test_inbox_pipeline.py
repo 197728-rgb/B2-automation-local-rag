@@ -107,7 +107,7 @@ def test_inbox_pipeline_local_default_generates_all_form_packets(tmp_path: Path)
 
     run_dir = tmp_path / "run"
     assert not list((run_dir / "raw").glob("*.docupipe.json"))
-    assert (run_dir / "raw" / "packet_one.extracted_text.json").is_file()
+    assert (run_dir / "raw" / "packet_one.ocr.json").is_file()
     assert (run_dir / "raw" / "packet_one.metadata.json").is_file()
     assert (run_dir / "raw" / "packet_one.chunks.json").is_file()
     assert (run_dir / "raw" / "local_rag_retrieval.json").is_file()
