@@ -17,6 +17,25 @@ def _repo_root() -> Path:
     return Path(__file__).resolve().parents[1]
 
 
+def _manifest(result: object) -> dict[str, object]:
+    return json.loads(result.manifest_path.read_text(encoding="utf-8"))
+
+
+def _review(result: object) -> dict[str, object]:
+    return json.loads(result.review_json_path.read_text(encoding="utf-8"))
+
+
+def _docx_text(path: Path) -> str:
+    doc = Document(str(path))
+    parts: list[str] = []
+    for table in doc.tables:
+        for row in table.rows:
+            for cell in row.cells:
+                if cell.text:
+                    parts.append(cell.text)
+    return "\n".join(parts)
+
+
 def test_inbox_pipeline_local_default_generates_all_form_packets(tmp_path: Path) -> None:
     root = _repo_root()
     inbox = tmp_path / "inbox"
@@ -45,7 +64,7 @@ def test_inbox_pipeline_local_default_generates_all_form_packets(tmp_path: Path)
     result = run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run")
 
     sample_tpl = root / "templates" / "B24_RL2.docx"
-    run_manifest_data = json.loads(result.manifest_path.read_text(encoding="utf-8"))
+    run_manifest_data = _manifest(result)
     assert result.status in {"success", "review_required"}
     if sample_tpl.is_file():
         guard = json.loads((tmp_path / "run" / "structure_guard_report.json").read_text(encoding="utf-8"))
@@ -71,8 +90,8 @@ def test_inbox_pipeline_local_default_generates_all_form_packets(tmp_path: Path)
     assert (run_dir / "raw" / "local_rag_retrieval.json").is_file()
     assert (run_dir / "rag_selection_report.json").is_file()
 
-    review = json.loads(result.review_json_path.read_text(encoding="utf-8"))
-    manifest = json.loads(result.manifest_path.read_text(encoding="utf-8"))
+    review = _review(result)
+    manifest = _manifest(result)
     assert review["docupipe_used"] is False
     assert manifest["docupipe_used"] is False
     assert manifest["legacy_adapter_used"] is False
@@ -129,7 +148,7 @@ def test_clear_scoped_filled_docx_removes_stale_outputs(tmp_path: Path) -> None:
     assert untouched.is_file()
 
 
-def test_inbox_pipeline_blocks_b81_fill_when_review_state_remains(tmp_path: Path) -> None:
+def test_inbox_pipeline_fills_b81_with_manual_markers_when_required_values_are_missing(tmp_path: Path) -> None:
     root = _repo_root()
     inbox = tmp_path / "inbox"
     inbox.mkdir()
@@ -157,25 +176,26 @@ def test_inbox_pipeline_blocks_b81_fill_when_review_state_remains(tmp_path: Path
         low_confidence_threshold=0.0,
     )
 
-    manifest = json.loads(result.manifest_path.read_text(encoding="utf-8"))
-    review = json.loads(result.review_json_path.read_text(encoding="utf-8"))
+    manifest = _manifest(result)
+    review = _review(result)
     b81_docx = next(item for item in manifest["docx_generation"] if item["form_id"] == "B81")
     b81_decisions = review["form_packets"]["B81"]["field_decisions"]
 
     assert result.status == "review_required"
     assert any(row["state"] == "FILL" for row in b81_decisions)
-    assert any(row["state"] in {"MISSING", "CONFLICT", "LOW_CONFIDENCE", "REVIEW_REQUIRED"} for row in b81_decisions)
-    assert b81_docx["status"] == "skipped_review_required"
-    assert b81_docx["filled_docx"] is None
-    assert "B81" in manifest["review_blocked_forms"]
-    assert manifest["skipped_review_required"] == ["B81"]
-    assert manifest["blocking_review_reasons"]["B81"]
-    assert result.filled_docx_path is None
-    assert result.filled_docx_paths == ()
-    assert not stale.exists()
+    assert b81_docx["status"] == "filled"
+    assert b81_docx["filled_docx"] is not None
+    assert Path(str(b81_docx["filled_docx"])).is_file()
+    assert manifest["review_blocked_forms"] == []
+    assert manifest["skipped_review_required"] == []
+    assert "B81" in manifest["manual_fields"]
+    assert "car.mark" in manifest["manual_fields"]["B81"]
+    assert stale.exists()
+    assert stale.stat().st_size > 4
+    assert "REVIEW_REQUIRED" in _docx_text(stale)
 
 
-def test_inbox_pipeline_blocks_b81_docx_when_only_basic_fields_are_present(tmp_path: Path) -> None:
+def test_inbox_pipeline_fills_b81_docx_when_only_basic_fields_are_present(tmp_path: Path) -> None:
     root = _repo_root()
     inbox = tmp_path / "inbox"
     inbox.mkdir()
@@ -193,22 +213,23 @@ def test_inbox_pipeline_blocks_b81_docx_when_only_basic_fields_are_present(tmp_p
 
     result = run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run", review_forms=("B81",))
 
-    review = json.loads(result.review_json_path.read_text(encoding="utf-8"))
+    review = _review(result)
     packet = review["form_packets"]["B81"]
     selected = {row["field_id"]: row["selected_value"] for row in packet["field_decisions"]}
     assert selected["facility_name"] == "Taller Mexico FTVM"
     assert selected["date"] == "2025-05-06"
     assert packet["missing_fields"] == []
-    manifest = json.loads(result.manifest_path.read_text(encoding="utf-8"))
+    manifest = _manifest(result)
     docx = manifest["docx_generation"][0]
     assert result.status == "review_required"
-    assert docx["status"] == "skipped_review_required"
-    assert "car.mark:MISSING" in "\n".join(docx["blocking_review_reasons"])
-    assert result.filled_docx_path is None
-    assert result.filled_docx_paths == ()
+    assert docx["status"] == "filled"
+    assert result.filled_docx_path is not None
+    assert result.filled_docx_paths
+    assert "car.mark" in manifest["manual_fields"]["B81"]
+    assert "REVIEW_REQUIRED" in _docx_text(result.filled_docx_path)
 
 
-def test_inbox_pipeline_blocks_b81_run_level_evidence_when_required_map_fields_are_missing(tmp_path: Path) -> None:
+def test_inbox_pipeline_fills_b81_run_level_evidence_with_manual_markers(tmp_path: Path) -> None:
     root = _repo_root()
     inbox = tmp_path / "inbox"
     inbox.mkdir()
@@ -223,18 +244,18 @@ def test_inbox_pipeline_blocks_b81_run_level_evidence_when_required_map_fields_a
 
     result = run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run", review_forms=("B81",))
 
-    review = json.loads(result.review_json_path.read_text(encoding="utf-8"))
+    review = _review(result)
     packet = review["form_packets"]["B81"]
     selected = {row["field_id"]: row["selected_value"] for row in packet["field_decisions"]}
     assert selected["facility_name"] == "Taller Mexico FTVM"
     assert selected["date"] == "2026-05-05"
     assert packet["missing_fields"] == []
-    manifest = json.loads(result.manifest_path.read_text(encoding="utf-8"))
+    manifest = _manifest(result)
     docx = manifest["docx_generation"][0]
     assert result.status == "review_required"
-    assert docx["status"] == "skipped_review_required"
-    assert "B81" in manifest["review_blocked_forms"]
-    assert result.filled_docx_path is None
+    assert docx["status"] == "filled"
+    assert result.filled_docx_path is not None
+    assert "B81" in manifest["manual_fields"]
 
 
 def test_inbox_pipeline_patches_multiple_b24_mapped_fields(tmp_path: Path) -> None:
@@ -266,7 +287,7 @@ def test_inbox_pipeline_patches_multiple_b24_mapped_fields(tmp_path: Path) -> No
 
     result = run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run", review_forms=("B24_RL2",))
 
-    manifest = json.loads(result.manifest_path.read_text(encoding="utf-8"))
+    manifest = _manifest(result)
     docx = manifest["docx_generation"][0]
     assert result.status == "success"
     assert {
@@ -277,7 +298,7 @@ def test_inbox_pipeline_patches_multiple_b24_mapped_fields(tmp_path: Path) -> No
         "tank_design_spec",
         "test_plate_tank_material",
     }.issubset(set(docx["patched_fields"]))
-    review = json.loads(result.review_json_path.read_text(encoding="utf-8"))
+    review = _review(result)
     selected = {row["field_id"]: row["selected_value"] for row in review["form_packets"]["B24_RL2"]["field_decisions"]}
     assert selected["car_mark"] == "PROBETA MUESTRA PAWCT-824"
     assert selected["tank_design_spec"] == "TANK CAR"
@@ -316,7 +337,7 @@ def test_inbox_pipeline_patches_b89_from_docupipe_schema_json(tmp_path: Path) ->
 
     result = run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run", review_forms=("B89",))
 
-    manifest = json.loads(result.manifest_path.read_text(encoding="utf-8"))
+    manifest = _manifest(result)
     docx = manifest["docx_generation"][0]
     assert result.status == "success"
     assert docx["status"] == "filled"
@@ -364,7 +385,7 @@ def test_inbox_pipeline_patches_b90_from_stub_sill_packet_text(tmp_path: Path) -
 
     result = run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run", review_forms=("B90",))
 
-    manifest = json.loads(result.manifest_path.read_text(encoding="utf-8"))
+    manifest = _manifest(result)
     docx = manifest["docx_generation"][0]
     assert result.status == "success"
     assert docx["status"] == "filled"
