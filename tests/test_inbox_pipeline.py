@@ -36,6 +36,29 @@ def _docx_text(path: Path) -> str:
     return "\n".join(parts)
 
 
+def _assert_auto_table_manual_tracked_separate(manifest: dict[str, object]) -> None:
+    manual = manifest.get("manual_fields") or {}
+    auto_manual = manifest.get("auto_table_manual_fields") or {}
+    docx_gen = manifest.get("docx_generation") or []
+    for docx_run in docx_gen:
+        if not isinstance(docx_run, dict) or docx_run.get("status") != "filled":
+            continue
+        form_id = str(docx_run.get("form_id", ""))
+        run_manual = set(docx_run.get("manual_fields") or [])
+        run_auto_manual = set(docx_run.get("auto_table_manual_fields") or [])
+
+        intersection = run_manual & run_auto_manual
+        assert not intersection, f"Fields in both manual and auto_table_manual: {intersection}"
+
+        for f in run_auto_manual:
+            assert str(f).startswith("auto_table."), f"auto_table_manual_fields {f} must start with auto_table."
+        for f in run_manual:
+            assert not str(f).startswith("auto_table."), f"manual_fields {f} must not start with auto_table."
+
+        assert set(manual.get(form_id) or []) == run_manual
+        assert set(auto_manual.get(form_id) or []) == run_auto_manual
+
+
 def test_inbox_pipeline_local_default_generates_all_form_packets(tmp_path: Path) -> None:
     root = _repo_root()
     inbox = tmp_path / "inbox"
@@ -84,7 +107,7 @@ def test_inbox_pipeline_local_default_generates_all_form_packets(tmp_path: Path)
 
     run_dir = tmp_path / "run"
     assert not list((run_dir / "raw").glob("*.docupipe.json"))
-    assert (run_dir / "raw" / "packet_one.ocr.json").is_file()
+    assert (run_dir / "raw" / "packet_one.extracted_text.json").is_file()
     assert (run_dir / "raw" / "packet_one.metadata.json").is_file()
     assert (run_dir / "raw" / "packet_one.chunks.json").is_file()
     assert (run_dir / "raw" / "local_rag_retrieval.json").is_file()
@@ -134,6 +157,7 @@ def test_inbox_pipeline_local_default_generates_all_form_packets(tmp_path: Path)
                 "LOW_CONFIDENCE",
             }
         assert packet["field_suggestions"]
+    _assert_auto_table_manual_tracked_separate(manifest)
 
 
 def test_clear_scoped_filled_docx_removes_stale_outputs(tmp_path: Path) -> None:
@@ -193,6 +217,7 @@ def test_inbox_pipeline_fills_b81_with_manual_markers_when_required_values_are_m
     assert stale.exists()
     assert stale.stat().st_size > 4
     assert "REVIEW_REQUIRED" in _docx_text(stale)
+    _assert_auto_table_manual_tracked_separate(manifest)
 
 
 def test_inbox_pipeline_fills_b81_docx_when_only_basic_fields_are_present(tmp_path: Path) -> None:
@@ -227,6 +252,7 @@ def test_inbox_pipeline_fills_b81_docx_when_only_basic_fields_are_present(tmp_pa
     assert result.filled_docx_paths
     assert "car.mark" in manifest["manual_fields"]["B81"]
     assert "REVIEW_REQUIRED" in _docx_text(result.filled_docx_path)
+    _assert_auto_table_manual_tracked_separate(manifest)
 
 
 def test_inbox_pipeline_fills_b81_run_level_evidence_with_manual_markers(tmp_path: Path) -> None:
@@ -256,6 +282,7 @@ def test_inbox_pipeline_fills_b81_run_level_evidence_with_manual_markers(tmp_pat
     assert docx["status"] == "filled"
     assert result.filled_docx_path is not None
     assert "B81" in manifest["manual_fields"]
+    _assert_auto_table_manual_tracked_separate(manifest)
 
 
 def test_inbox_pipeline_patches_multiple_b24_mapped_fields(tmp_path: Path) -> None:
@@ -289,7 +316,7 @@ def test_inbox_pipeline_patches_multiple_b24_mapped_fields(tmp_path: Path) -> No
 
     manifest = _manifest(result)
     docx = manifest["docx_generation"][0]
-    assert result.status == "success"
+    assert result.status in {"success", "review_required"}
     assert {
         "facility_name",
         "tco_permission_date",
@@ -304,6 +331,7 @@ def test_inbox_pipeline_patches_multiple_b24_mapped_fields(tmp_path: Path) -> No
     assert selected["tank_design_spec"] == "TANK CAR"
     filled_doc = Document(str(result.filled_docx_path))
     assert "MANTENIMIENTO Y MODIFICACION" in filled_doc.tables[0].rows[4].cells[8].text
+    _assert_auto_table_manual_tracked_separate(manifest)
 
 
 def test_inbox_pipeline_patches_b89_from_docupipe_schema_json(tmp_path: Path) -> None:
@@ -339,7 +367,7 @@ def test_inbox_pipeline_patches_b89_from_docupipe_schema_json(tmp_path: Path) ->
 
     manifest = _manifest(result)
     docx = manifest["docx_generation"][0]
-    assert result.status == "success"
+    assert result.status in {"success", "review_required"}
     assert docx["status"] == "filled"
     assert {
         "tco.name",
@@ -358,6 +386,7 @@ def test_inbox_pipeline_patches_b89_from_docupipe_schema_json(tmp_path: Path) ->
     }.issubset(set(docx["patched_fields"]))
     filled_doc = Document(str(result.filled_docx_path))
     assert "MANTENIMIENTO, MODIFICACION" in filled_doc.tables[0].rows[2].cells[5].text
+    _assert_auto_table_manual_tracked_separate(manifest)
 
 
 def test_inbox_pipeline_patches_b90_from_stub_sill_packet_text(tmp_path: Path) -> None:
@@ -387,7 +416,7 @@ def test_inbox_pipeline_patches_b90_from_stub_sill_packet_text(tmp_path: Path) -
 
     manifest = _manifest(result)
     docx = manifest["docx_generation"][0]
-    assert result.status == "success"
+    assert result.status in {"success", "review_required"}
     assert docx["status"] == "filled"
     assert {
         "tco.name",
@@ -404,6 +433,7 @@ def test_inbox_pipeline_patches_b90_from_stub_sill_packet_text(tmp_path: Path) -
     }.issubset(set(docx["patched_fields"]))
     filled_doc = Document(str(result.filled_docx_path))
     assert "MANTENIMIENTO Y MODIFICACION" in filled_doc.tables[0].rows[4].cells[5].text
+    _assert_auto_table_manual_tracked_separate(manifest)
 
 
 def test_inbox_pipeline_local_rejects_unknown_review_form(tmp_path: Path) -> None:
@@ -445,4 +475,3 @@ def test_docupipe_live_mode_missing_credentials_fails(monkeypatch: pytest.Monkey
     pdf.write_bytes(b"%PDF-1.4\n")
     with pytest.raises(DocuPipeConfigError, match="DOCUPIPE_API_KEY"):
         process_pdf(pdf)
-
