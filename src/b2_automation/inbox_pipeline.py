@@ -94,6 +94,13 @@ class InboxPipelineResult:
     status: str
 
 
+@dataclass(frozen=True)
+class _DocxTableCell:
+    text: str
+    visual_col: int
+    span: int
+
+
 def _utc_now() -> str:
     return utc_now()
 
@@ -146,25 +153,34 @@ def _read_docx_table_pairs(path: Path) -> str:
     out: list[str] = []
     seen: set[str] = set()
     for table_index, table in enumerate(root.iter(f"{WORD_NS}tbl")):
-        rows = [_table_row_cells(row) for row in table.iter(f"{WORD_NS}tr")]
-        for row_index, cells in enumerate(rows):
+        physical_rows = [_table_row_physical_cells(row) for row in table.iter(f"{WORD_NS}tr")]
+        expanded_rows = [_expand_physical_cells(row) for row in physical_rows]
+        for row_index, cells in enumerate(expanded_rows):
             compact = _collapse_adjacent_duplicates(cells)
             row_text = " | ".join(cell for cell in compact if cell)
             _emit_unique(out, seen, f"table_{table_index}_row_{row_index}: {row_text}")
-        for labels, values in zip(rows, rows[1:]):
+        for label_cells, value_cells in zip(physical_rows, physical_rows[1:]):
+            labels = _expand_physical_cells(label_cells)
+            values = _expand_physical_cells(value_cells)
             if not _looks_like_label_row(labels) or _looks_like_label_row(values):
                 continue
-            for label, value in zip(labels, values):
-                label = _clean_cell(label)
-                value = _clean_cell(value)
-                if not label or not value or label == value or _looks_like_label(value):
+            for label_cell in label_cells:
+                label = _clean_cell(label_cell.text)
+                if not label or not _looks_like_label(label):
+                    continue
+                value_cell = _value_cell_for_visual_col(value_cells, label_cell.visual_col)
+                if value_cell is None:
+                    continue
+                value = _clean_cell(value_cell.text)
+                if not value or label == value or _looks_like_label(value):
                     continue
                 _emit_unique(out, seen, f"{label}: {value}")
     return "\n".join(out)
 
 
-def _table_row_cells(row: ET.Element) -> list[str]:
-    cells: list[str] = []
+def _table_row_physical_cells(row: ET.Element) -> list[_DocxTableCell]:
+    cells: list[_DocxTableCell] = []
+    visual_col = 0
     for cell in row.iter(f"{WORD_NS}tc"):
         text = _clean_cell(" ".join(node.text or "" for node in cell.iter(f"{WORD_NS}t")))
         span = 1
@@ -174,8 +190,27 @@ def _table_row_cells(row: ET.Element) -> list[str]:
                 span = max(1, int(grid_span.attrib.get(f"{WORD_NS}val", "1")))
             except ValueError:
                 span = 1
-        cells.extend([text] * span)
+        cells.append(_DocxTableCell(text=text, visual_col=visual_col, span=span))
+        visual_col += span
     return cells
+
+
+def _table_row_cells(row: ET.Element) -> list[str]:
+    return _expand_physical_cells(_table_row_physical_cells(row))
+
+
+def _expand_physical_cells(cells: list[_DocxTableCell]) -> list[str]:
+    expanded: list[str] = []
+    for cell in cells:
+        expanded.extend([cell.text] * cell.span)
+    return expanded
+
+
+def _value_cell_for_visual_col(cells: list[_DocxTableCell], visual_col: int) -> _DocxTableCell | None:
+    for cell in cells:
+        if cell.visual_col <= visual_col < cell.visual_col + cell.span:
+            return cell
+    return None
 
 
 def _looks_like_label_row(cells: list[str]) -> bool:
@@ -235,29 +270,65 @@ def _collect_packet_label_value_evidence(packet: Mapping[str, Any]) -> dict[str,
     for row in packet.get("retrieved_context", []) or []:
         if isinstance(row, Mapping):
             texts.append(str(row.get("full_text") or row.get("text") or ""))
-    return _collect_label_value_evidence_from_texts(texts)
+    evidence = _collect_label_value_evidence_from_texts(texts)
+    for decision in packet.get("field_decisions", []) or []:
+        if not isinstance(decision, Mapping):
+            continue
+        value = _clean_cell(str(decision.get("selected_value") or ""))
+        if not value or value.startswith(REVIEW_REQUIRED_TEXT):
+            continue
+        field_id = str(decision.get("field_id") or "")
+        if not field_id:
+            continue
+        key = _normalize_label_key(field_id)
+        if not key:
+            continue
+        evidence.setdefault(key, [])
+        if value not in evidence[key]:
+            evidence[key].append(value)
+    return evidence
 
 
 def _collect_label_value_evidence_from_texts(texts: list[str]) -> dict[str, list[str]]:
     evidence: dict[str, list[str]] = {}
+    pending_key: str | None = None
     for text in texts:
         for raw_line in str(text or "").splitlines():
             line = _clean_cell(raw_line)
-            if not line or ":" not in line:
+            if not line:
                 continue
+            if ":" not in line:
+                if pending_key is None:
+                    continue
+                bucket = evidence.setdefault(pending_key, [])
+                if not bucket:
+                    bucket.append(line)
+                else:
+                    bucket[-1] = _clean_cell(bucket[-1] + " " + line)
+                pending_key = None
+                continue
+            if pending_key is not None:
+                pending_key = None
             label, value = line.split(":", 1)
             label = re.sub(r"^table_[0-9]+_row_[0-9]+\s*", "", label).strip()
             value = _clean_cell(value)
-            if not label or not value:
+            if not label:
+                pending_key = None
                 continue
             if value.startswith(REVIEW_REQUIRED_TEXT):
-                continue
-            if len(value) > 160:
+                pending_key = None
                 continue
             key = _normalize_label_key(label)
             if not key:
+                pending_key = None
                 continue
             bucket = evidence.setdefault(key, [])
+            if not value:
+                pending_key = key
+                continue
+            pending_key = None
+            if len(value) > 160:
+                continue
             if value not in bucket:
                 bucket.append(value)
     return evidence
@@ -292,6 +363,10 @@ def _best_value_for_label(label: str, evidence: Mapping[str, list[str]]) -> str 
     direct = evidence.get(key)
     if direct:
         return direct[0]
+    for preferred_key in _preferred_evidence_keys(key):
+        values = evidence.get(preferred_key)
+        if values:
+            return values[0]
     tokens = _label_tokens(label)
     if not tokens:
         return None
@@ -307,13 +382,77 @@ def _best_value_for_label(label: str, evidence: Mapping[str, list[str]]) -> str 
         score = overlap / max(len(tokens), len(candidate_tokens))
         if tokens <= candidate_tokens or candidate_tokens <= tokens:
             score += 0.25
+        if {"date", "permission"} <= tokens and {"date", "permission"} <= candidate_tokens:
+            score += 0.25
+        if {"drawing", "number"} <= tokens and {"drawing", "number"} <= candidate_tokens:
+            score += 0.25
+        if {"material", "thickness"} <= tokens and "thickness" in candidate_tokens:
+            score += 0.25
         if score > best_score:
             best_key = str(candidate_key)
             best_score = score
-    if best_score >= 0.45 and best_key:
+    if best_score >= 0.38 and best_key:
         values = evidence.get(best_key) or []
         return values[0] if values else None
     return None
+
+
+def _preferred_evidence_keys(key: str) -> tuple[str, ...]:
+    tokens = set(key.split())
+    preferred: list[str] = []
+    if {"date", "permission"} <= tokens:
+        preferred.extend(["tco permission date", "permission received", "date"])
+    if {"written", "instruction"} <= tokens or {"instruction", "received"} <= tokens:
+        preferred.extend(["tco written instructions", "tco instructions"])
+    if {"drawing", "number"} <= tokens:
+        preferred.extend(["four two drawing number", "drawing number", "aar form 4 2 number"])
+    if "revision" in tokens and "drawing" in tokens:
+        preferred.extend(["four two drawing revision", "drawing revision"])
+    if {"material", "thickness"} <= tokens:
+        preferred.extend(["observed thickness", "thickness", "test fixture patch plate size"])
+    if "contour" in tokens and "plate" in tokens:
+        preferred.extend(["observed contour test plate", "test plate tank material"])
+    if "rls" in tokens or "weldin" in tokens or "welding" in tokens:
+        preferred.extend(["tco written instructions", "stub sill type", "materials stub sill spec"])
+    if "calibration" in tokens or "calibrations" in tokens:
+        preferred.extend(["calibration due", "calibration"])
+    if "function" in tokens and "performed" in tokens:
+        preferred.extend(["function performed"])
+    if "measure" in tokens and "equipment" in tokens:
+        preferred.extend(["measure test equipment"])
+    if "ndt" in tokens:
+        preferred.extend(["ndt method", "ndt equipment"])
+    if "visual" in tokens or "acuity" in tokens:
+        preferred.extend(["visual acuity exam due date"])
+    if "stub" in tokens and "sill" in tokens:
+        preferred.extend(
+            [
+                "location facility stub sill qualification stenciling was observed",
+                "stub sill type",
+            ]
+        )
+    if "thermocouple" in tokens:
+        preferred.extend(
+            [
+                "control thermocouples required procedure",
+                "spare thermocouples required procedure",
+                "observed control thermocouples applied",
+                "observed spare thermocouples applied",
+                "observed monitor thermocouples applied if required",
+            ]
+        )
+    if "two" in tokens and "piece" in tokens and "tee" in tokens:
+        preferred.extend(
+            [
+                "observed two piece tee joint configuration width",
+                "observed two piece tee joint configuration height",
+                "observed distance between test plate positions",
+                "observed welder position",
+            ]
+        )
+    if "stenciling" in tokens or "stencil" in tokens:
+        preferred.extend(["location facility stenciling was observed"])
+    return tuple(preferred)
 
 
 def _append_table_autofill_cells(
@@ -337,10 +476,10 @@ def _append_table_autofill_cells(
         fid = str(spec["field_id"])
         value = _best_value_for_label(label, label_evidence)
         if value is None:
-            value = _marker(fid, f"needs manual completion for {label}")
             manual.append(fid)
+            continue
         values[fid] = value
-        confidences[fid] = 0.99 if not value.startswith(REVIEW_REQUIRED_TEXT) else 1.0
+        confidences[fid] = 0.99
         cells.append(spec)
         added.append(fid)
     fill_manifest["cells"] = cells
@@ -356,31 +495,37 @@ def _template_autofill_specs(template_path: Path, existing_coords: set[tuple[int
     specs: list[tuple[dict[str, Any], str]] = []
     used_coords = set(existing_coords)
     for table_index, table in enumerate(root.iter(f"{WORD_NS}tbl")):
-        rows = [_table_row_cells(row) for row in table.iter(f"{WORD_NS}tr")]
-        for row_index in range(len(rows) - 1):
-            labels = rows[row_index]
-            value_cells = rows[row_index + 1]
-            if not _looks_like_label_row(labels) or _looks_like_label_row(value_cells):
+        physical_rows = [_table_row_physical_cells(row) for row in table.iter(f"{WORD_NS}tr")]
+        expanded_rows = [_expand_physical_cells(row) for row in physical_rows]
+        for row_index in range(len(physical_rows) - 1):
+            label_cells = physical_rows[row_index]
+            value_cells = physical_rows[row_index + 1]
+            if not _looks_like_label_row(expanded_rows[row_index]):
                 continue
-            for col, label in enumerate(labels):
-                label = _clean_cell(label)
+            if _looks_like_label_row(expanded_rows[row_index + 1]):
+                continue
+            for label_cell in label_cells:
+                label = _clean_cell(label_cell.text)
                 if not label or not _looks_like_label(label):
                     continue
-                current_value = _clean_cell(value_cells[col]) if col < len(value_cells) else ""
+                value_cell = _value_cell_for_visual_col(value_cells, label_cell.visual_col)
+                if value_cell is None:
+                    continue
+                current_value = _clean_cell(value_cell.text)
                 if current_value and not _is_template_placeholder(current_value):
                     continue
-                coord = (table_index, row_index + 1, col)
+                coord = (table_index, row_index + 1, value_cell.visual_col)
                 if coord in used_coords:
                     continue
                 used_coords.add(coord)
-                field_id = f"{AUTO_TABLE_PREFIX}.t{table_index}.r{row_index + 1}.c{col}.{_slug_label(label)}"
+                field_id = f"{AUTO_TABLE_PREFIX}.t{table_index}.r{row_index + 1}.c{value_cell.visual_col}.{_slug_label(label)}"
                 specs.append(
                     (
                         {
                             "field_id": field_id,
                             "table_index": table_index,
                             "row": row_index + 1,
-                            "col": col,
+                            "col": value_cell.visual_col,
                             "required": False,
                             "cell_role": "target",
                             "label": label,
@@ -514,8 +659,10 @@ def _write_local_filled_docx(
             label_evidence=form_label_evidence,
         )
         result["auto_table_fields"] = auto_fields
-        result["auto_table_manual_fields"] = auto_manual_fields
-        result["manual_fields"] = _manual_fields(values)
+        result["auto_table_manual_fields"] = sorted(auto_manual_fields)
+        # True manual follow-ups: exact-map / decision REVIEW_REQUIRED markers only (never auto_table field_ids).
+        map_manual_field_ids = sorted(_manual_fields(values))
+        result["manual_fields"] = map_manual_field_ids
         if not fill_manifest.get("cells"):
             result["status"] = "skipped_no_matching_manifest_cells"
             result["errors"] = result["errors"] + ["No selected field IDs matched exact map cells or template table value rows."]
@@ -543,9 +690,9 @@ def _write_local_filled_docx(
                 "structure_guard_report": str(outcome.structure_guard_report) if outcome.structure_guard_report else None,
                 "structure_guard_passed": outcome.structure_guard_passed,
                 "patched_fields": list(outcome.patched_fields),
-                "manual_fields": sorted(set(result["manual_fields"]) & set(outcome.patched_fields)),
+                "manual_fields": sorted(set(map_manual_field_ids) & set(outcome.patched_fields)),
                 "auto_table_fields": sorted(set(auto_fields) & set(outcome.patched_fields)),
-                "auto_table_manual_fields": sorted(set(auto_manual_fields) & set(outcome.patched_fields)),
+                "auto_table_manual_fields": sorted(auto_manual_fields),
                 "errors": list(outcome.errors),
             }
         )
@@ -630,7 +777,7 @@ def _run_local_rag_inbox_pipeline(*, root: Path, inbox: Path, out_dir: Path, rev
         for item in docx_results
         if item.get("auto_table_manual_fields")
     }
-    status = "review_required" if missing_context or failed_docx or manual_fields else "success"
+    status = "review_required" if missing_context or failed_docx or manual_fields or auto_table_manual_fields else "success"
 
     canonical_path = run_dir / "canonical_evidence.json"
     trace_path = run_dir / "field_traceability.json"
@@ -652,7 +799,7 @@ def _run_local_rag_inbox_pipeline(*, root: Path, inbox: Path, out_dir: Path, rev
         "form_packets": packets,
         "missing_context_forms": missing_context,
         "decision_summary_by_form": {fid: packets[fid].get("decision_summary") for fid in forms},
-        "write_authority": "exact approval maps plus template label/value row autofill; unresolved cells receive visible manual markers",
+        "write_authority": "exact approval maps plus template label/value row autofill; unresolved cells are listed in manifest",
         "docx_generation": docx_results,
         "review_blocked_forms": [],
         "blocking_review_reasons": {},
@@ -678,8 +825,8 @@ def _run_local_rag_inbox_pipeline(*, root: Path, inbox: Path, out_dir: Path, rev
     rag_selection = {
         "selected_approval_maps": [item.get("approval_map") for item in docx_results if item.get("approval_map")],
         "retrieved_context_used": list(artifact_index["per_form_reviews"].keys()),
-        "decision": "best_extracted_values_plus_template_table_autofill_and_manual_markers",
-        "uncertainty": "Remaining unresolved mapped/table fields are visible REVIEW_REQUIRED markers in the DOCX.",
+        "decision": "best_extracted_values_plus_template_table_autofill_and_manifest_manual_fields",
+        "uncertainty": "Remaining unresolved mapped/table fields are listed in run_manifest.json manual_fields.",
     }
     rag_selection_path.write_text(json.dumps(rag_selection, indent=2, sort_keys=True), encoding="utf-8")
 
