@@ -16,6 +16,7 @@ from b2_automation.evidence_assistant import build_delta_report, build_role_view
 from b2_automation.evidence_outputs import build_canonical_evidence_document, build_field_traceability_document
 from b2_automation.local_extraction import (
     DEFAULT_REVIEW_FORMS,
+    LocalEvidenceDocument,
     build_form_packets,
     chunk_text,
     extract_local_document,
@@ -91,25 +92,24 @@ def _clear_scoped_filled_docx(filled_dir: Path, forms: tuple[str, ...]) -> None:
             pass
 
 
-def _augment_docx_table_evidence(documents: list[Any]) -> list[Any]:
+def _augment_docx_table_evidence(documents: list[LocalEvidenceDocument]) -> list[LocalEvidenceDocument]:
     """Append row-paired DOCX table evidence so filled B-2 examples become usable RAG input."""
-    augmented: list[Any] = []
+    augmented: list[LocalEvidenceDocument] = []
     for doc in documents:
-        source_path = getattr(doc, "source_path", None)
-        if source_path is None or source_path.suffix.lower() != ".docx":
+        if doc.source_path.suffix.lower() != ".docx":
             augmented.append(doc)
             continue
-        structured = _read_docx_table_pairs(source_path)
+        structured = _read_docx_table_pairs(doc.source_path)
         if not structured:
             augmented.append(doc)
             continue
-        metadata = dict(getattr(doc, "metadata", {}) or {})
+        metadata = dict(doc.metadata or {})
         metadata["docx_table_structured_evidence"] = True
         metadata["docx_table_structured_characters"] = len(structured)
         augmented.append(
             replace(
                 doc,
-                text=(str(getattr(doc, "text", "") or "") + "\n\n" + DOCX_TABLE_MARKER + "\n" + structured).strip(),
+                text=(str(doc.text or "") + "\n\n" + DOCX_TABLE_MARKER + "\n" + structured).strip(),
                 metadata=metadata,
             )
         )
@@ -120,7 +120,9 @@ def _read_docx_table_pairs(path: Path) -> str:
     try:
         with zipfile.ZipFile(path) as zf:
             root = ET.fromstring(zf.read("word/document.xml"))
-    except Exception:
+    except OSError:
+        return ""
+    except (zipfile.BadZipFile, KeyError, ET.ParseError):
         return ""
     out: list[str] = []
     seen: set[str] = set()
