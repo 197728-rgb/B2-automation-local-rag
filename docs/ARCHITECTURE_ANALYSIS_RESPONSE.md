@@ -154,8 +154,8 @@ Design quality: strong separation between raw extraction and downstream interpre
 
 Modes:
 
-1. TF-IDF ranking by default (`sklearn_tfidf` or local TF-IDF cosine)
-2. Keyword/lexical retrieval as fallback when scores are empty or non-positive
+1. Lexical matching (default)
+2. Semantic similarity (optional extra dependencies)
 
 Optional dependencies:
 
@@ -179,7 +179,7 @@ Improvement opportunities:
 States:
 
 - FILL
-- LOW_CONFIDENCE
+- REVIEW_REQUIRED
 - CONFLICT
 - MISSING
 - BLANK
@@ -187,6 +187,7 @@ States:
 Example decision logic:
 
 - Multiple high-confidence conflicting values → CONFLICT
+- Low-confidence suggestion → REVIEW_REQUIRED
 - Low-confidence suggestion → LOW_CONFIDENCE
 - No evidence for required field → MISSING
 - Single high-confidence value → FILL
@@ -351,14 +352,13 @@ Strengths:
 - CLI-friendly automation
 - Structured outputs
 - Deterministic runs
-- Easy CI/CD integration
+- Easy local validation and repeatable runs
 
-Missing features for enterprise deployment:
+Optional Local-Only Enhancements:
 
 - Structured logging
 - Metrics collection
 - Parallel execution
-- Containerization
 - Configuration profiles
 
 ## Suggested Improvements (Priority Order)
@@ -380,8 +380,8 @@ Medium priority:
 
 Low priority:
 
-8. Web UI for review artifacts.
-9. Distributed execution.
+8. Local review UI for artifacts.
+9. Improved local review screens.
 10. Model-based extraction.
 
 ## Proposed Future Architecture
@@ -390,8 +390,7 @@ Low priority:
 @startuml
 package "Execution Layer" {
   [CLI]
-  [REST API]
-  [Web UI]
+  [Local Review UI]
 }
 
 package "Pipeline Engine" {
@@ -408,8 +407,7 @@ package "Persistence" {
 }
 
 [CLI] --> [Orchestrator]
-[REST API] --> [Orchestrator]
-[Web UI] --> [Orchestrator]
+[Local Review UI] --> [Orchestrator]
 
 [Orchestrator] --> [Extraction Workers]
 [Orchestrator] --> [Retrieval Engine]
@@ -499,4 +497,4 @@ Phase 3: Operations
 
 - Parallel OCR
 - SQLite metadata index
-- Web review interface
+- Local review interface
