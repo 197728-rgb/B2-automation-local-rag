@@ -30,6 +30,7 @@ from b2_automation.ooxml_writer import patch_docx_cells
 DEFAULT_LOW_CONFIDENCE_THRESHOLD = 0.70
 REVIEW_REQUIRED_TEXT = "REVIEW_REQUIRED"
 DOCX_TABLE_MARKER = "[structured_docx_table_evidence]"
+AUTO_TABLE_PREFIX = "auto_table"
 WORD_NS = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
 LABEL_WORDS = (
     "name",
@@ -62,6 +63,24 @@ LABEL_WORDS = (
     "observed",
     "pitp",
 )
+LABEL_STOPWORDS = {
+    "a",
+    "an",
+    "and",
+    "by",
+    "for",
+    "from",
+    "in",
+    "of",
+    "on",
+    "or",
+    "the",
+    "to",
+    "with",
+    "aar",
+    "tank",
+    "car",
+}
 
 
 @dataclass(frozen=True)
@@ -207,6 +226,184 @@ def _emit_unique(out: list[str], seen: set[str], line: str) -> None:
         out.append(line)
 
 
+def _collect_label_value_evidence(documents: list[LocalEvidenceDocument]) -> dict[str, list[str]]:
+    return _collect_label_value_evidence_from_texts([doc.text for doc in documents])
+
+
+def _collect_packet_label_value_evidence(packet: Mapping[str, Any]) -> dict[str, list[str]]:
+    texts: list[str] = []
+    for row in packet.get("retrieved_context", []) or []:
+        if isinstance(row, Mapping):
+            texts.append(str(row.get("full_text") or row.get("text") or ""))
+    return _collect_label_value_evidence_from_texts(texts)
+
+
+def _collect_label_value_evidence_from_texts(texts: list[str]) -> dict[str, list[str]]:
+    evidence: dict[str, list[str]] = {}
+    for text in texts:
+        for raw_line in str(text or "").splitlines():
+            line = _clean_cell(raw_line)
+            if not line or ":" not in line:
+                continue
+            label, value = line.split(":", 1)
+            label = re.sub(r"^table_[0-9]+_row_[0-9]+\s*", "", label).strip()
+            value = _clean_cell(value)
+            if not label or not value:
+                continue
+            if value.startswith(REVIEW_REQUIRED_TEXT):
+                continue
+            if len(value) > 160:
+                continue
+            key = _normalize_label_key(label)
+            if not key:
+                continue
+            bucket = evidence.setdefault(key, [])
+            if value not in bucket:
+                bucket.append(value)
+    return evidence
+
+
+def _merge_label_evidence(primary: Mapping[str, list[str]], fallback: Mapping[str, list[str]]) -> dict[str, list[str]]:
+    merged: dict[str, list[str]] = {}
+    for source in (primary, fallback):
+        for key, values in source.items():
+            bucket = merged.setdefault(str(key), [])
+            for value in values:
+                if value not in bucket:
+                    bucket.append(value)
+    return merged
+
+
+def _normalize_label_key(label: str) -> str:
+    label = _clean_cell(label).lower()
+    label = label.replace("/", " ").replace("&", " and ")
+    label = re.sub(r"\([^)]*\)", " ", label)
+    label = re.sub(r"[^a-z0-9]+", " ", label)
+    tokens = [tok for tok in label.split() if tok and tok not in LABEL_STOPWORDS]
+    return " ".join(tokens)
+
+
+def _label_tokens(label: str) -> set[str]:
+    return set(_normalize_label_key(label).split())
+
+
+def _best_value_for_label(label: str, evidence: Mapping[str, list[str]]) -> str | None:
+    key = _normalize_label_key(label)
+    direct = evidence.get(key)
+    if direct:
+        return direct[0]
+    tokens = _label_tokens(label)
+    if not tokens:
+        return None
+    best_key = ""
+    best_score = 0.0
+    for candidate_key in evidence.keys():
+        candidate_tokens = set(str(candidate_key).split())
+        if not candidate_tokens:
+            continue
+        overlap = len(tokens & candidate_tokens)
+        if overlap == 0:
+            continue
+        score = overlap / max(len(tokens), len(candidate_tokens))
+        if tokens <= candidate_tokens or candidate_tokens <= tokens:
+            score += 0.25
+        if score > best_score:
+            best_key = str(candidate_key)
+            best_score = score
+    if best_score >= 0.45 and best_key:
+        values = evidence.get(best_key) or []
+        return values[0] if values else None
+    return None
+
+
+def _append_table_autofill_cells(
+    *,
+    bundle: ApprovalBundle,
+    fill_manifest: dict[str, Any],
+    values: dict[str, str],
+    confidences: dict[str, float],
+    label_evidence: Mapping[str, list[str]],
+) -> tuple[list[str], list[str]]:
+    """Add label-driven table cells so the output is not limited to the small approval map."""
+    cells = list(fill_manifest.get("cells") or [])
+    existing_coords = {
+        (int(cell["table_index"]), int(cell["row"]), int(cell["col"]))
+        for cell in cells
+        if isinstance(cell, Mapping) and {"table_index", "row", "col"} <= set(cell.keys())
+    }
+    added: list[str] = []
+    manual: list[str] = []
+    for spec, label in _template_autofill_specs(bundle.template_path, existing_coords):
+        fid = str(spec["field_id"])
+        value = _best_value_for_label(label, label_evidence)
+        if value is None:
+            value = _marker(fid, f"needs manual completion for {label}")
+            manual.append(fid)
+        values[fid] = value
+        confidences[fid] = 0.99 if not value.startswith(REVIEW_REQUIRED_TEXT) else 1.0
+        cells.append(spec)
+        added.append(fid)
+    fill_manifest["cells"] = cells
+    return added, manual
+
+
+def _template_autofill_specs(template_path: Path, existing_coords: set[tuple[int, int, int]]) -> list[tuple[dict[str, Any], str]]:
+    try:
+        with zipfile.ZipFile(template_path) as zf:
+            root = ET.fromstring(zf.read("word/document.xml"))
+    except (OSError, zipfile.BadZipFile, KeyError, ET.ParseError):
+        return []
+    specs: list[tuple[dict[str, Any], str]] = []
+    used_coords = set(existing_coords)
+    for table_index, table in enumerate(root.iter(f"{WORD_NS}tbl")):
+        rows = [_table_row_cells(row) for row in table.iter(f"{WORD_NS}tr")]
+        for row_index in range(len(rows) - 1):
+            labels = rows[row_index]
+            value_cells = rows[row_index + 1]
+            if not _looks_like_label_row(labels) or _looks_like_label_row(value_cells):
+                continue
+            for col, label in enumerate(labels):
+                label = _clean_cell(label)
+                if not label or not _looks_like_label(label):
+                    continue
+                current_value = _clean_cell(value_cells[col]) if col < len(value_cells) else ""
+                if current_value and not _is_template_placeholder(current_value):
+                    continue
+                coord = (table_index, row_index + 1, col)
+                if coord in used_coords:
+                    continue
+                used_coords.add(coord)
+                field_id = f"{AUTO_TABLE_PREFIX}.t{table_index}.r{row_index + 1}.c{col}.{_slug_label(label)}"
+                specs.append(
+                    (
+                        {
+                            "field_id": field_id,
+                            "table_index": table_index,
+                            "row": row_index + 1,
+                            "col": col,
+                            "required": False,
+                            "cell_role": "target",
+                            "label": label,
+                        },
+                        label,
+                    )
+                )
+    return specs
+
+
+def _is_template_placeholder(text: str) -> bool:
+    lower = _clean_cell(text).lower()
+    if not lower:
+        return True
+    return lower in {"n/a", "na", "none", "-", "—"} or "click" in lower or "enter" in lower or lower.startswith("{{")
+
+
+def _slug_label(label: str) -> str:
+    slug = re.sub(r"[^a-z0-9]+", "_", _normalize_label_key(label))
+    slug = slug.strip("_")[:48]
+    return slug or "field"
+
+
 def _field_values_from_packet(packet: dict[str, Any]) -> tuple[dict[str, str], dict[str, float]]:
     values: dict[str, str] = {}
     confidences: dict[str, float] = {}
@@ -266,6 +463,7 @@ def _write_local_filled_docx(
     filled_dir: Path,
     packets: dict[str, dict[str, Any]],
     low_confidence_threshold: float,
+    label_evidence: Mapping[str, list[str]],
 ) -> list[dict[str, Any]]:
     work_dir = run_dir / "patch_work"
     guard_dir = run_dir / "structure_guard_reports"
@@ -288,6 +486,8 @@ def _write_local_filled_docx(
             "structure_guard_passed": False,
             "patched_fields": [],
             "manual_fields": [],
+            "auto_table_fields": [],
+            "auto_table_manual_fields": [],
             "errors": list(load_result.errors),
         }
         if bundle is None:
@@ -300,15 +500,25 @@ def _write_local_filled_docx(
             continue
 
         _add_missing_required_map_markers(bundle, values, confidences)
-        result["manual_fields"] = _manual_fields(values)
         if not values:
             results.append(result)
             continue
 
         fill_manifest = _manifest_cells_for_fill(bundle, values)
+        form_label_evidence = _merge_label_evidence(_collect_packet_label_value_evidence(packet), label_evidence)
+        auto_fields, auto_manual_fields = _append_table_autofill_cells(
+            bundle=bundle,
+            fill_manifest=fill_manifest,
+            values=values,
+            confidences=confidences,
+            label_evidence=form_label_evidence,
+        )
+        result["auto_table_fields"] = auto_fields
+        result["auto_table_manual_fields"] = auto_manual_fields
+        result["manual_fields"] = _manual_fields(values)
         if not fill_manifest.get("cells"):
             result["status"] = "skipped_no_matching_manifest_cells"
-            result["errors"] = result["errors"] + ["No selected field IDs matched exact map cells."]
+            result["errors"] = result["errors"] + ["No selected field IDs matched exact map cells or template table value rows."]
             results.append(result)
             continue
 
@@ -324,7 +534,7 @@ def _write_local_filled_docx(
             required_field_ids=set(),
             low_confidence_threshold=low_confidence_threshold,
             structure_guard_report_path=guard_path,
-            approval_map=bundle.approval_map,
+            approval_map=None,
         )
         result.update(
             {
@@ -334,6 +544,8 @@ def _write_local_filled_docx(
                 "structure_guard_passed": outcome.structure_guard_passed,
                 "patched_fields": list(outcome.patched_fields),
                 "manual_fields": sorted(set(result["manual_fields"]) & set(outcome.patched_fields)),
+                "auto_table_fields": sorted(set(auto_fields) & set(outcome.patched_fields)),
+                "auto_table_manual_fields": sorted(set(auto_manual_fields) & set(outcome.patched_fields)),
                 "errors": list(outcome.errors),
             }
         )
@@ -373,6 +585,7 @@ def _run_local_rag_inbox_pipeline(*, root: Path, inbox: Path, out_dir: Path, rev
     forms = normalize_review_forms(review_forms)
     _clear_scoped_filled_docx(filled_dir, forms)
     documents = _augment_docx_table_evidence([extract_local_document(path) for path in inputs])
+    label_evidence = _collect_label_value_evidence(documents)
     chunks_by_source = {}
     for doc in documents:
         chunks_by_source[doc.source_file] = [
@@ -402,9 +615,21 @@ def _run_local_rag_inbox_pipeline(*, root: Path, inbox: Path, out_dir: Path, rev
     rag_selection_path = run_dir / "rag_selection_report.json"
 
     missing_context = [form for form, packet in packets.items() if not packet["retrieved_context"]]
-    docx_results = _write_local_filled_docx(root=root, run_dir=run_dir, filled_dir=filled_dir, packets=packets, low_confidence_threshold=low_confidence_threshold)
+    docx_results = _write_local_filled_docx(
+        root=root,
+        run_dir=run_dir,
+        filled_dir=filled_dir,
+        packets=packets,
+        low_confidence_threshold=low_confidence_threshold,
+        label_evidence=label_evidence,
+    )
     failed_docx = [item for item in docx_results if item.get("attempted") and not item.get("structure_guard_passed")]
     manual_fields = {str(item["form_id"]): list(item.get("manual_fields") or []) for item in docx_results if item.get("manual_fields")}
+    auto_table_manual_fields = {
+        str(item["form_id"]): list(item.get("auto_table_manual_fields") or [])
+        for item in docx_results
+        if item.get("auto_table_manual_fields")
+    }
     status = "review_required" if missing_context or failed_docx or manual_fields else "success"
 
     canonical_path = run_dir / "canonical_evidence.json"
@@ -427,11 +652,12 @@ def _run_local_rag_inbox_pipeline(*, root: Path, inbox: Path, out_dir: Path, rev
         "form_packets": packets,
         "missing_context_forms": missing_context,
         "decision_summary_by_form": {fid: packets[fid].get("decision_summary") for fid in forms},
-        "write_authority": "exact approval maps required; best extracted values and visible manual markers are passed to DOCX patching",
+        "write_authority": "exact approval maps plus template label/value row autofill; unresolved cells receive visible manual markers",
         "docx_generation": docx_results,
         "review_blocked_forms": [],
         "blocking_review_reasons": {},
         "manual_fields": manual_fields,
+        "auto_table_manual_fields": auto_table_manual_fields,
         "skipped_review_required": [],
         "structure_guard_failed_forms": [item["form_id"] for item in failed_docx],
         "approval_map_and_fill_errors": [{"form_id": item["form_id"], "errors": list(item.get("errors") or [])} for item in docx_results if item.get("errors")],
@@ -444,14 +670,16 @@ def _run_local_rag_inbox_pipeline(*, root: Path, inbox: Path, out_dir: Path, rev
     for item in docx_results:
         manual = item.get("manual_fields") or []
         suffix = f" ({len(manual)} manual fields)" if manual else ""
-        lines.append(f"- {item['form_id']}: {item['status']}{suffix}")
+        auto_count = len(item.get("auto_table_fields") or [])
+        auto_suffix = f", {auto_count} table-row autofill fields" if auto_count else ""
+        lines.append(f"- {item['form_id']}: {item['status']}{suffix}{auto_suffix}")
     review_md.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
     rag_selection = {
         "selected_approval_maps": [item.get("approval_map") for item in docx_results if item.get("approval_map")],
         "retrieved_context_used": list(artifact_index["per_form_reviews"].keys()),
-        "decision": "best_extracted_values_plus_manual_markers",
-        "uncertainty": "Remaining unresolved mapped fields are visible REVIEW_REQUIRED markers in the DOCX.",
+        "decision": "best_extracted_values_plus_template_table_autofill_and_manual_markers",
+        "uncertainty": "Remaining unresolved mapped/table fields are visible REVIEW_REQUIRED markers in the DOCX.",
     }
     rag_selection_path.write_text(json.dumps(rag_selection, indent=2, sort_keys=True), encoding="utf-8")
 
@@ -476,6 +704,7 @@ def _run_local_rag_inbox_pipeline(*, root: Path, inbox: Path, out_dir: Path, rev
         "review_blocked_forms": [],
         "blocking_review_reasons": {},
         "manual_fields": manual_fields,
+        "auto_table_manual_fields": auto_table_manual_fields,
         "skipped_review_required": [],
         "structure_guard_failed_forms": [item["form_id"] for item in failed_docx],
         "structure_guard_report": str(guard_summary_path),
