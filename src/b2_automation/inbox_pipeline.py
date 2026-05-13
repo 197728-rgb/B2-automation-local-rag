@@ -3,10 +3,13 @@
 from __future__ import annotations
 
 import json
+import re
 import shutil
-from dataclasses import dataclass
+import zipfile
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Mapping
+from xml.etree import ElementTree as ET
 
 from b2_automation.approval_maps import ApprovalBundle, load_exact_approval_bundle_checked
 from b2_automation.evidence_assistant import build_delta_report, build_role_views, enrich_chunk_metadata, ensure_clause_map_db, write_eval_seed
@@ -25,6 +28,39 @@ from b2_automation.ooxml_writer import patch_docx_cells
 
 DEFAULT_LOW_CONFIDENCE_THRESHOLD = 0.70
 REVIEW_REQUIRED_TEXT = "REVIEW_REQUIRED"
+DOCX_TABLE_MARKER = "[structured_docx_table_evidence]"
+WORD_NS = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
+LABEL_WORDS = (
+    "name",
+    "date",
+    "permission",
+    "instruction",
+    "car",
+    "mark",
+    "number",
+    "spec",
+    "stencil",
+    "form",
+    "drawing",
+    "revision",
+    "description",
+    "material",
+    "id",
+    "status",
+    "function",
+    "training",
+    "procedure",
+    "approved",
+    "record",
+    "result",
+    "equipment",
+    "calibration",
+    "location",
+    "temperature",
+    "method",
+    "observed",
+    "pitp",
+)
 
 
 @dataclass(frozen=True)
@@ -53,6 +89,120 @@ def _clear_scoped_filled_docx(filled_dir: Path, forms: tuple[str, ...]) -> None:
             (filled_dir / f"{form}_filled.docx").unlink()
         except FileNotFoundError:
             pass
+
+
+def _augment_docx_table_evidence(documents: list[Any]) -> list[Any]:
+    """Append row-paired DOCX table evidence so filled B-2 examples become usable RAG input."""
+    augmented: list[Any] = []
+    for doc in documents:
+        source_path = getattr(doc, "source_path", None)
+        if source_path is None or source_path.suffix.lower() != ".docx":
+            augmented.append(doc)
+            continue
+        structured = _read_docx_table_pairs(source_path)
+        if not structured:
+            augmented.append(doc)
+            continue
+        metadata = dict(getattr(doc, "metadata", {}) or {})
+        metadata["docx_table_structured_evidence"] = True
+        metadata["docx_table_structured_characters"] = len(structured)
+        augmented.append(
+            replace(
+                doc,
+                text=(str(getattr(doc, "text", "") or "") + "\n\n" + DOCX_TABLE_MARKER + "\n" + structured).strip(),
+                metadata=metadata,
+            )
+        )
+    return augmented
+
+
+def _read_docx_table_pairs(path: Path) -> str:
+    try:
+        with zipfile.ZipFile(path) as zf:
+            root = ET.fromstring(zf.read("word/document.xml"))
+    except Exception:
+        return ""
+    out: list[str] = []
+    seen: set[str] = set()
+    for table_index, table in enumerate(root.iter(f"{WORD_NS}tbl")):
+        rows = [_table_row_cells(row) for row in table.iter(f"{WORD_NS}tr")]
+        for row_index, cells in enumerate(rows):
+            compact = _collapse_adjacent_duplicates(cells)
+            row_text = " | ".join(cell for cell in compact if cell)
+            _emit_unique(out, seen, f"table_{table_index}_row_{row_index}: {row_text}")
+        for labels, values in zip(rows, rows[1:]):
+            if not _looks_like_label_row(labels) or _looks_like_label_row(values):
+                continue
+            for label, value in zip(labels, values):
+                label = _clean_cell(label)
+                value = _clean_cell(value)
+                if not label or not value or label == value or _looks_like_label(value):
+                    continue
+                _emit_unique(out, seen, f"{label}: {value}")
+    return "\n".join(out)
+
+
+def _table_row_cells(row: ET.Element) -> list[str]:
+    cells: list[str] = []
+    for cell in row.iter(f"{WORD_NS}tc"):
+        text = _clean_cell(" ".join(node.text or "" for node in cell.iter(f"{WORD_NS}t")))
+        span = 1
+        grid_span = next(cell.iter(f"{WORD_NS}gridSpan"), None)
+        if grid_span is not None:
+            try:
+                span = max(1, int(grid_span.attrib.get(f"{WORD_NS}val", "1")))
+            except ValueError:
+                span = 1
+        cells.extend([text] * span)
+    return cells
+
+
+def _looks_like_label_row(cells: list[str]) -> bool:
+    nonblank = [_clean_cell(cell) for cell in cells if _clean_cell(cell)]
+    if not nonblank or len({cell.lower() for cell in nonblank}) == 1:
+        return False
+    label_hits = sum(1 for cell in nonblank if _looks_like_label(cell))
+    value_hits = sum(1 for cell in nonblank if _looks_like_value(cell))
+    return label_hits >= max(1, len(nonblank) // 3) and label_hits >= value_hits
+
+
+def _looks_like_label(text: str) -> bool:
+    lower = _clean_cell(text).lower()
+    if not lower:
+        return False
+    return lower.endswith(":") or any(word in lower for word in LABEL_WORDS) or (lower.upper() == lower and len(lower.split()) <= 8)
+
+
+def _looks_like_value(text: str) -> bool:
+    cleaned = _clean_cell(text)
+    if not cleaned:
+        return False
+    if re.search(r"\b\d{1,2}[/-]\d{1,2}[/-]\d{2,4}\b|\b[A-Z]{2,6}\s*[- ]?\d{3,8}\b", cleaned):
+        return True
+    if re.search(r"\b\d+(?:\.\d+)?\s*(?:psi|psig|f|mils?|in|%)\b", cleaned, flags=re.IGNORECASE):
+        return True
+    return bool(re.search(r"[a-z]", cleaned) and len(cleaned.split()) <= 12)
+
+
+def _collapse_adjacent_duplicates(cells: list[str]) -> list[str]:
+    out: list[str] = []
+    last = None
+    for cell in cells:
+        if cell and cell != last:
+            out.append(cell)
+        last = cell
+    return out
+
+
+def _clean_cell(text: str) -> str:
+    return re.sub(r"\s+", " ", str(text or "").replace("\u00a0", " ")).strip(" |")
+
+
+def _emit_unique(out: list[str], seen: set[str], line: str) -> None:
+    line = _clean_cell(line)
+    if line and line not in seen:
+        seen.add(line)
+        out.append(line)
 
 
 def _field_values_from_packet(packet: dict[str, Any]) -> tuple[dict[str, str], dict[str, float]]:
@@ -220,7 +370,7 @@ def _run_local_rag_inbox_pipeline(*, root: Path, inbox: Path, out_dir: Path, rev
 
     forms = normalize_review_forms(review_forms)
     _clear_scoped_filled_docx(filled_dir, forms)
-    documents = [extract_local_document(path) for path in inputs]
+    documents = _augment_docx_table_evidence([extract_local_document(path) for path in inputs])
     chunks_by_source = {}
     for doc in documents:
         chunks_by_source[doc.source_file] = [
