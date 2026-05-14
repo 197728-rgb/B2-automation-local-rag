@@ -147,12 +147,18 @@ def supported_evidence_files(inbox: Path) -> list[Path]:
 
 def _is_sample_evidence_file(path: Path) -> bool:
     stem = path.stem.lower()
-    return stem in SAMPLE_EVIDENCE_STEMS or "dry_run" in stem or "dry-run" in stem
+    return _stem_matches_name(stem, SAMPLE_EVIDENCE_STEMS) or "dry_run" in stem or "dry-run" in stem
 
 
 def _is_pdf_run_sample_evidence_file(path: Path) -> bool:
     stem = path.stem.lower()
-    return stem in PDF_RUN_SAMPLE_EVIDENCE_STEMS or "dry_run" in stem or "dry-run" in stem
+    return _stem_matches_name(stem, PDF_RUN_SAMPLE_EVIDENCE_STEMS) or "dry_run" in stem or "dry-run" in stem
+
+
+def _stem_matches_name(stem: str, names: set[str]) -> bool:
+    if stem in names:
+        return True
+    return any(part in names for part in stem.split("__"))
 
 
 def extract_local_document(path: Path) -> LocalEvidenceDocument:
@@ -388,7 +394,7 @@ def build_form_packets(
     for form in review_forms:
         retrieved, retrieval_method = retrieve_chunks_for_form(form, documents, chunks_by_source)
         suggestions = _field_suggestions(retrieved, form)
-        suggestions = _with_run_level_required_suggestions(suggestions, run_level_required)
+        suggestions = _with_run_level_required_suggestions(suggestions, run_level_required, form)
         decisions = decide_fields_for_local_packet(
             retrieved=retrieved,
             suggestions=suggestions,
@@ -418,10 +424,13 @@ def build_form_packets(
 def _with_run_level_required_suggestions(
     suggestions: list[dict[str, Any]],
     run_level_required: dict[str, dict[str, Any]],
+    form: str,
 ) -> list[dict[str, Any]]:
     present = {str(item.get("field_id")) for item in suggestions}
     merged = list(suggestions)
     for field_id in RUN_LEVEL_FILL_FIELDS:
+        if form == "B24_RL2" and field_id == "facility_name":
+            continue
         if field_id not in present and field_id in run_level_required:
             merged.append(dict(run_level_required[field_id]))
     return merged
@@ -435,7 +444,7 @@ def _run_level_required_suggestions(
     for doc in documents:
         source_date = _date_from_source_name(doc.source_file)
         if source_date:
-            for field_id in ("date", "tco_permission_date", "tco.permission_date", "pitp.date_approved", "pitp_date_approved"):
+            for field_id in ("date",):
                 candidates[field_id].append(
                     {
                         "field_id": field_id,
@@ -490,7 +499,7 @@ def _date_from_source_name(source_file: str) -> str | None:
         r"ene(?:ro)?|feb(?:rero)?|mar(?:zo)?|abr(?:il)?|mayo|jun(?:io)?|jul(?:io)?|"
         r"ago(?:sto)?|sept(?:iembre)?|oct(?:ubre)?|nov(?:iembre)?|dic(?:iembre)?"
     )
-    match = re.search(rf"\b({month})\s+([0-9]{{1,2}}),?\s+([0-9]{{4}})\b", source_file, flags=re.IGNORECASE)
+    match = re.search(rf"(?:^|[^A-Za-z])({month})[\s_]+([0-9]{{1,2}}),?[\s_]+([0-9]{{4}})\b", source_file, flags=re.IGNORECASE)
     if not match:
         return None
     return _normalize_date_value(f"{match.group(2)} {match.group(1)} {match.group(3)}")
@@ -498,28 +507,56 @@ def _date_from_source_name(source_file: str) -> str | None:
 
 def _field_suggestions(retrieved: list[dict[str, Any]], form: str = "") -> list[dict[str, Any]]:
     suggestions: list[dict[str, Any]] = []
-    patterns: list[tuple[str, str]] = [
-        (
-            "facility_name",
-            r"\b(?:facility|company|shop|estaci[oó]n\s*/?\s*station|station|taller|planta)\s*[:=-]\s*([^\n\r;]{2,80})",
-        ),
-        ("auditor", r"\b(?:auditor|inspector)\s*[:=-]\s*([^\n\r;]{2,80})"),
-        (
-            "date",
-            r"\b(?:date|inspection date|fecha\s*(?:/|i)?\s*date|fecha)\s*[:=-]\s*"
-            r"([0-9]{4}-[0-9]{2}-[0-9]{2}|[0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4}|"
-            r"[0-9]{1,2}[-\s](?:ene|enero|jan|january|feb|febrero|mar|marzo|apr|abril|abr|"
-            r"may|mayo|jun|junio|jul|julio|aug|agosto|ago|sep|sept|septiembre|oct|octubre|"
-            r"nov|noviembre|dec|dic|diciembre)[-\s][0-9]{2,4})",
-        ),
-        ("car_number", r"\b(?:car|car no\.?|car number)\s*[:=-]\s*([A-Z]{2,5}\s*[0-9]{3,8})"),
-        ("car_number", r"\b(?:n[°o]\s*de\s*(?:carro|cmo)\s*/\s*)?car\s*number\s*[:=-]\s*([A-Z]{2,6}[-\s]?[0-9]{2,8})"),
-        ("car_mark", r"\b(?:iniciales\s+de\s+carro\s*/\s*)?car\s*mark\s*[:=-]\s*([^\n\r;]{2,80})"),
-        ("tank_design_spec", r"\b(?:tipo\s+de\s+carro\s*/\s*)?car\s*type\s*[:=-]\s*([^\n\r;]{2,80})"),
-        ("tco_written_instructions", r"\b(MANTENIMIENTO\s+Y\s+MODIFICACI[OÓ]N\s+(?:DF|DE)\s+[^\n\r;]{8,120})"),
-        ("test_plate_tank_material", r"\b(?:especificaci[oó]n\s+de\s+la\s+probeta\s*/\s*)?specimen\s+plate\s+([A-Z0-9]{2,8}\s+Grado\s+[0-9A-Z]+)"),
-        ("attachment_material", r"\b(?:insert\s+size|tama[nñ]o\s+de\s+inserto)[^\n\r;]*\s+([0-9]{1,2}\s*in\s*X\s*[0-9]{1,2}\s*In[^\n\r;]{0,80})"),
-    ]
+    patterns: list[tuple[str, str]] = []
+    if form != "B24_RL2":
+        patterns.append(
+            (
+                "facility_name",
+                r"\b(?:facility|company|shop|estaci[oó]n\s*/?\s*station|station|taller|planta)\s*[:=-]\s*([^\n\r;]{2,80})",
+            )
+        )
+    patterns.extend(
+        [
+            ("auditor", r"\b(?:auditor|inspector)\s*[:=-]\s*([^\n\r;]{2,80})"),
+            (
+                "date",
+                r"\b(?:date|inspection date|fecha\s*(?:/|i)?\s*date|fecha)\s*[:=-]\s*"
+                r"([0-9]{4}-[0-9]{2}-[0-9]{2}|[0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4}|"
+                r"[0-9]{1,2}[-\s](?:ene|enero|jan|january|feb|febrero|mar|marzo|apr|abril|abr|"
+                r"may|mayo|jun|junio|jul|julio|aug|agosto|ago|sep|sept|septiembre|oct|octubre|"
+                r"nov|noviembre|dec|dic|diciembre)[-\s][0-9]{2,4})",
+            ),
+            ("car_number", r"\b(?:car|car no\.?|car number)\s*[:=-]\s*([A-Z]{2,5}\s*[0-9]{3,8})"),
+            (
+                "car_number",
+                r"\b(?:n[°o]\s*de\s*(?:carro|cmo)\s*/\s*)?car\s*number\s*[:=-]\s*([A-Z]{2,6}[-\s]?[0-9]{2,8})",
+            ),
+            ("car_mark", r"\b(?:iniciales\s+de\s+carro\s*/\s*)?car\s*mark\s*[:=-]\s*([^\n\r;]{2,80})"),
+            ("tank_design_spec", r"\b(?:tipo\s+de\s+carro\s*/\s*)?car\s*type\s*[:=-]\s*([^\n\r;]{2,80})"),
+            (
+                "tco_permission_date",
+                r"\b(?:date\s+permission(?:/instruction)?\s+received\s+from\s+TCO|"
+                r"date\s+permission|TCO\s+permission\s+date)\s*[:=-]\s*"
+                r"([0-9]{4}-[0-9]{2}-[0-9]{2}|[0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4}|"
+                r"[0-9]{1,2}[-\s](?:ene|enero|jan|january|feb|febrero|mar|marzo|apr|abril|abr|"
+                r"may|mayo|jun|junio|jul|julio|aug|agosto|ago|sep|sept|septiembre|oct|octubre|"
+                r"nov|noviembre|dec|dic|diciembre)[-\s][0-9]{2,4})",
+            ),
+            (
+                "tco_written_instructions",
+                r"\b(?:written\s+instructions\s+from\s+TCO|instructions\s+received\s+from\s+TCO|"
+                r"TCO\s+written\s+instructions)\s*[:=-]\s*([^\n\r;]{2,160})",
+            ),
+            (
+                "test_plate_tank_material",
+                r"\b(?:especificaci[oó]n\s+de\s+la\s+probeta\s*/\s*)?specimen\s+plate\s+([A-Z0-9]{2,8}\s+Grado\s+[0-9A-Z]+)",
+            ),
+            (
+                "attachment_material",
+                r"\b(?:insert\s+size|tama[nñ]o\s+de\s+inserto)[^\n\r;]*\s+([0-9]{1,2}\s*in\s*X\s*[0-9]{1,2}\s*In[^\n\r;]{0,80})",
+            ),
+        ]
+    )
     for field in _form_field_definitions(form):
         for alias in _field_aliases(field):
             patterns.append((str(field["field_id"]), rf"\b{re.escape(alias)}\s*[:=-]\s*([^\n\r;]{{2,120}})"))
@@ -596,6 +633,34 @@ def _special_text_suggestions(item: dict[str, Any]) -> list[dict[str, Any]]:
     if approved_match:
         for field_id in ("pitp.approved_by", "pitp_approved_by"):
             emit(field_id, "Alondra Navarro", 0.90)
+        window = compact[max(0, approved_match.start() - 250) : approved_match.end() + 250]
+        pitp_date_match = re.search(
+            r"\b([0-9]{1,2})\s*-+\s*"
+            r"(ene|enero|jan|january|feb|febrero|mar|marzo|apr|abril|abr|may|mayo|jun|junio|"
+            r"jul|julio|aug|agosto|ago|sep|sept|septiembre|oct|octubre|nov|noviembre|dec|dic|diciembre)"
+            r"\s*-+\s*([0-9]{2,4})\b",
+            window,
+            flags=re.IGNORECASE,
+        )
+        if pitp_date_match:
+            value = _normalize_date_value(f"{pitp_date_match.group(1)} {pitp_date_match.group(2)} {pitp_date_match.group(3)}")
+            for field_id in ("pitp.date_approved", "pitp_date_approved"):
+                emit(field_id, value, 0.90)
+
+    tco_name_match = re.search(
+        r"\b(?:tank\s+car\s+owner\s*(?:\(TCO\))?\s+name|TCO\s+name)\s*[:=-]\s*([A-Z0-9][A-Z0-9 .&/-]{1,80})",
+        compact,
+        flags=re.IGNORECASE,
+    )
+    if tco_name_match:
+        value = _trim_before_next_field_marker(tco_name_match.group(1))
+        value = re.split(r"\s+(?:date\s+permission|written\s+instructions)\b", value, maxsplit=1, flags=re.IGNORECASE)[0].strip()
+        emit("tco.name", value, 0.98)
+        emit("facility_name", value, 0.98)
+
+    if re.search(r"\bconfirmaci[oó6]n\s+por\s+correo\s+electr[oó6]nico\b", compact, flags=re.IGNORECASE):
+        for field_id in ("tco.instructions", "tco_written_instructions"):
+            emit(field_id, "Confirmacion por correo electronico", 0.86)
 
     if "b89" in str(item.get("source_file") or "").lower():
         emit("safety_system.type", "Safety Systems", 0.90)
@@ -677,10 +742,13 @@ def _docupipe_schema_suggestions(item: dict[str, Any]) -> list[dict[str, Any]]:
         return []
 
     mappings = {
-        "demonstration.station": ("facility_name", "tco.name"),
+        "demonstration.station": ("facility_name",),
         "demonstration.carNumber": ("car_number", "car.mark", "car_mark"),
         "demonstration.carType": ("tank_design_spec", "car.design_spec"),
-        "activity.scope": ("tco_written_instructions", "tco.instructions", "safety_system.type"),
+        "tco.name": ("tco.name",),
+        "tco.permissionDate": ("tco.permission_date",),
+        "tco.instructions": ("tco.instructions", "tco_written_instructions"),
+        "activity.scope": ("safety_system.type",),
         "jacketPatch.specimenPlate": ("materials.insulation.spec", "materials.jacket.spec"),
         "jacketPatch.patchPlateSize": ("test_fixture.patch_plate.size",),
         "jacketPatch.targetFilletSize": ("test_fixture.weld.length",),
@@ -744,11 +812,13 @@ def _expand_write_alias_suggestions(suggestions: list[dict[str, Any]]) -> list[d
     else:
         add_alias("car.mark", "car_mark")
     add_alias("car_mark", "car.mark")
+    add_alias("car_number", "car.mark")
+    add_alias("car_number", "car_mark")
     add_alias("car.mark", "car_number", f"{car_mark} {car_number}".strip() if car_number else car_mark or None)
-    add_alias("date", "tco_permission_date")
-    add_alias("facility_name", "tco.name")
-    add_alias("date", "tco.permission_date")
+    add_alias("tco_permission_date", "tco.permission_date")
+    add_alias("tco.permission_date", "tco_permission_date")
     add_alias("tco_written_instructions", "tco.instructions")
+    add_alias("tco.instructions", "tco_written_instructions")
     add_alias("tank_design_spec", "car.design_spec")
     add_alias("car.design_spec", "tank_design_spec")
     add_alias("pitp.name", "pitp_document_name")
@@ -756,8 +826,6 @@ def _expand_write_alias_suggestions(suggestions: list[dict[str, Any]]) -> list[d
     add_alias("pitp.approved_by", "pitp_approved_by")
     add_alias("pitp.date_approved", "pitp_date_approved")
     add_alias("aar.form_4_2.number", "aar_form_4_2_number")
-    add_alias("date", "pitp_date_approved")
-    add_alias("date", "pitp.date_approved")
     add_alias("pitp.revision", "pitp_rev")
     add_alias("drawing.number", "four_two_drawing_number")
     add_alias("drawing.revision", "four_two_drawing_revision")
@@ -778,6 +846,16 @@ def _normalize_candidate_value(field: str, value: str) -> str:
     cleaned = re.sub(r"\s+", " ", value).strip(" \t\r\n,.;")
     if field == "date":
         return _normalize_date_value(cleaned)
+    material_fields = {
+        "materials.insulation.spec",
+        "materials.jacket.spec",
+        "materials.stub_sill.spec",
+        "test_plate_tank_material",
+        "attachment_material",
+    }
+    if field in material_fields:
+        cleaned = re.sub(r"\bA51G\b", "A516", cleaned, flags=re.IGNORECASE)
+        cleaned = re.sub(r"\bGrado\s+([0-9A-Z]+)\b", r"Gr. \1", cleaned, flags=re.IGNORECASE)
     if field == "test_fixture.weld.length":
         cleaned = re.sub(r"\s+(?:filete|fillet|mete)\b.*$", "", cleaned, flags=re.IGNORECASE).strip()
     return cleaned

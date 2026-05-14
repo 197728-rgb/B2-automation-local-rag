@@ -6,6 +6,7 @@ import json
 import re
 import shutil
 import zipfile
+from io import BytesIO
 from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Mapping
@@ -16,6 +17,7 @@ from b2_automation.evidence_assistant import build_delta_report, build_role_view
 from b2_automation.evidence_outputs import build_canonical_evidence_document, build_field_traceability_document
 from b2_automation.local_extraction import (
     DEFAULT_REVIEW_FORMS,
+    LOCAL_EVIDENCE_EXTENSIONS,
     LocalEvidenceDocument,
     build_form_packets,
     chunk_text,
@@ -31,6 +33,7 @@ DEFAULT_LOW_CONFIDENCE_THRESHOLD = 0.70
 REVIEW_REQUIRED_TEXT = "REVIEW_REQUIRED"
 DOCX_TABLE_MARKER = "[structured_docx_table_evidence]"
 AUTO_TABLE_PREFIX = "auto_table"
+MAX_ZIP_EVIDENCE_DEPTH = 5
 WORD_NS = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
 LABEL_WORDS = (
     "name",
@@ -108,6 +111,80 @@ def _utc_now() -> str:
 def _retrieval_summary(packets: dict[str, dict[str, Any]], forms: tuple[str, ...]) -> str:
     modes = sorted({str(packets.get(f, {}).get("retrieval_method") or "unknown") for f in forms})
     return "local semantic ranking: " + ", ".join(modes) + " (evidence-only; exact maps authorize writes)"
+
+
+def _stage_inbox_evidence(inbox: Path, run_dir: Path) -> Path:
+    staging_dir = run_dir / "staged_inbox"
+    if staging_dir.exists():
+        shutil.rmtree(staging_dir)
+    staging_dir.mkdir(parents=True, exist_ok=True)
+    for path in sorted(inbox.iterdir()):
+        if not path.is_file():
+            continue
+        if path.suffix.lower() == ".zip":
+            try:
+                with zipfile.ZipFile(path) as zf:
+                    _stage_zip_members(zf, staging_dir, prefix=safe_archive_stem(path), depth=0)
+            except zipfile.BadZipFile:
+                continue
+            continue
+        if path.suffix.lower() in LOCAL_EVIDENCE_EXTENSIONS:
+            _copy_staged_file(path, staging_dir, safe_archive_member_name(path.name))
+    return staging_dir
+
+
+def _stage_zip_members(zf: zipfile.ZipFile, staging_dir: Path, *, prefix: str, depth: int) -> None:
+    if depth >= MAX_ZIP_EVIDENCE_DEPTH:
+        return
+    for info in zf.infolist():
+        if info.is_dir():
+            continue
+        member_name = safe_archive_member_name(info.filename)
+        suffix = Path(member_name).suffix.lower()
+        if suffix == ".zip":
+            try:
+                with zipfile.ZipFile(BytesIO(zf.read(info))) as nested:
+                    _stage_zip_members(nested, staging_dir, prefix=f"{prefix}__{Path(member_name).stem}", depth=depth + 1)
+            except zipfile.BadZipFile:
+                continue
+            continue
+        if suffix in LOCAL_EVIDENCE_EXTENSIONS:
+            _write_staged_bytes(staging_dir, f"{prefix}__{member_name}", zf.read(info))
+
+
+def safe_archive_stem(path: Path) -> str:
+    return re.sub(r"[^A-Za-z0-9_.-]+", "_", path.stem).strip("._") or "archive"
+
+
+def safe_archive_member_name(name: str) -> str:
+    parts = [part for part in re.split(r"[\\/]+", name) if part and part not in {".", ".."}]
+    flat = "__".join(parts) if parts else "member"
+    return re.sub(r"[^A-Za-z0-9_.-]+", "_", flat).strip("._") or "member"
+
+
+def _copy_staged_file(source: Path, staging_dir: Path, name: str) -> Path:
+    dest = _unique_staged_path(staging_dir, name)
+    shutil.copy2(source, dest)
+    return dest
+
+
+def _write_staged_bytes(staging_dir: Path, name: str, data: bytes) -> Path:
+    dest = _unique_staged_path(staging_dir, name)
+    dest.write_bytes(data)
+    return dest
+
+
+def _unique_staged_path(staging_dir: Path, name: str) -> Path:
+    candidate = staging_dir / name
+    if not candidate.exists():
+        return candidate
+    stem = candidate.stem
+    suffix = candidate.suffix
+    for index in range(2, 10_000):
+        candidate = staging_dir / f"{stem}_{index}{suffix}"
+        if not candidate.exists():
+            return candidate
+    raise RuntimeError(f"Could not create unique staged evidence name for {name!r}")
 
 
 def _clear_scoped_filled_docx(filled_dir: Path, forms: tuple[str, ...]) -> None:
@@ -375,6 +452,8 @@ def _best_value_for_label(label: str, evidence: Mapping[str, list[str]]) -> str 
     for candidate_key in evidence.keys():
         candidate_tokens = set(str(candidate_key).split())
         if not candidate_tokens:
+            continue
+        if {"date", "approved"} <= tokens and "pitp" not in tokens and "pitp" in candidate_tokens:
             continue
         overlap = len(tokens & candidate_tokens)
         if overlap == 0:
@@ -725,7 +804,8 @@ def _run_local_rag_inbox_pipeline(*, root: Path, inbox: Path, out_dir: Path, rev
     for p in (raw_dir, review_dir, filled_dir):
         p.mkdir(parents=True, exist_ok=True)
 
-    inputs = supported_evidence_files(inbox)
+    staged_inbox = _stage_inbox_evidence(inbox, run_dir)
+    inputs = supported_evidence_files(staged_inbox)
     if not inputs:
         raise FileNotFoundError(f"No supported local evidence files found in inbox: {inbox}")
 

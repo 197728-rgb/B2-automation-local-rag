@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import zipfile
 from pathlib import Path
 
 import pytest
@@ -126,6 +127,7 @@ def test_inbox_pipeline_local_default_generates_all_form_packets(tmp_path: Path)
         str(row.get("selected_value") or "")
         for row in canonical["fields"]
         if row.get("field_id") == "facility_name" and row.get("selected_value")
+        and not str(row.get("selected_value") or "").startswith("REVIEW_REQUIRED")
     ]
     assert facility_values
     assert set(facility_values) == {"Midwest Tank Rail Inc"}
@@ -220,6 +222,34 @@ def test_inbox_pipeline_fills_b81_with_manual_markers_when_required_values_are_m
     _assert_auto_table_manual_tracked_separate(manifest)
 
 
+def test_inbox_pipeline_aliases_car_number_to_b81_car_mark(tmp_path: Path) -> None:
+    root = _repo_root()
+    inbox = tmp_path / "inbox"
+    inbox.mkdir()
+    (inbox / "b81_car_number.txt").write_text(
+        "\n".join(
+            [
+                "B81 stub sill evidence for tank car repair.",
+                "Facility: Demo Rail Shop",
+                "Date: 2026-05-07",
+                "Car: DOTX 123456",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run", review_forms=("B81",))
+
+    review = _review(result)
+    selected = {row["field_id"]: row["selected_value"] for row in review["form_packets"]["B81"]["field_decisions"]}
+    assert selected["car.mark"] == "DOTX 123456"
+    manifest = _manifest(result)
+    docx = manifest["docx_generation"][0]
+    assert "car.mark" in docx["patched_fields"]
+    filled_doc = Document(str(result.filled_docx_path))
+    assert "DOTX 123456" in filled_doc.tables[0].rows[6].cells[0].text
+
+
 def test_inbox_pipeline_fills_b81_docx_when_only_basic_fields_are_present(tmp_path: Path) -> None:
     root = _repo_root()
     inbox = tmp_path / "inbox"
@@ -295,6 +325,9 @@ def test_inbox_pipeline_patches_multiple_b24_mapped_fields(tmp_path: Path) -> No
                 "B24 RL2 MANTENIMIENTO Y MODIFICACION DE LOS CARROS TANQUE RL2",
                 "Estacion/ Station: Taller Mexico FTVM",
                 "Fecha I Date: 06-Mayo-2025",
+                "Tank Car Owner (TCO) Name: CIT",
+                "Date Permission/Instruction Received from TCO: 2026-05-04",
+                "Written Instructions from TCO: Repair authorized per customer email.",
                 "Car Mark: PROBETA MUESTRA",
                 "Car Number: PAWCT-824",
                 "Car Type: TANK CAR",
@@ -329,9 +362,149 @@ def test_inbox_pipeline_patches_multiple_b24_mapped_fields(tmp_path: Path) -> No
     selected = {row["field_id"]: row["selected_value"] for row in review["form_packets"]["B24_RL2"]["field_decisions"]}
     assert selected["car_mark"] == "PROBETA MUESTRA PAWCT-824"
     assert selected["tank_design_spec"] == "TANK CAR"
+    assert selected["facility_name"] == "CIT"
+    assert selected["tco_written_instructions"] == "Repair authorized per customer email"
     filled_doc = Document(str(result.filled_docx_path))
-    assert "MANTENIMIENTO Y MODIFICACION" in filled_doc.tables[0].rows[4].cells[8].text
+    assert "Repair authorized" in filled_doc.tables[0].rows[4].cells[8].text
     _assert_auto_table_manual_tracked_separate(manifest)
+
+
+def test_inbox_pipeline_does_not_use_b24_activity_title_as_tco_instructions(tmp_path: Path) -> None:
+    root = _repo_root()
+    inbox = tmp_path / "inbox"
+    inbox.mkdir()
+    (inbox / "b24_scope_only.txt").write_text(
+        "\n".join(
+            [
+                "B24 RL2 MANTENIMIENTO Y MODIFICACION DE LOS CARROS TANQUE RL2",
+                "Estacion/ Station: Taller Mexico FTVM",
+                "Fecha I Date: 06-Mayo-2025",
+                "Car Mark: PROBETA MUESTRA",
+                "Car Number: PAWCT-824",
+                "Car Type: TANK CAR",
+                "pitp_document_name: PC-TC-01",
+                "pitp_id: PC-TC-01",
+                "pitp_approved_by: Casey",
+                "pitp_date_approved: 2026-05-05",
+                "aar_form_4_2_number: AAR-42-001",
+                "four_two_drawing_number: DWG-100",
+                "Specimen plate A516 Grado 70",
+                "test_plate_tank_mtr: MTR-777",
+                "attachment_material: A36",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run", review_forms=("B24_RL2",))
+
+    manifest = _manifest(result)
+    docx = manifest["docx_generation"][0]
+    assert "tco_written_instructions" in docx["manual_fields"]
+    filled_doc = Document(str(result.filled_docx_path))
+    instruction_cell = filled_doc.tables[0].rows[4].cells[8].text
+    assert "MANTENIMIENTO Y MODIFICACION" not in instruction_cell
+    assert "REVIEW_REQUIRED: tco_written_instructions" in instruction_cell
+    _assert_auto_table_manual_tracked_separate(manifest)
+
+
+def test_inbox_pipeline_uses_email_confirmation_as_tco_instructions(tmp_path: Path) -> None:
+    root = _repo_root()
+    inbox = tmp_path / "inbox"
+    inbox.mkdir()
+    (inbox / "b24_email_confirmation.txt").write_text(
+        "\n".join(
+            [
+                "B24 RL2 evidence",
+                "Confirmaci6n por correo electr6nico",
+                "Car Mark: PROBETA MUESTRA",
+                "Car Number: PAWCT-824",
+                "Car Type: TANK CAR",
+                "PC-TC-01 Alondra Navarro c-4--nov---21 Primera edicion",
+                "aar_form_4_2_number: AAR-42-001",
+                "four_two_drawing_number: DWG-100",
+                "Specimen plate A516 Grado 70",
+                "test_plate_tank_mtr: MTR-777",
+                "attachment_material: A36",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run", review_forms=("B24_RL2",))
+
+    review = _review(result)
+    selected = {row["field_id"]: row["selected_value"] for row in review["form_packets"]["B24_RL2"]["field_decisions"]}
+    assert selected["tco_written_instructions"] == "Confirmacion por correo electronico"
+    filled_doc = Document(str(result.filled_docx_path))
+    assert "Confirmacion por correo electronico" in filled_doc.tables[0].rows[4].cells[8].text
+
+
+def test_inbox_pipeline_recovers_b24_ocr_pitp_date_and_material(tmp_path: Path) -> None:
+    root = _repo_root()
+    inbox = tmp_path / "inbox"
+    inbox.mkdir()
+    (inbox / "b24_ocr.txt").write_text(
+        "\n".join(
+            [
+                "B24 RL2 evidence",
+                "Tank Car Owner (TCO) Name: CIT",
+                "Date Permission/Instruction Received from TCO: 2026-05-04",
+                "Written Instructions from TCO: Repair authorized per customer email.",
+                "Car Mark: PROBETA MUESTRA",
+                "Car Number: PAWCT-824",
+                "Car Type: TANK CAR",
+                "PC-TC-01 Alondra Navarro c-4--nov---21 Primera edicion",
+                "aar_form_4_2_number: AAR-42-001",
+                "four_two_drawing_number: DWG-100",
+                "Specimen plate A51G Grado 70",
+                "test_plate_tank_mtr: MTR-777",
+                "attachment_material: A36",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run", review_forms=("B24_RL2",))
+
+    review = _review(result)
+    selected = {row["field_id"]: row["selected_value"] for row in review["form_packets"]["B24_RL2"]["field_decisions"]}
+    assert selected["pitp_date_approved"] == "2021-11-04"
+    assert selected["test_plate_tank_material"] == "A516 Gr. 70"
+
+
+def test_inbox_pipeline_does_not_autofill_generic_date_approved_from_pitp_date(tmp_path: Path) -> None:
+    root = _repo_root()
+    inbox = tmp_path / "inbox"
+    inbox.mkdir()
+    (inbox / "b24_ocr.txt").write_text(
+        "\n".join(
+            [
+                "B24 RL2 evidence",
+                "Tank Car Owner (TCO) Name: CIT",
+                "Date Permission/Instruction Received from TCO: 2026-05-04",
+                "Written Instructions from TCO: Repair authorized per customer email.",
+                "Car Mark: PROBETA MUESTRA",
+                "Car Number: PAWCT-824",
+                "Car Type: TANK CAR",
+                "PC-TC-01 Alondra Navarro c-4--nov---21 Primera edicion",
+                "aar_form_4_2_number: AAR-42-001",
+                "four_two_drawing_number: DWG-100",
+                "Specimen plate A516 Grado 70",
+                "test_plate_tank_mtr: MTR-777",
+                "attachment_material: A36",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run", review_forms=("B24_RL2",))
+
+    filled_doc = Document(str(result.filled_docx_path))
+    assert "2021-11-04" not in filled_doc.tables[0].rows[11].cells[16].text
+    manifest = _manifest(result)
+    b24_docx = manifest["docx_generation"][0]
+    assert "auto_table.t0.r11.c16.date_approved" in b24_docx["auto_table_manual_fields"]
 
 
 def test_inbox_pipeline_patches_b89_from_docupipe_schema_json(tmp_path: Path) -> None:
@@ -350,6 +523,11 @@ def test_inbox_pipeline_patches_b89_from_docupipe_schema_json(tmp_path: Path) ->
                     "carNumber": "PAWCT-RLJ",
                     "carType": "TANK CAR",
                     "station": "Taller Mexico FTVM",
+                },
+                "tco": {
+                    "name": "CIT",
+                    "permissionDate": "2026-05-04",
+                    "instructions": "Repair authorized per customer email",
                 },
                 "aar": {"form42Number": "AAR-89-001"},
                 "jacketPatch": {
@@ -385,7 +563,7 @@ def test_inbox_pipeline_patches_b89_from_docupipe_schema_json(tmp_path: Path) ->
         "pitp.id",
     }.issubset(set(docx["patched_fields"]))
     filled_doc = Document(str(result.filled_docx_path))
-    assert "MANTENIMIENTO, MODIFICACION" in filled_doc.tables[0].rows[2].cells[5].text
+    assert "Repair authorized" in filled_doc.tables[0].rows[2].cells[5].text
     _assert_auto_table_manual_tracked_separate(manifest)
 
 
@@ -400,6 +578,9 @@ def test_inbox_pipeline_patches_b90_from_stub_sill_packet_text(tmp_path: Path) -
                 "Estacion/ Station: Taller Mexico FTVM",
                 "Fecha I Date: 06-Mayo-2025",
                 "MANTENIMIENTO Y MODIFICACION DE STUB SILLS",
+                "Tank Car Owner (TCO) Name: CIT",
+                "Date Permission Received from TCO: 2026-05-04",
+                "Written Instructions from TCO: Repair authorized per customer email.",
                 "Car Mark: PROBETA MUESTRA",
                 "Car Number: PAWCT-B90",
                 "Car Type: TANK CAR",
@@ -432,7 +613,7 @@ def test_inbox_pipeline_patches_b90_from_stub_sill_packet_text(tmp_path: Path) -
         "stub_sill.procedure.id",
     }.issubset(set(docx["patched_fields"]))
     filled_doc = Document(str(result.filled_docx_path))
-    assert "MANTENIMIENTO Y MODIFICACION" in filled_doc.tables[0].rows[4].cells[5].text
+    assert "Repair authorized" in filled_doc.tables[0].rows[4].cells[5].text
     _assert_auto_table_manual_tracked_separate(manifest)
 
 
@@ -465,6 +646,62 @@ def test_pdf_inbox_ignores_tracked_smoke_evidence_txt(tmp_path: Path) -> None:
     (inbox / "evidence_sample.txt").write_text("sample only", encoding="utf-8")
 
     assert [p.name for p in supported_evidence_files(inbox)] == [pdf.name]
+
+
+def test_pdf_inbox_ignores_staged_zip_smoke_evidence_txt(tmp_path: Path) -> None:
+    inbox = tmp_path / "inbox"
+    inbox.mkdir()
+    pdf = inbox / "activitys__b24_1.pdf"
+    pdf.write_bytes(b"%PDF-1.4\n")
+    (inbox / "evidence_sample__evidence.txt").write_text(
+        "Cover Page Facility: Smoke Fixture\nB24 RL2 Date: 2099-01-01\n",
+        encoding="utf-8",
+    )
+
+    assert [p.name for p in supported_evidence_files(inbox)] == [pdf.name]
+
+
+def test_inbox_pipeline_extracts_supported_files_from_zip(tmp_path: Path) -> None:
+    root = _repo_root()
+    inbox = tmp_path / "inbox"
+    inbox.mkdir()
+    with zipfile.ZipFile(inbox / "evidence_bundle.zip", "w") as zf:
+        zf.writestr(
+            "nested/b24_mapped.txt",
+            "\n".join(
+                [
+                    "B24 RL2 MANTENIMIENTO Y MODIFICACION DE LOS CARROS TANQUE RL2",
+                    "Estacion/ Station: Taller Mexico FTVM",
+                    "Fecha I Date: 06-Mayo-2025",
+                    "Tank Car Owner (TCO) Name: CIT",
+                    "Date Permission/Instruction Received from TCO: 2026-05-04",
+                    "Written Instructions from TCO: Repair authorized per customer email.",
+                    "Car Mark: PROBETA MUESTRA",
+                    "Car Number: PAWCT-824",
+                    "Car Type: TANK CAR",
+                    "pitp_document_name: PC-TC-01",
+                    "pitp_id: PC-TC-01",
+                    "pitp_approved_by: Casey",
+                    "pitp_date_approved: 2026-05-05",
+                    "aar_form_4_2_number: AAR-42-001",
+                    "four_two_drawing_number: DWG-100",
+                    "Specimen plate A516 Grado 70",
+                    "test_plate_tank_mtr: MTR-777",
+                    "attachment_material: A36",
+                ]
+            ),
+        )
+
+    result = run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run", review_forms=("B24_RL2",))
+
+    manifest = _manifest(result)
+    review = _review(result)
+    source_files = {row["source_file"] for row in review["inputs"]}
+    assert any("b24_mapped" in str(source) for source in source_files)
+    docx = manifest["docx_generation"][0]
+    assert docx["status"] == "filled"
+    assert {"facility_name", "car_mark", "tank_design_spec"}.issubset(set(docx["patched_fields"]))
+    assert result.filled_docx_path is not None and result.filled_docx_path.is_file()
 
 
 def test_docupipe_live_mode_missing_credentials_fails(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
