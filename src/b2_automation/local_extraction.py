@@ -544,7 +544,7 @@ def _field_suggestions(retrieved: list[dict[str, Any]], form: str = "") -> list[
             ),
             (
                 "tco_written_instructions",
-                r"\b(?:written\s+instructions\s+from\s+TCO|instructions\s+received\s+from\s+TCO|"
+                r"\b(?:written\s+instructions(?:\s+from\s+TCO)?|instructions\s+received(?:\s+from\s+TCO)?|"
                 r"TCO\s+written\s+instructions)\s*[:=-]\s*([^\n\r;]{2,160})",
             ),
             (
@@ -647,6 +647,29 @@ def _special_text_suggestions(item: dict[str, Any]) -> list[dict[str, Any]]:
             for field_id in ("pitp.date_approved", "pitp_date_approved"):
                 emit(field_id, value, 0.90)
 
+    pitp_line_match = re.search(r"\bPITP\s*[:=-]\s*([^\n\r]+)", text, flags=re.IGNORECASE)
+    if pitp_line_match:
+        pitp_parts = [
+            _trim_before_next_field_marker(part).strip()
+            for part in re.split(r"\s+\|\s+|\s+/\s+", pitp_line_match.group(1))
+        ]
+        pitp_parts = [part for part in pitp_parts if part]
+        if pitp_parts:
+            emit("pitp.name", pitp_parts[0], 0.95)
+            emit("pitp_document_name", pitp_parts[0], 0.95)
+        if len(pitp_parts) > 1:
+            emit("pitp.id", pitp_parts[1], 0.95)
+            emit("pitp_id", pitp_parts[1], 0.95)
+        if len(pitp_parts) > 2:
+            emit("pitp.approved_by", pitp_parts[2], 0.92)
+            emit("pitp_approved_by", pitp_parts[2], 0.92)
+        if len(pitp_parts) > 3:
+            emit("pitp.date_approved", pitp_parts[3], 0.92)
+            emit("pitp_date_approved", pitp_parts[3], 0.92)
+        if len(pitp_parts) > 4:
+            emit("pitp.revision", pitp_parts[4], 0.90)
+            emit("pitp_rev", pitp_parts[4], 0.90)
+
     tco_name_match = re.search(
         r"\b(?:tank\s+car\s+owner\s*(?:\(TCO\))?\s+name|TCO\s+name)\s*[:=-]\s*([A-Z0-9][A-Z0-9 .&/-]{1,80})",
         compact,
@@ -654,9 +677,44 @@ def _special_text_suggestions(item: dict[str, Any]) -> list[dict[str, Any]]:
     )
     if tco_name_match:
         value = _trim_before_next_field_marker(tco_name_match.group(1))
-        value = re.split(r"\s+(?:date\s+permission|written\s+instructions)\b", value, maxsplit=1, flags=re.IGNORECASE)[0].strip()
+        value = re.split(
+            r"\s+(?:date\s+permission|permission\s+date|tco\s+permission\s+date|written\s+instructions)\b",
+            value,
+            maxsplit=1,
+            flags=re.IGNORECASE,
+        )[0].strip()
         emit("tco.name", value, 0.98)
         emit("facility_name", value, 0.98)
+
+    design_spec_match = re.search(r"\bDesign\s+Spec\s*[:=-]\s*([A-Z0-9][A-Z0-9./ -]{1,60})", compact, flags=re.IGNORECASE)
+    stencil_spec_match = re.search(r"\bStencil\s+Spec\s*[:=-]\s*([A-Z0-9][A-Z0-9./ -]{1,60})", compact, flags=re.IGNORECASE)
+    design_spec = _trim_before_next_field_marker(design_spec_match.group(1)).strip() if design_spec_match else ""
+    stencil_spec = _trim_before_next_field_marker(stencil_spec_match.group(1)).strip() if stencil_spec_match else ""
+    if design_spec:
+        design_spec = re.split(r"\s+Stencil\s+Spec\b", design_spec, maxsplit=1, flags=re.IGNORECASE)[0].strip()
+    if stencil_spec:
+        stencil_spec = re.split(r"\s+AAR\s+Form\s+4[- ]?2\b", stencil_spec, maxsplit=1, flags=re.IGNORECASE)[0].strip()
+        stencil_spec = re.split(r"\s+Drawing(?:\s+Number)?\b", stencil_spec, maxsplit=1, flags=re.IGNORECASE)[0].strip()
+    if design_spec and stencil_spec:
+        emit("tank_design_spec", f"{design_spec} / {stencil_spec}", 0.95)
+    elif design_spec:
+        emit("tank_design_spec", design_spec, 0.92)
+    elif stencil_spec:
+        emit("tank_design_spec", stencil_spec, 0.92)
+
+    aar_form_match = re.search(
+        r"\bAAR\s*Form\s*4[- ]?2(?:\s*\(AAR\s*No\.?\))?\s*[:=-]\s*([A-Z0-9][A-Z0-9./ -]{1,40})",
+        compact,
+        flags=re.IGNORECASE,
+    )
+    if aar_form_match:
+        aar_value = _trim_before_next_field_marker(aar_form_match.group(1))
+        aar_value = re.split(r"\s+Drawing(?:\s+Number)?\b", aar_value, maxsplit=1, flags=re.IGNORECASE)[0].strip()
+        emit("aar.form_4_2.number", aar_value, 0.94)
+
+    drawing_match = re.search(r"\bDrawing(?:\s+Number)?\s*[:=-]\s*([A-Z0-9][A-Z0-9./ -]{1,40})", compact, flags=re.IGNORECASE)
+    if drawing_match:
+        emit("drawing.number", _trim_before_next_field_marker(drawing_match.group(1)), 0.94)
 
     if re.search(r"\bconfirmaci[oó6]n\s+por\s+correo\s+electr[oó6]nico\b", compact, flags=re.IGNORECASE):
         for field_id in ("tco.instructions", "tco_written_instructions"):
@@ -844,7 +902,7 @@ def _compact_match_text(text: str) -> str:
 
 def _normalize_candidate_value(field: str, value: str) -> str:
     cleaned = re.sub(r"\s+", " ", value).strip(" \t\r\n,.;")
-    if field == "date":
+    if _is_date_like_field(field):
         return _normalize_date_value(cleaned)
     material_fields = {
         "materials.insulation.spec",
@@ -907,6 +965,11 @@ def _normalize_date_value(value: str) -> str:
     if len(year_raw) == 2:
         year += 2000
     return f"{year:04d}-{int(month):02d}-{day:02d}"
+
+
+def _is_date_like_field(field: str) -> bool:
+    field_lower = str(field).lower()
+    return field_lower == "date" or "date" in field_lower or field_lower.endswith("_dt")
 
 
 def _deterministic_confidence(field: str, value: str, retrieval_score: int) -> float:
@@ -1024,6 +1087,8 @@ def _trim_before_next_field_marker(value: str) -> str:
         r"\s+(?:"
         r"B24\s+RL2|B81|B89|B90|Cover\s+Page|"
         r"Inspection\s+Date|Date|Fecha|Auditor|Inspector|"
+        r"TCO\s+Name|TCO\s+Permission\s+Date|Written\s+Instructions|"
+        r"PITP|Design\s+Spec|Stencil\s+Spec|AAR\s+Form\s+4[- ]?2|Drawing(?:\s+Number)?|"
         r"Car(?:\s+No\.?|\s+Number|(?:ro)?\s*/\s*Car)?|Tipo\s+de\s+Carro|"
         r"Facility|Company|Shop|Estaci[oó]n|Station|Taller|Planta"
         r")\s*[:=-]",
@@ -1040,12 +1105,10 @@ def _is_plausible_candidate_value(field: str, value: str) -> bool:
     if not cleaned:
         return False
     lower = cleaned.lower()
-    if field == "date":
+    if _is_date_like_field(field):
         return bool(
-            re.fullmatch(
-                r"[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}|[0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4}",
-                cleaned,
-            )
+            re.fullmatch(r"[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}|[0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4}", cleaned)
+            or re.fullmatch(r"[0-9]{1,2}[-\s][A-Za-zÁÉÍÓÚáéíóúñÑ]+[-\s][0-9]{2,4}", cleaned)
         )
     if field != "facility_name":
         material_fields = {

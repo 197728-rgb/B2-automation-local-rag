@@ -473,6 +473,52 @@ def test_inbox_pipeline_recovers_b24_ocr_pitp_date_and_material(tmp_path: Path) 
     assert selected["test_plate_tank_material"] == "A516 Gr. 70"
 
 
+def test_inbox_pipeline_recovers_manual_b24_style_fields_and_rejects_junk_dates(tmp_path: Path) -> None:
+    root = _repo_root()
+    inbox = tmp_path / "inbox"
+    inbox.mkdir()
+    (inbox / "manual_b24_style.txt").write_text(
+        "\n".join(
+            [
+                "B24 RL2 evidence",
+                "TCO Name: CIT",
+                "TCO Permission Date: 5/20/2024",
+                "Written Instructions: Facility received written confirmation from owner Allowing FACILITY Procedures.",
+                "Date Approved: day where the action",
+                "PITP: PITP / PC-TC-01 / A Navarre / 11/4/2021 / 0",
+                "Car Mark: DBUX 250086",
+                "Design Spec: DOT111A100W1",
+                "Stencil Spec: AAR211A100W1",
+                "AAR Form 4-2: L016048A",
+                "Drawing: D43520",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run", review_forms=("B24_RL2",))
+
+    review = _review(result)
+    selected = {row["field_id"]: row["selected_value"] for row in review["form_packets"]["B24_RL2"]["field_decisions"]}
+    assert selected["facility_name"] == "CIT"
+    assert selected["tco_permission_date"] == "5/20/2024"
+    assert selected["tco_written_instructions"] == "Facility received written confirmation from owner Allowing FACILITY Procedures"
+    assert selected["pitp_document_name"] == "PITP"
+    assert selected["pitp_id"] == "PC-TC-01"
+    assert selected["pitp_approved_by"] == "A Navarre"
+    assert selected["pitp_date_approved"] == "11/4/2021"
+    assert selected["pitp_rev"] == "0"
+    assert selected["car_mark"] == "DBUX 250086"
+    assert selected["tank_design_spec"] == "DOT111A100W1 / AAR211A100W1"
+    assert selected["aar_form_4_2_number"] == "L016048A"
+    assert selected["four_two_drawing_number"] == "D43520"
+    assert all("day where the action" not in str(value).lower() for value in selected.values())
+
+    filled_doc = Document(str(result.filled_docx_path))
+    assert "day where the action" not in _docx_text(result.filled_docx_path).lower()
+    assert "DOT111A100W1 / AAR211A100W1" in filled_doc.tables[0].rows[9].cells[2].text
+
+
 def test_inbox_pipeline_does_not_autofill_generic_date_approved_from_pitp_date(tmp_path: Path) -> None:
     root = _repo_root()
     inbox = tmp_path / "inbox"
