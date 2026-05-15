@@ -26,6 +26,11 @@ def _review(result: object) -> dict[str, object]:
     return json.loads(result.review_json_path.read_text(encoding="utf-8"))
 
 
+def _fixture_text(name: str) -> str:
+    fixture = _repo_root() / "tests" / "fixtures" / name
+    return fixture.read_text(encoding="utf-8")
+
+
 def _docx_text(path: Path) -> str:
     doc = Document(str(path))
     parts: list[str] = []
@@ -517,6 +522,151 @@ def test_inbox_pipeline_recovers_manual_b24_style_fields_and_rejects_junk_dates(
     filled_doc = Document(str(result.filled_docx_path))
     assert "day where the action" not in _docx_text(result.filled_docx_path).lower()
     assert "DOT111A100W1 / AAR211A100W1" in filled_doc.tables[0].rows[9].cells[2].text
+
+
+def test_inbox_pipeline_validates_b24_table_pair_fixture_end_to_end(tmp_path: Path) -> None:
+    root = _repo_root()
+    inbox = tmp_path / "inbox"
+    inbox.mkdir()
+    (inbox / "DLGA-B24_table_pairs.txt").write_text(_fixture_text("dlga_b24_table_pairs_fixture.txt"), encoding="utf-8")
+
+    result = run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run", review_forms=("B24_RL2",))
+
+    manifest = _manifest(result)
+    b24_docx = next(item for item in manifest["docx_generation"] if item["form_id"] == "B24_RL2")
+    assert b24_docx["status"] == "filled"
+    assert b24_docx["structure_guard_passed"] is True
+    assert manifest["structure_guard_passed"] is True
+    assert (tmp_path / "run" / "structure_guard_report.json").is_file()
+
+    review = _review(result)
+    selected = {row["field_id"]: row["selected_value"] for row in review["form_packets"]["B24_RL2"]["field_decisions"]}
+    assert selected["facility_name"] == "CIT"
+    assert selected["tco_permission_date"] == "5/20/2024"
+    assert selected["tco_written_instructions"] == "Facility received written confirmation from owner Allowing FACILITY Procedures"
+    assert selected["pitp_document_name"] == "PITP"
+    assert selected["pitp_id"] == "PC-TC-01"
+    assert selected["pitp_approved_by"] == "A Navarre"
+    assert selected["pitp_date_approved"] == "11/4/2021"
+    assert selected["pitp_rev"] == "0"
+    assert selected["tank_design_spec"] == "DOT111A100W1 / AAR211A100W1"
+    assert selected["aar_form_4_2_number"] == "L016048A"
+    assert selected["four_two_drawing_number"] == "D43520"
+    assert selected["tco.name"] == "CIT"
+
+    manual_map_fields = set(manifest["manual_fields"]["B24_RL2"])
+    assert manual_map_fields == {"test_plate_tank_material", "test_plate_tank_mtr", "attachment_material"}
+    assert result.status == "review_required"
+
+    text = _docx_text(result.filled_docx_path).lower()
+    for junk in ("day where the action", "a):", "malformed ocr fragment"):
+        assert junk not in text
+    for should_not_be_manual in (
+        "review_required: facility_name",
+        "review_required: tco_permission_date",
+        "review_required: pitp_document_name",
+        "review_required: pitp_id",
+        "review_required: tank_design_spec",
+        "review_required: four_two_drawing_number",
+    ):
+        assert should_not_be_manual not in text
+
+
+def test_inbox_pipeline_b24_aliases_prefer_tco_name_over_facility_alias_noise(tmp_path: Path) -> None:
+    root = _repo_root()
+    inbox = tmp_path / "inbox"
+    inbox.mkdir()
+    (inbox / "b24_alias_noise.txt").write_text(
+        "\n".join(
+            [
+                "B24 RL2 evidence",
+                "facility_name: WRONG FACILITY VALUE",
+                "TCO Name: CIT",
+                "TCO Permission Date: 5/20/2024",
+                "Written Instructions: Facility received written confirmation from owner Allowing FACILITY Procedures.",
+                "PITP: PITP / PC-TC-01 / A Navarre / 11/4/2021 / 0",
+                "Car Mark: DBUX 250086",
+                "Design Spec: DOT111A100W1",
+                "Stencil Spec: AAR211A100W1",
+                "AAR Form 4-2: L016048A",
+                "Drawing: D43520",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run", review_forms=("B24_RL2",))
+    review = _review(result)
+    selected = {row["field_id"]: row["selected_value"] for row in review["form_packets"]["B24_RL2"]["field_decisions"]}
+    assert selected["facility_name"] == "CIT"
+    assert selected["tco.name"] == "CIT"
+
+
+def test_inbox_pipeline_b24_aliases_do_not_hardcode_customer_name(tmp_path: Path) -> None:
+    root = _repo_root()
+    inbox = tmp_path / "inbox"
+    inbox.mkdir()
+    (inbox / "b24_alt_tco.txt").write_text(
+        "\n".join(
+            [
+                "B24 RL2 evidence",
+                "TCO Name: GATX",
+                "TCO Permission Date: 5/20/2024",
+                "Written Instructions: Owner approved procedures in writing.",
+                "PITP: PITP / PC-TC-77 / J Smith / 11/4/2021 / 0",
+                "Car Mark: DBUX 250086",
+                "Design Spec: DOT111A100W1",
+                "Stencil Spec: AAR211A100W1",
+                "AAR Form 4-2: L016048A",
+                "Drawing: D43520",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run", review_forms=("B24_RL2",))
+    review = _review(result)
+    selected = {row["field_id"]: row["selected_value"] for row in review["form_packets"]["B24_RL2"]["field_decisions"]}
+    assert selected["facility_name"] == "GATX"
+    assert selected["tco.name"] == "GATX"
+    assert selected["pitp_document_name"] == "PITP"
+
+
+def test_inbox_pipeline_b24_does_not_fill_numeric_or_date_targets_from_prose_only_labels(tmp_path: Path) -> None:
+    root = _repo_root()
+    inbox = tmp_path / "inbox"
+    inbox.mkdir()
+    (inbox / "b24_prose_noise.txt").write_text(
+        "\n".join(
+            [
+                "[structured_docx_table_evidence]",
+                "Tank Car Owner (TCO) Name: CIT",
+                "Date Permission/Instruction Received from TCO: 5/20/2024",
+                "Written Instructions from TCO: Facility received written confirmation from owner Allowing FACILITY Procedures.",
+                "PITP Document Name: PITP",
+                "PITP ID: should follow owner guidance in procedure",
+                "Date Approved: day where the action",
+                "AAR Form 4-2 (AAR No.): see owner email thread",
+                "Drawing Number: as noted by inspector in general prose",
+                "Car Mark and Number: DBUX 250086",
+                "Tank Car Design Spec/Stencil Spec: DOT111A100W1 / AAR211A100W1",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run", review_forms=("B24_RL2",))
+    manifest = _manifest(result)
+    manual_fields = set(manifest["manual_fields"]["B24_RL2"])
+    assert {"pitp_id", "pitp_date_approved", "aar_form_4_2_number", "four_two_drawing_number"} <= manual_fields
+    text = _docx_text(result.filled_docx_path).lower()
+    for junk in (
+        "day where the action",
+        "should follow owner guidance in procedure",
+        "see owner email thread",
+        "as noted by inspector in general prose",
+    ):
+        assert junk not in text
 
 
 def test_inbox_pipeline_does_not_autofill_generic_date_approved_from_pitp_date(tmp_path: Path) -> None:
