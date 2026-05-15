@@ -623,8 +623,11 @@ def _special_text_suggestions(item: dict[str, Any]) -> list[dict[str, Any]]:
     pc_match = re.search(r"\b(PC[-\s]?TC[-\s]?\d{2})\b", compact, flags=re.IGNORECASE)
     if pc_match:
         value = re.sub(r"\s+", "-", pc_match.group(1).upper())
-        for field_id in ("pitp.name", "pitp.id", "pitp_document_name", "pitp_id"):
+        for field_id in ("pitp.id", "pitp_id"):
             emit(field_id, value, 0.94)
+        # Keep permissive PITP-name fallback, but below explicit label-derived candidates.
+        for field_id in ("pitp.name", "pitp_document_name"):
+            emit(field_id, value, 0.80)
         source = str(item.get("source_file") or "").lower()
         if "b90" in source or re.search(r"\bstu+b\s+sills?\b", compact, flags=re.IGNORECASE):
             emit("stub_sill.procedure.id", value, 0.92)
@@ -692,9 +695,11 @@ def _special_text_suggestions(item: dict[str, Any]) -> list[dict[str, Any]]:
     stencil_spec = _trim_before_next_field_marker(stencil_spec_match.group(1)).strip() if stencil_spec_match else ""
     if design_spec:
         design_spec = re.split(r"\s+Stencil\s+Spec\b", design_spec, maxsplit=1, flags=re.IGNORECASE)[0].strip()
+        design_spec = re.sub(r"\s+table$", "", design_spec, flags=re.IGNORECASE).strip()
     if stencil_spec:
         stencil_spec = re.split(r"\s+AAR\s+Form\s+4[- ]?2\b", stencil_spec, maxsplit=1, flags=re.IGNORECASE)[0].strip()
         stencil_spec = re.split(r"\s+Drawing(?:\s+Number)?\b", stencil_spec, maxsplit=1, flags=re.IGNORECASE)[0].strip()
+        stencil_spec = re.sub(r"\s+table$", "", stencil_spec, flags=re.IGNORECASE).strip()
     if design_spec and stencil_spec:
         emit("tank_design_spec", f"{design_spec} / {stencil_spec}", 0.95)
     elif design_spec:
@@ -1083,6 +1088,9 @@ def _trim_before_next_field_marker(value: str) -> str:
     canonical_marker = re.search(r"\s+[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z0-9_]+)+\s*[:=-]", value)
     if canonical_marker:
         value = value[: canonical_marker.start()]
+    table_marker = re.search(r"\s+table_[0-9]+_row_[0-9]+\s*:", value, flags=re.IGNORECASE)
+    if table_marker:
+        value = value[: table_marker.start()]
     label_marker = re.search(
         r"\s+(?:"
         r"B24\s+RL2|B81|B89|B90|Cover\s+Page|"

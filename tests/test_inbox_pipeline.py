@@ -26,6 +26,11 @@ def _review(result: object) -> dict[str, object]:
     return json.loads(result.review_json_path.read_text(encoding="utf-8"))
 
 
+def _fixture_text(name: str) -> str:
+    fixture = _repo_root() / "tests" / "fixtures" / name
+    return fixture.read_text(encoding="utf-8")
+
+
 def _docx_text(path: Path) -> str:
     doc = Document(str(path))
     parts: list[str] = []
@@ -517,6 +522,43 @@ def test_inbox_pipeline_recovers_manual_b24_style_fields_and_rejects_junk_dates(
     filled_doc = Document(str(result.filled_docx_path))
     assert "day where the action" not in _docx_text(result.filled_docx_path).lower()
     assert "DOT111A100W1 / AAR211A100W1" in filled_doc.tables[0].rows[9].cells[2].text
+
+
+def test_inbox_pipeline_validates_b24_table_pair_fixture_end_to_end(tmp_path: Path) -> None:
+    root = _repo_root()
+    inbox = tmp_path / "inbox"
+    inbox.mkdir()
+    (inbox / "DLGA-B24_table_pairs.txt").write_text(_fixture_text("dlga_b24_table_pairs_fixture.txt"), encoding="utf-8")
+
+    result = run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run", review_forms=("B24_RL2",))
+
+    manifest = _manifest(result)
+    b24_docx = next(item for item in manifest["docx_generation"] if item["form_id"] == "B24_RL2")
+    assert b24_docx["status"] == "filled"
+    assert b24_docx["structure_guard_passed"] is True
+    assert manifest["structure_guard_passed"] is True
+    assert (tmp_path / "run" / "structure_guard_report.json").is_file()
+
+    review = _review(result)
+    selected = {row["field_id"]: row["selected_value"] for row in review["form_packets"]["B24_RL2"]["field_decisions"]}
+    assert selected["facility_name"] == "CIT"
+    assert selected["tco_permission_date"] == "5/20/2024"
+    assert selected["tco_written_instructions"] == "Facility received written confirmation from owner Allowing FACILITY Procedures"
+    assert selected["pitp_document_name"] == "PITP"
+    assert selected["pitp_id"] == "PC-TC-01"
+    assert selected["pitp_approved_by"] == "A Navarre"
+    assert selected["pitp_date_approved"] == "11/4/2021"
+    assert selected["pitp_rev"] == "0"
+    assert selected["tank_design_spec"] == "DOT111A100W1 / AAR211A100W1"
+    assert selected["aar_form_4_2_number"] == "L016048A"
+    assert selected["four_two_drawing_number"] == "D43520"
+
+    manual_map_fields = set(manifest["manual_fields"]["B24_RL2"])
+    assert manual_map_fields == {"test_plate_tank_material", "test_plate_tank_mtr", "attachment_material"}
+
+    text = _docx_text(result.filled_docx_path).lower()
+    for junk in ("day where the action", "a):", "malformed ocr fragment"):
+        assert junk not in text
 
 
 def test_inbox_pipeline_does_not_autofill_generic_date_approved_from_pitp_date(tmp_path: Path) -> None:
