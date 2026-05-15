@@ -35,6 +35,12 @@ python -m venv .venv
 
 For scanned/image PDFs, install the Tesseract OCR engine on Windows and make sure `tesseract.exe` is on `PATH`. The Python OCR dependencies are installed with the project, but the OCR engine itself is a system dependency.
 
+## Verified source handoff
+
+A clean source handoff archive is complete when it contains the project source, tests, schemas/maps, templates, scripts, docs, and workflow files, but excludes local/runtime state such as `.git/`, `.venv/`, `inbox/`, `outputs/`, `.env*`, and pytest temp folders. A verified handoff should install from a fresh extraction, report `b2 0.1.0`, pass the full pytest suite, and run `b2 inbox` against a local inbox to generate the five filled DOCX files for `B24_RL2`, `B81`, `B89`, `B90`, and `Cover_Page`.
+
+`inbox/` is intentionally gitignored. Each user supplies their own evidence files locally; PDF and ZIP evidence in `inbox/` is supported at runtime but is not part of the source handoff.
+
 ## Run the local inbox command
 
 ```powershell
