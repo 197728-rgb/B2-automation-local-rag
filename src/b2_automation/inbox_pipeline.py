@@ -493,11 +493,17 @@ def _best_value_for_label(label: str, evidence: Mapping[str, list[str]]) -> str 
     tokens = _label_tokens(label)
     if not tokens:
         return None
+    numeric_label_tokens = {"id", "number", "no", "form", "drawing", "spec", "stencil", "mark", "mtr"}
     best_key = ""
     best_score = 0.0
     for candidate_key in evidence.keys():
         candidate_tokens = set(str(candidate_key).split())
         if not candidate_tokens:
+            continue
+        # Avoid weak cross-field matching for sensitive label classes.
+        if "date" in tokens and "date" not in candidate_tokens:
+            continue
+        if tokens & numeric_label_tokens and not (candidate_tokens & numeric_label_tokens):
             continue
         if {"date", "approved"} <= tokens and "pitp" not in tokens and "pitp" in candidate_tokens:
             continue
@@ -528,7 +534,7 @@ def _preferred_evidence_keys(key: str) -> tuple[str, ...]:
     tokens = set(key.split())
     preferred: list[str] = []
     if {"date", "permission"} <= tokens:
-        preferred.extend(["tco permission date", "permission received", "date"])
+        preferred.extend(["tco permission date", "permission received"])
     if {"written", "instruction"} <= tokens or {"instruction", "received"} <= tokens:
         preferred.extend(["tco written instructions", "tco instructions"])
     if {"drawing", "number"} <= tokens:
@@ -724,6 +730,29 @@ def _add_missing_required_map_markers(bundle: ApprovalBundle, values: dict[str, 
     return sorted(manual)
 
 
+def _sanitize_map_values_against_labels(bundle: ApprovalBundle, values: dict[str, str], confidences: dict[str, float]) -> None:
+    fields = bundle.approval_map.get("fields") or {}
+    if not isinstance(fields, Mapping):
+        return
+    for field_id, spec in fields.items():
+        if not isinstance(spec, Mapping):
+            continue
+        fid = str(field_id)
+        current = str(values.get(fid) or "").strip()
+        if not current or current.startswith(REVIEW_REQUIRED_TEXT):
+            continue
+        label = str(spec.get("label") or fid)
+        required = bool(spec.get("required"))
+        if _label_value_is_compatible(label, current):
+            continue
+        if required:
+            values[fid] = _marker(fid, "needs manual completion")
+            confidences[fid] = 1.0
+        else:
+            values.pop(fid, None)
+            confidences.pop(fid, None)
+
+
 def _manual_fields(values: Mapping[str, str]) -> list[str]:
     return sorted(fid for fid, value in values.items() if str(value).startswith(REVIEW_REQUIRED_TEXT))
 
@@ -771,6 +800,7 @@ def _write_local_filled_docx(
             results.append(result)
             continue
 
+        _sanitize_map_values_against_labels(bundle, values, confidences)
         _add_missing_required_map_markers(bundle, values, confidences)
         if not values:
             results.append(result)

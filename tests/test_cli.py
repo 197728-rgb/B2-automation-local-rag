@@ -125,3 +125,43 @@ def test_b2_inbox_zip_b24_end_to_end_quality_gate(tmp_path):
     text = _docx_text(Path(b24_docx["filled_docx"])).lower()
     for junk in ("day where the action", "a):", "malformed ocr fragment"):
         assert junk not in text
+
+
+def test_b2_inbox_zip_b24_rejects_prose_for_numeric_and_date_cells(tmp_path):
+    inbox = tmp_path / "inbox"
+    inbox.mkdir()
+    fixture = "\n".join(
+        [
+            "[structured_docx_table_evidence]",
+            "Tank Car Owner (TCO) Name: CIT",
+            "Date Permission/Instruction Received from TCO: 5/20/2024",
+            "Written Instructions from TCO: Facility received written confirmation from owner Allowing FACILITY Procedures.",
+            "PITP Document Name: PITP",
+            "PITP ID: should follow owner guidance in procedure",
+            "Date Approved: day where the action",
+            "AAR Form 4-2 (AAR No.): see owner email thread",
+            "Drawing Number: as noted by inspector in general prose",
+            "Car Mark and Number: DBUX 250086",
+            "Tank Car Design Spec/Stencil Spec: DOT111A100W1 / AAR211A100W1",
+        ]
+    )
+    with zipfile.ZipFile(inbox / "inbox.zip", "w", compression=zipfile.ZIP_DEFLATED) as zf:
+        zf.writestr("DLGA-B24_prose_noise.txt", fixture)
+
+    out_dir = tmp_path / "out"
+    r = _run_cli(["inbox", "--inbox", str(inbox), "--out", str(out_dir), "--review-forms", "B24_RL2"])
+    assert r.returncode == 0
+
+    manifest = json.loads((out_dir / "run_manifest.json").read_text(encoding="utf-8"))
+    b24_docx = next(item for item in manifest["docx_generation"] if item["form_id"] == "B24_RL2")
+    manual = set(manifest["manual_fields"]["B24_RL2"])
+    assert {"pitp_id", "pitp_date_approved", "aar_form_4_2_number", "four_two_drawing_number"} <= manual
+
+    text = _docx_text(Path(b24_docx["filled_docx"])).lower()
+    for junk in (
+        "day where the action",
+        "should follow owner guidance in procedure",
+        "see owner email thread",
+        "as noted by inspector in general prose",
+    ):
+        assert junk not in text

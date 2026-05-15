@@ -561,6 +561,73 @@ def test_inbox_pipeline_validates_b24_table_pair_fixture_end_to_end(tmp_path: Pa
         assert junk not in text
 
 
+def test_inbox_pipeline_b24_aliases_prefer_tco_name_over_facility_alias_noise(tmp_path: Path) -> None:
+    root = _repo_root()
+    inbox = tmp_path / "inbox"
+    inbox.mkdir()
+    (inbox / "b24_alias_noise.txt").write_text(
+        "\n".join(
+            [
+                "B24 RL2 evidence",
+                "facility_name: WRONG FACILITY VALUE",
+                "TCO Name: CIT",
+                "TCO Permission Date: 5/20/2024",
+                "Written Instructions: Facility received written confirmation from owner Allowing FACILITY Procedures.",
+                "PITP: PITP / PC-TC-01 / A Navarre / 11/4/2021 / 0",
+                "Car Mark: DBUX 250086",
+                "Design Spec: DOT111A100W1",
+                "Stencil Spec: AAR211A100W1",
+                "AAR Form 4-2: L016048A",
+                "Drawing: D43520",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run", review_forms=("B24_RL2",))
+    review = _review(result)
+    selected = {row["field_id"]: row["selected_value"] for row in review["form_packets"]["B24_RL2"]["field_decisions"]}
+    assert selected["facility_name"] == "CIT"
+    assert selected["tco.name"] == "CIT"
+
+
+def test_inbox_pipeline_b24_does_not_fill_numeric_or_date_targets_from_prose_only_labels(tmp_path: Path) -> None:
+    root = _repo_root()
+    inbox = tmp_path / "inbox"
+    inbox.mkdir()
+    (inbox / "b24_prose_noise.txt").write_text(
+        "\n".join(
+            [
+                "[structured_docx_table_evidence]",
+                "Tank Car Owner (TCO) Name: CIT",
+                "Date Permission/Instruction Received from TCO: 5/20/2024",
+                "Written Instructions from TCO: Facility received written confirmation from owner Allowing FACILITY Procedures.",
+                "PITP Document Name: PITP",
+                "PITP ID: should follow owner guidance in procedure",
+                "Date Approved: day where the action",
+                "AAR Form 4-2 (AAR No.): see owner email thread",
+                "Drawing Number: as noted by inspector in general prose",
+                "Car Mark and Number: DBUX 250086",
+                "Tank Car Design Spec/Stencil Spec: DOT111A100W1 / AAR211A100W1",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run", review_forms=("B24_RL2",))
+    manifest = _manifest(result)
+    manual_fields = set(manifest["manual_fields"]["B24_RL2"])
+    assert {"pitp_id", "pitp_date_approved", "aar_form_4_2_number", "four_two_drawing_number"} <= manual_fields
+    text = _docx_text(result.filled_docx_path).lower()
+    for junk in (
+        "day where the action",
+        "should follow owner guidance in procedure",
+        "see owner email thread",
+        "as noted by inspector in general prose",
+    ):
+        assert junk not in text
+
+
 def test_inbox_pipeline_does_not_autofill_generic_date_approved_from_pitp_date(tmp_path: Path) -> None:
     root = _repo_root()
     inbox = tmp_path / "inbox"
