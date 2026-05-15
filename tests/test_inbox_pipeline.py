@@ -552,13 +552,24 @@ def test_inbox_pipeline_validates_b24_table_pair_fixture_end_to_end(tmp_path: Pa
     assert selected["tank_design_spec"] == "DOT111A100W1 / AAR211A100W1"
     assert selected["aar_form_4_2_number"] == "L016048A"
     assert selected["four_two_drawing_number"] == "D43520"
+    assert selected["tco.name"] == "CIT"
 
     manual_map_fields = set(manifest["manual_fields"]["B24_RL2"])
     assert manual_map_fields == {"test_plate_tank_material", "test_plate_tank_mtr", "attachment_material"}
+    assert result.status == "review_required"
 
     text = _docx_text(result.filled_docx_path).lower()
     for junk in ("day where the action", "a):", "malformed ocr fragment"):
         assert junk not in text
+    for should_not_be_manual in (
+        "review_required: facility_name",
+        "review_required: tco_permission_date",
+        "review_required: pitp_document_name",
+        "review_required: pitp_id",
+        "review_required: tank_design_spec",
+        "review_required: four_two_drawing_number",
+    ):
+        assert should_not_be_manual not in text
 
 
 def test_inbox_pipeline_b24_aliases_prefer_tco_name_over_facility_alias_noise(tmp_path: Path) -> None:
@@ -589,6 +600,36 @@ def test_inbox_pipeline_b24_aliases_prefer_tco_name_over_facility_alias_noise(tm
     selected = {row["field_id"]: row["selected_value"] for row in review["form_packets"]["B24_RL2"]["field_decisions"]}
     assert selected["facility_name"] == "CIT"
     assert selected["tco.name"] == "CIT"
+
+
+def test_inbox_pipeline_b24_aliases_do_not_hardcode_customer_name(tmp_path: Path) -> None:
+    root = _repo_root()
+    inbox = tmp_path / "inbox"
+    inbox.mkdir()
+    (inbox / "b24_alt_tco.txt").write_text(
+        "\n".join(
+            [
+                "B24 RL2 evidence",
+                "TCO Name: GATX",
+                "TCO Permission Date: 5/20/2024",
+                "Written Instructions: Owner approved procedures in writing.",
+                "PITP: PITP / PC-TC-77 / J Smith / 11/4/2021 / 0",
+                "Car Mark: DBUX 250086",
+                "Design Spec: DOT111A100W1",
+                "Stencil Spec: AAR211A100W1",
+                "AAR Form 4-2: L016048A",
+                "Drawing: D43520",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run", review_forms=("B24_RL2",))
+    review = _review(result)
+    selected = {row["field_id"]: row["selected_value"] for row in review["form_packets"]["B24_RL2"]["field_decisions"]}
+    assert selected["facility_name"] == "GATX"
+    assert selected["tco.name"] == "GATX"
+    assert selected["pitp_document_name"] == "PITP"
 
 
 def test_inbox_pipeline_b24_does_not_fill_numeric_or_date_targets_from_prose_only_labels(tmp_path: Path) -> None:

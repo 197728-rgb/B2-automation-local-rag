@@ -878,6 +878,8 @@ def _expand_write_alias_suggestions(suggestions: list[dict[str, Any]]) -> list[d
     add_alias("car_number", "car.mark")
     add_alias("car_number", "car_mark")
     add_alias("car.mark", "car_number", f"{car_mark} {car_number}".strip() if car_number else car_mark or None)
+    add_alias("tco.name", "facility_name")
+    add_alias("facility_name", "tco.name")
     add_alias("tco_permission_date", "tco.permission_date")
     add_alias("tco.permission_date", "tco_permission_date")
     add_alias("tco_written_instructions", "tco.instructions")
