@@ -1,9 +1,13 @@
 """CLI smoke tests."""
 
+import json
 import os
 import subprocess
 import sys
+import zipfile
 from pathlib import Path
+
+from docx import Document
 
 _REPO = Path(__file__).resolve().parents[1]
 
@@ -18,6 +22,11 @@ def _run_cli(args: list[str], *, cwd: Path | None = None, env: dict | None = Non
         cwd=cwd or _REPO,
         env=env,
     )
+
+
+def _docx_text(path: Path) -> str:
+    doc = Document(str(path))
+    return "\n".join(cell.text for table in doc.tables for row in table.rows for cell in row.cells)
 
 
 def test_b2_help():
@@ -82,3 +91,37 @@ def test_b2_discover_no_templates_dir(tmp_path):
         env={"B2_PROJECT_ROOT": str(tmp_path)},
     )
     assert r.returncode == 2
+
+
+def test_b2_inbox_zip_b24_end_to_end_quality_gate(tmp_path):
+    inbox = tmp_path / "inbox"
+    inbox.mkdir()
+    fixture = (_REPO / "tests" / "fixtures" / "dlga_b24_table_pairs_fixture.txt").read_text(encoding="utf-8")
+    with zipfile.ZipFile(inbox / "inbox.zip", "w", compression=zipfile.ZIP_DEFLATED) as zf:
+        zf.writestr("DLGA-B24_table_pairs.txt", fixture)
+
+    out_dir = tmp_path / "out"
+    r = _run_cli(["inbox", "--inbox", str(inbox), "--out", str(out_dir), "--review-forms", "B24_RL2"])
+    assert r.returncode == 0
+    assert "Status: review_required" in r.stdout
+
+    manifest = json.loads((out_dir / "run_manifest.json").read_text(encoding="utf-8"))
+    review = json.loads((out_dir / "review" / "local_rag_review.json").read_text(encoding="utf-8"))
+    structure_guard = json.loads((out_dir / "structure_guard_report.json").read_text(encoding="utf-8"))
+    b24_docx = next(item for item in manifest["docx_generation"] if item["form_id"] == "B24_RL2")
+
+    assert structure_guard["pass"] is True
+    assert manifest["structure_guard_passed"] is True
+    assert b24_docx["status"] == "filled"
+
+    selected = {row["field_id"]: row["selected_value"] for row in review["form_packets"]["B24_RL2"]["field_decisions"]}
+    assert selected["facility_name"] == "CIT"
+    assert selected["tco_permission_date"] == "5/20/2024"
+    assert selected["pitp_document_name"] == "PITP"
+    assert selected["tank_design_spec"] == "DOT111A100W1 / AAR211A100W1"
+    assert selected["four_two_drawing_number"] == "D43520"
+    assert set(manifest["manual_fields"]["B24_RL2"]) == {"test_plate_tank_material", "test_plate_tank_mtr", "attachment_material"}
+
+    text = _docx_text(Path(b24_docx["filled_docx"])).lower()
+    for junk in ("day where the action", "a):", "malformed ocr fragment"):
+        assert junk not in text
