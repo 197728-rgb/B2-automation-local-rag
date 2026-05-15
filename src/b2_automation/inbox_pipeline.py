@@ -435,15 +435,61 @@ def _label_tokens(label: str) -> set[str]:
     return set(_normalize_label_key(label).split())
 
 
+def _value_looks_like_date(value: str) -> bool:
+    return bool(
+        re.fullmatch(r"[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}|[0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4}", value)
+        or re.fullmatch(r"[0-9]{1,2}[-\s][A-Za-z]+[-\s][0-9]{2,4}", value)
+    )
+
+
+def _label_value_is_compatible(label: str, value: str) -> bool:
+    tokens = _label_tokens(label)
+    cleaned = _clean_cell(value)
+    if not cleaned:
+        return False
+    lower = cleaned.lower()
+    if lower in {"n/a", "na", "none", "-", "—"}:
+        return False
+    if re.fullmatch(r"[a-z]\)", lower):
+        return False
+    if "date" in tokens and not _value_looks_like_date(cleaned):
+        return False
+    numeric_label_tokens = {"id", "number", "no", "form", "drawing", "spec", "stencil", "mark", "mtr"}
+    if tokens & numeric_label_tokens and not re.search(r"\d", cleaned):
+        return False
+    if "approved" in tokens and "date" not in tokens and "by" not in tokens:
+        if len(cleaned.split()) > 3:
+            return False
+        if not re.fullmatch(r"[A-Za-z0-9./-]{1,16}(?:\s+[A-Za-z0-9./-]{1,16}){0,2}", cleaned):
+            return False
+    if {"revision"} & tokens or {"rev"} <= tokens:
+        return bool(re.fullmatch(r"[A-Za-z0-9._-]{1,16}", cleaned))
+    return True
+
+
+def _best_compatible_value(label: str, values: list[str]) -> str | None:
+    compatible = [_clean_cell(value) for value in values if _label_value_is_compatible(label, value)]
+    if not compatible:
+        return None
+    if "date" in _label_tokens(label):
+        compatible.sort(key=lambda value: (0 if _value_looks_like_date(value) else 1, len(value)))
+        return compatible[0]
+    return compatible[0]
+
+
 def _best_value_for_label(label: str, evidence: Mapping[str, list[str]]) -> str | None:
     key = _normalize_label_key(label)
     direct = evidence.get(key)
     if direct:
-        return direct[0]
+        chosen = _best_compatible_value(label, direct)
+        if chosen:
+            return chosen
     for preferred_key in _preferred_evidence_keys(key):
         values = evidence.get(preferred_key)
         if values:
-            return values[0]
+            chosen = _best_compatible_value(label, values)
+            if chosen:
+                return chosen
     tokens = _label_tokens(label)
     if not tokens:
         return None
@@ -472,7 +518,9 @@ def _best_value_for_label(label: str, evidence: Mapping[str, list[str]]) -> str 
             best_score = score
     if best_score >= 0.38 and best_key:
         values = evidence.get(best_key) or []
-        return values[0] if values else None
+        chosen = _best_compatible_value(label, values)
+        if chosen:
+            return chosen
     return None
 
 
