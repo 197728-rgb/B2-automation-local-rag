@@ -45,7 +45,7 @@ A clean source handoff archive is complete when it contains the project source, 
 
 ```powershell
 New-Item -ItemType Directory -Force .\inbox | Out-Null
-# Put .pdf, .txt, .md, .json, or .csv evidence files in .\inbox
+# Put .pdf, .zip, .txt, .md, .json, or .csv evidence files in .\inbox
 .\.venv\Scripts\b2.exe inbox --inbox .\inbox --out .\outputs\local_rag_run
 ```
 
