@@ -524,6 +524,50 @@ def test_inbox_pipeline_recovers_manual_b24_style_fields_and_rejects_junk_dates(
     assert "DOT111A100W1 / AAR211A100W1" in filled_doc.tables[0].rows[9].cells[2].text
 
 
+def test_inbox_pipeline_b24_ocr_fallbacks_fill_station_permission_and_dot_spec(tmp_path: Path) -> None:
+    root = _repo_root()
+    inbox = tmp_path / "inbox"
+    inbox.mkdir()
+    (inbox / "b24_ocr_table_fallbacks.txt").write_text(
+        "\n".join(
+            [
+                "B24 RL2 evidence",
+                "Estacion/ Station: Taller Mexico FTVM",
+                "Tlpo de Carro/ Car Type: TANK CAR",
+                "Date Permission Received: 5/20/2024",
+                "Written Instructions from TCO: Confirmacion por correo electronico",
+                "PITP: PITP / PC-TC-01 / A Navarre / 11/4/2021 / 0",
+                "lnlclales de Carro/ Car Mark: PROBETA MUESTRA",
+                "N de Carro / Car Number: PAWCT-824",
+                "7 TANK SPECIFICATION DOT 111A100W1",
+                "8 STENCILED SPEC: DOT 111A100W1",
+                "The Following Drawings Apply",
+                "39 General Arrangement - D-41759 L056040A",
+                "Specimen plate A51G Grado 70",
+                "CERTIFICADO DE MATERIAL # AD6S",
+                "Insert size 12 in X 12 In",
+                "attachment_material: A36",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run", review_forms=("B24_RL2",))
+
+    review = _review(result)
+    selected = {row["field_id"]: row["selected_value"] for row in review["form_packets"]["B24_RL2"]["field_decisions"]}
+    assert selected["facility_name"] == "Taller Mexico FTVM"
+    assert selected["tco_permission_date"] == "5/20/2024"
+    assert selected["tank_design_spec"] == "DOT111A100W1"
+    assert selected["car.design_spec"] == "DOT111A100W1"
+
+    filled_text = _docx_text(result.filled_docx_path)
+    assert "REVIEW_REQUIRED: facility_name" not in filled_text
+    assert "REVIEW_REQUIRED: tco_permission_date" not in filled_text
+    assert "REVIEW_REQUIRED: tank_design_spec" not in filled_text
+    assert "DOT111A100W1" in filled_text
+
+
 def test_inbox_pipeline_validates_b24_table_pair_fixture_end_to_end(tmp_path: Path) -> None:
     root = _repo_root()
     inbox = tmp_path / "inbox"
@@ -826,8 +870,19 @@ def test_inbox_pipeline_missing_pdf_folder_content_fails_clearly(tmp_path: Path)
     root = _repo_root()
     inbox = tmp_path / "empty_inbox"
     inbox.mkdir()
-    with pytest.raises(FileNotFoundError, match="No supported local evidence files found"):
+    with pytest.raises(FileNotFoundError, match="No files found in inbox"):
         run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run")
+
+
+def test_inbox_pipeline_corrupt_zip_only_inbox_surfaces_staging_note(tmp_path: Path) -> None:
+    root = _repo_root()
+    inbox = tmp_path / "inbox"
+    inbox.mkdir()
+    (inbox / "broken.zip").write_bytes(b"not a real zip")
+    with pytest.raises(FileNotFoundError) as exc:
+        run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run")
+    assert "zip_corrupt_or_unreadable" in str(exc.value)
+    assert "staged_inbox" in str(exc.value)
 
 
 def test_pdf_inbox_ignores_tracked_smoke_evidence_txt(tmp_path: Path) -> None:

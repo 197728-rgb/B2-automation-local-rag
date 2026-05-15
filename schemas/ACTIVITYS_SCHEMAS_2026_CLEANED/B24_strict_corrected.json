@@ -1,0 +1,183 @@
+{
+  "activity": {
+    "code": "B24",
+    "repairLevel": "RL2",
+    "scope": "Maintenance and modification of tank cars including welded insert repairs, NDT, and stress relief demonstrations"
+  },
+  "demonstration": {
+    "carNumber": "PAWCT-B24",
+    "carMark": "PROBETA MUESTRA",
+    "carType": "Tank Car",
+    "station": "Taller México FTVM",
+    "location": "DLGE",
+    "inspectionForm": "Check list demostración de probeta RL2",
+    "date": null
+  },
+  "insertRepair": {
+    "specimenPlate": "A516 Grade 70",
+    "specimenDimensions": "4 ft x 4 ft x 1/2 in",
+    "insertSize": "12 in x 12 in",
+    "cornerRadius": "1 in",
+    "jointPreparation": "Double V groove, 45°, 1/8 in root face and 1/8 in root opening",
+    "preheatRequirement": "149°C / 300°F",
+    "inspectionStandard": "AWS D15.1"
+  },
+  "welding": {
+    "wps": [
+      {
+        "number": "DLG W-No.01",
+        "process": null,
+        "positions": [
+          "2G",
+          "3G"
+        ]
+      },
+      {
+        "number": "DLG W-No.02",
+        "process": null,
+        "positions": [
+          "2G",
+          "3G"
+        ]
+      },
+      {
+        "number": "DLG W-No.08-1",
+        "process": null,
+        "positions": [
+          "2G",
+          "3G"
+        ]
+      },
+      {
+        "number": "DLG W-FC-1-1-01",
+        "process": "FCAW",
+        "positions": [
+          "2G",
+          "3G"
+        ]
+      },
+      {
+        "number": "DLG SMAW WTCE W No 05",
+        "process": "SMAW",
+        "processSpecification": "AWS A5.1",
+        "fillerClassification": "E7018",
+        "position": "2G",
+        "jointDesign": "Double V groove",
+        "baseMaterial": "SA516 Grade 70"
+      }
+    ],
+    "welderQualification": {
+      "wqrNumber": "DLG SMAW WTCE W No 05",
+      "process": "SMAW",
+      "position": "2G",
+      "jointType": "Double V groove",
+      "fillerClassification": "E7018",
+      "electrodeDiameter": "1/8 in",
+      "baseMaterial": "SA516 Grade 70",
+      "qualificationResult": "Acceptable"
+    },
+    "fillerMetal": {
+      "observedClassification": "E7018",
+      "observedDiameter": "1/8 in",
+      "manufacturerCertificatePresent": null
+    },
+    "observedParameters": {
+      "amps": null,
+      "volts": null,
+      "wireFeed": null
+    }
+  },
+  "equipment": {
+    "weldingMachines": [
+      {
+        "equipmentId": "DLG-MS-19",
+        "brand": "Lincoln",
+        "model": "RX-450",
+        "calibrationDate": "2025-05-16",
+        "calibrationDue": "2026-05-16",
+        "status": "OK",
+        "calibrationRecord": "FOLIO #2047"
+      },
+      {
+        "equipmentId": "DLG-MS-10",
+        "brand": "Miller",
+        "model": "RX-450",
+        "calibrationDate": "2026-03-27",
+        "calibrationDue": "2027-03-27",
+        "status": "OK",
+        "calibrationRecord": "#10"
+      }
+    ],
+    "stressRelief": {
+      "requirement": "Simulation only; equipment not energized",
+      "technicianCertificatesCurrent": true,
+      "equipmentCalibrationCurrent": true
+    }
+  },
+  "inspection": {
+    "visual": {
+      "form": "FOR-TC-26",
+      "method": "VT",
+      "standard": "AWS D15.1",
+      "result": null
+    },
+    "ultrasonic": {
+      "form": "FOR-TC-57",
+      "method": "UT",
+      "standard": "AWS D15.1 Appendix T Appendix W",
+      "procedureNumber": "PR-TC-47",
+      "procedureQualificationResult": "Accepted"
+    },
+    "penetrant": {
+      "form": "FOR-TC-25",
+      "method": "PT",
+      "procedureNumber": "PR-TC-44",
+      "procedureQualificationResult": "Accepted"
+    },
+    "thickness": {
+      "form": "FOR-TC-27",
+      "method": "UTT",
+      "procedureNumber": "PR-TC-48",
+      "procedureQualificationResult": "Accepted"
+    }
+  },
+  "ndt": {
+    "technician": {
+      "qualificationMethod": "SNT-TC-1A",
+      "techniques": [
+        "UT",
+        "UTT",
+        "VT",
+        "BLT",
+        "HLT-PC",
+        "WIS"
+      ],
+      "certificationLevel": "Level II",
+      "certificateNumber": "DLGA/NDT-67",
+      "certificationExpiration": "2028-05-16",
+      "visionExamExpiration": "2026-01-16"
+    }
+  },
+  "regulatory": {
+    "aarReference": "AAR M-1002 Appendix M",
+    "cfrReferences": [
+      "49 CFR 179",
+      "49 CFR 173.31(a)(11)",
+      "49 CFR 180.509(g)"
+    ],
+    "constructionReference": "DOT-111A100W1"
+  },
+  "pitp": null,
+  "tcid": null,
+  "warnings": [
+    "Demonstration date not identified; do not use plan-control or historical document dates as current demonstration date.",
+    "Observed welding parameters (actual amps/volts during demonstration) not identified.",
+    "Actual completed visual/UT inspection acceptance records are not fully populated in checklist.",
+    "PITP evidence not explicitly identified; PC-TC-01 is a control plan and was not treated as PITP.",
+    "TCID evidence not identified.",
+    "Original extraction included extra welder list entries; retained only directly relevant B24 WQR support evidence.",
+    "Original extraction misclassified Magnaflux UT-X as welding filler; removed from welding filler because it is NDT consumable support evidence.",
+    "Do not use historical procedure approval signatures as current audit signoff."
+  ],
+  "sourceReference": "B24.pdf"
+}

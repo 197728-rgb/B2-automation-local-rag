@@ -69,6 +69,29 @@ RUN_LEVEL_FILL_FIELDS = DEFAULT_REQUIRED_SUGGESTION_FIELDS + (
     "attachment_material",
 )
 
+# Facility / site labels → facility_name only (never infer TCO owner from these lines).
+_FACILITY_STATION_LABEL_RE = (
+    r"\b(?:facility|company|shop|estaci[oó]n\s*/?\s*station|station|taller|planta)\s*[:=-]"
+)
+# TCO owner identity labels → tco.name (do not reuse facility/station lines).
+_TCO_OWNER_NAME_LABEL_RE = r"\b(?:tank\s+car\s+owner\s*(?:\(TCO\))?\s*name|TCO\s+name)\s*[:=-]"
+
+# TCO permission date: require permission+received and/or explicit "TCO … permission date" (no generic inspection dates).
+_TCO_PERMISSION_DATE_PATTERN = (
+    r"\b(?:"
+    r"(?:date|dale)\s+(?:permission|permiss[il]on)\s*(?:/\s*instruction)?\s*"
+    r"(?:received|receiv(?:ed|ad))(?:\s+from\s+T\s*C\s*O)?|"
+    r"T\s*C\s*O\s+(?:permission|permiss[il]on)\s+date|"
+    r"(?:date|dale)\s+permission\s+received\s+from\s+T\s*C\s*O|"
+    r"permission\s+date\s+received\s+from\s+T\s*C\s*O"
+    r")\s*[:=-]?\s*"
+    r"([0-9]{4}-[0-9]{2}-[0-9]{2}|[0-9]{1,2}/[0-9]{1,2}/\s*[0-9]{2}\s*[0-9]{2}|[0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4}|"
+    r"[0-9]{1,2}[-\s](?:ene|enero|jan|january|feb|febrero|mar|marzo|apr|abril|abr|"
+    r"may|mayo|jun|junio|jul|julio|aug|agosto|ago|sep|sept|septiembre|oct|octubre|"
+    r"nov|noviembre|dec|dic|diciembre)[-\s][0-9]{2,4})"
+)
+
+
 @dataclass(frozen=True)
 class LocalEvidenceDocument:
     source_path: Path
@@ -431,9 +454,49 @@ def _with_run_level_required_suggestions(
     for field_id in RUN_LEVEL_FILL_FIELDS:
         if form == "B24_RL2" and field_id == "facility_name":
             continue
-        if field_id not in present and field_id in run_level_required:
-            merged.append(dict(run_level_required[field_id]))
+        fallback = run_level_required.get(field_id)
+        if not fallback:
+            continue
+        if field_id not in present or _fallback_has_better_value(field_id, fallback, merged):
+            merged.append(dict(fallback))
+            present.add(field_id)
+    if form == "B24_RL2":
+        tco_rows = [row for row in merged if str(row.get("field_id")) == "tco.name"]
+        if tco_rows:
+            best_tco = max(tco_rows, key=lambda row: float(row.get("confidence") or 0.0))
+            alias = dict(best_tco)
+            alias["field_id"] = "facility_name"
+            alias["confidence"] = max(float(alias.get("confidence") or 0.0), 0.99)
+            merged.append(alias)
     return merged
+
+
+def _fallback_has_better_value(field_id: str, fallback: dict[str, Any], suggestions: list[dict[str, Any]]) -> bool:
+    fallback_value = str(fallback.get("candidate_value") or "").strip()
+    if not fallback_value:
+        return False
+    fallback_confidence = float(fallback.get("confidence") or 0.0)
+    for item in suggestions:
+        if str(item.get("field_id")) != field_id:
+            continue
+        current_value = str(item.get("candidate_value") or "").strip()
+        current_confidence = float(item.get("confidence") or 0.0)
+        if current_value == fallback_value:
+            return False
+        if fallback_confidence > current_confidence:
+            return True
+        if field_id in {"tank_design_spec", "car.design_spec"}:
+            return _design_spec_value_rank(fallback_value) > _design_spec_value_rank(current_value)
+    return False
+
+
+def _design_spec_value_rank(value: str) -> int:
+    cleaned = re.sub(r"\s+", "", value.upper())
+    if re.search(r"\b(?:DOT|AAR)[0-9]{3}[A-Z][0-9A-Z]{3,}\b", cleaned):
+        return 3
+    if any(ch.isdigit() for ch in cleaned):
+        return 2
+    return 1
 
 
 def _run_level_required_suggestions(
@@ -531,16 +594,11 @@ def _field_suggestions(retrieved: list[dict[str, Any]], form: str = "") -> list[
                 "car_number",
                 r"\b(?:n[°o]\s*de\s*(?:carro|cmo)\s*/\s*)?car\s*number\s*[:=-]\s*([A-Z]{2,6}[-\s]?[0-9]{2,8})",
             ),
-            ("car_mark", r"\b(?:iniciales\s+de\s+carro\s*/\s*)?car\s*mark\s*[:=-]\s*([^\n\r;]{2,80})"),
+            ("car_mark", r"\b(?:iniciales\s+de\s+carro\s*/\s*)?car\s*mark(?!\s+and\s+number)\s*[:=-]\s*([^\n\r;]{2,80})"),
             ("tank_design_spec", r"\b(?:tipo\s+de\s+carro\s*/\s*)?car\s*type\s*[:=-]\s*([^\n\r;]{2,80})"),
             (
                 "tco_permission_date",
-                r"\b(?:date\s+permission(?:/instruction)?\s+received\s+from\s+TCO|"
-                r"date\s+permission|TCO\s+permission\s+date)\s*[:=-]\s*"
-                r"([0-9]{4}-[0-9]{2}-[0-9]{2}|[0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4}|"
-                r"[0-9]{1,2}[-\s](?:ene|enero|jan|january|feb|febrero|mar|marzo|apr|abril|abr|"
-                r"may|mayo|jun|junio|jul|julio|aug|agosto|ago|sep|sept|septiembre|oct|octubre|"
-                r"nov|noviembre|dec|dic|diciembre)[-\s][0-9]{2,4})",
+                _TCO_PERMISSION_DATE_PATTERN,
             ),
             (
                 "tco_written_instructions",
@@ -571,7 +629,7 @@ def _field_suggestions(retrieved: list[dict[str, Any]], form: str = "") -> list[
             if key not in seen:
                 seen.add(key)
                 suggestions.append(suggestion)
-        for suggestion in _special_text_suggestions(item):
+        for suggestion in _special_text_suggestions(item, form):
             field = str(suggestion["field_id"])
             value = str(suggestion["candidate_value"])
             key = (field, value)
@@ -585,6 +643,8 @@ def _field_suggestions(retrieved: list[dict[str, Any]], form: str = "") -> list[
                 continue
             value = match.group(1).strip()
             value = _trim_before_next_field_marker(value)
+            if field == "facility_name":
+                value = _trim_concatenated_form_headers(value)
             value = _normalize_candidate_value(field, value)
             if not _is_plausible_candidate_value(field, value):
                 continue
@@ -606,10 +666,10 @@ def _field_suggestions(retrieved: list[dict[str, Any]], form: str = "") -> list[
                     "review_required": True,
                 }
             )
-    return _expand_write_alias_suggestions(suggestions)
+    return _expand_write_alias_suggestions(suggestions, form)
 
 
-def _special_text_suggestions(item: dict[str, Any]) -> list[dict[str, Any]]:
+def _special_text_suggestions(item: dict[str, Any], form: str = "") -> list[dict[str, Any]]:
     text = str(item.get("full_text") or item.get("text") or "")
     compact = _compact_match_text(text)
     out: list[dict[str, Any]] = []
@@ -625,9 +685,6 @@ def _special_text_suggestions(item: dict[str, Any]) -> list[dict[str, Any]]:
         value = re.sub(r"\s+", "-", pc_match.group(1).upper())
         for field_id in ("pitp.id", "pitp_id"):
             emit(field_id, value, 0.94)
-        # Keep permissive PITP-name fallback, but below explicit label-derived candidates.
-        for field_id in ("pitp.name", "pitp_document_name"):
-            emit(field_id, value, 0.80)
         source = str(item.get("source_file") or "").lower()
         if "b90" in source or re.search(r"\bstu+b\s+sills?\b", compact, flags=re.IGNORECASE):
             emit("stub_sill.procedure.id", value, 0.92)
@@ -673,13 +730,26 @@ def _special_text_suggestions(item: dict[str, Any]) -> list[dict[str, Any]]:
             emit("pitp.revision", pitp_parts[4], 0.90)
             emit("pitp_rev", pitp_parts[4], 0.90)
 
+    pitp_name_match = re.search(r"\bPITP\s+Document\s+Name\s*[:=-]\s*([^\n\r;]{2,80})", text, flags=re.IGNORECASE)
+    if pitp_name_match:
+        value = _trim_before_next_field_marker(pitp_name_match.group(1))
+        emit("pitp.name", value, 0.96)
+        emit("pitp_document_name", value, 0.96)
+
+    pitp_id_match = re.search(r"\bPITP\s+ID\s*[:=-]\s*([A-Z0-9][A-Z0-9./ -]{1,40})", text, flags=re.IGNORECASE)
+    if pitp_id_match:
+        value = _trim_before_next_field_marker(pitp_id_match.group(1))
+        emit("pitp.id", value, 0.96)
+        emit("pitp_id", value, 0.96)
+
     tco_name_match = re.search(
-        r"\b(?:tank\s+car\s+owner\s*(?:\(TCO\))?\s+name|TCO\s+name)\s*[:=-]\s*([A-Z0-9][A-Z0-9 .&/-]{1,80})",
+        rf"{_TCO_OWNER_NAME_LABEL_RE}\s*([A-Z0-9][A-Z0-9 .&/-]{{1,80}})",
         compact,
         flags=re.IGNORECASE,
     )
     if tco_name_match:
         value = _trim_before_next_field_marker(tco_name_match.group(1))
+        value = _trim_concatenated_form_headers(value)
         value = re.split(
             r"\s+(?:date\s+permission|permission\s+date|tco\s+permission\s+date|written\s+instructions)\b",
             value,
@@ -687,12 +757,86 @@ def _special_text_suggestions(item: dict[str, Any]) -> list[dict[str, Any]]:
             flags=re.IGNORECASE,
         )[0].strip()
         emit("tco.name", value, 0.98)
-        emit("facility_name", value, 0.98)
 
-    design_spec_match = re.search(r"\bDesign\s+Spec\s*[:=-]\s*([A-Z0-9][A-Z0-9./ -]{1,60})", compact, flags=re.IGNORECASE)
-    stencil_spec_match = re.search(r"\bStencil\s+Spec\s*[:=-]\s*([A-Z0-9][A-Z0-9./ -]{1,60})", compact, flags=re.IGNORECASE)
+    station_match = re.search(
+        rf"{_FACILITY_STATION_LABEL_RE}\s*([A-Z0-9][A-Z0-9 .&/-]{{1,80}})",
+        compact,
+        flags=re.IGNORECASE,
+    )
+    if station_match:
+        value = _trim_before_next_field_marker(station_match.group(1))
+        value = _trim_concatenated_form_headers(value)
+        value = re.split(
+            r"\s+(?:tipo\s+de\s+carro|tlpo\s+de\s+carro|car\s+type|car\s+mark|fecha|date)\b",
+            value,
+            maxsplit=1,
+            flags=re.IGNORECASE,
+        )[0].strip()
+        emit("facility_name", value, 0.93)
+
+    permission_date_match = re.search(_TCO_PERMISSION_DATE_PATTERN, compact, flags=re.IGNORECASE)
+    if permission_date_match:
+        for field_id in ("tco_permission_date", "tco.permission_date"):
+            emit(field_id, permission_date_match.group(1), 0.95)
+
+    # AAR certificate boilerplate must not override labeled B24 packet cues when both appear (merged OCR).
+    has_labeled_tco_header = bool(tco_name_match) or bool(
+        re.search(
+            r"\b(?:Tank\s+Car\s+Owner\s*(?:\(TCO\))?\s*Name|TCO\s+Name)\s*[:=-]",
+            compact,
+            flags=re.IGNORECASE,
+        )
+    )
+    applicant = _aar_certificate_applicant(compact)
+    if applicant and not has_labeled_tco_header:
+        # AAR certificate applicants are builders/manufacturers on many packets,
+        # not the Tank Car Owner. Keep the detector available for future
+        # applicant-specific fields, but never backfill TCO owner cells from it.
+        pass
+
+    has_labeled_permission_context = bool(permission_date_match) or bool(
+        re.search(
+            r"\b(?:Date\s+Permission|permission\s*(?:/instruction)?\s*(?:received|receiv)|"
+            r"Permiss(?:ion|lon)\s+Receivad|TCO\s+permission\s+date|"
+            r"permission\s+received\s+from\s+TCO)\b",
+            compact,
+            flags=re.IGNORECASE,
+        )
+    )
+    aar_approval_date = _aar_certificate_approval_date(compact)
+    if aar_approval_date and not has_labeled_permission_context:
+        # The committee approval date belongs to the AAR certificate, not the
+        # permission/instruction date received from the TCO.
+        pass
+
+    design_spec_match = re.search(
+        r"\b(?:Tank\s+Car\s+)?Design\s+Spec(?:\s*ification)?\s*[:=-]\s*([A-Z0-9][A-Z0-9./ -]{1,60})",
+        compact,
+        flags=re.IGNORECASE,
+    )
+    stencil_spec_match = re.search(
+        r"\bStencil\s+Spec(?:\s*ification)?\s*[:=-]\s*([A-Z0-9][A-Z0-9./ -]{1,60})",
+        compact,
+        flags=re.IGNORECASE,
+    )
     design_spec = _trim_before_next_field_marker(design_spec_match.group(1)).strip() if design_spec_match else ""
     stencil_spec = _trim_before_next_field_marker(stencil_spec_match.group(1)).strip() if stencil_spec_match else ""
+    if not design_spec:
+        tank_spec_line = re.search(
+            r"\b(?:\d+\s+)?TANK\s+SPECIFICATION\s+((?:DOT\s*)?[0-9A-Z][0-9A-Z./]{4,})\b",
+            compact,
+            flags=re.IGNORECASE,
+        )
+        if tank_spec_line:
+            design_spec = _trim_before_next_field_marker(tank_spec_line.group(1)).strip()
+    if not stencil_spec:
+        stenciled_line = re.search(
+            r"\bSTENCILED\s+SPEC\s*:\s*((?:DOT\s*)?[0-9A-Z][0-9A-Z./]{4,})\b",
+            compact,
+            flags=re.IGNORECASE,
+        )
+        if stenciled_line:
+            stencil_spec = _trim_before_next_field_marker(stenciled_line.group(1)).strip()
     if design_spec:
         design_spec = re.split(r"\s+Stencil\s+Spec\b", design_spec, maxsplit=1, flags=re.IGNORECASE)[0].strip()
         design_spec = re.sub(r"\s+table$", "", design_spec, flags=re.IGNORECASE).strip()
@@ -701,11 +845,22 @@ def _special_text_suggestions(item: dict[str, Any]) -> list[dict[str, Any]]:
         stencil_spec = re.split(r"\s+Drawing(?:\s+Number)?\b", stencil_spec, maxsplit=1, flags=re.IGNORECASE)[0].strip()
         stencil_spec = re.sub(r"\s+table$", "", stencil_spec, flags=re.IGNORECASE).strip()
     if design_spec and stencil_spec:
-        emit("tank_design_spec", f"{design_spec} / {stencil_spec}", 0.95)
+        norm_a = _normalize_candidate_value("tank_design_spec", design_spec)
+        norm_b = _normalize_candidate_value("tank_design_spec", stencil_spec)
+        if norm_a == norm_b:
+            emit("tank_design_spec", design_spec, 0.95)
+        else:
+            emit("tank_design_spec", f"{design_spec} / {stencil_spec}", 0.95)
     elif design_spec:
         emit("tank_design_spec", design_spec, 0.92)
     elif stencil_spec:
         emit("tank_design_spec", stencil_spec, 0.92)
+
+    design_specs = _design_spec_fallback_values(compact)
+    if design_specs:
+        design_value = " / ".join(design_specs[:2])
+        for field_id in ("tank_design_spec", "car.design_spec"):
+            emit(field_id, design_value, 0.96)
 
     aar_form_match = re.search(
         r"\bAAR\s*Form\s*4[- ]?2(?:\s*\(AAR\s*No\.?\))?\s*[:=-]\s*([A-Z0-9][A-Z0-9./ -]{1,40})",
@@ -780,6 +935,85 @@ def _special_text_suggestions(item: dict[str, Any]) -> list[dict[str, Any]]:
     return out
 
 
+def _aar_certificate_applicant(text: str) -> str:
+    normalized = re.sub(r"\s+", " ", text).strip()
+    if not re.search(r"\bA\s*PPLICATION\s+FOR\s+A\s*PPROVAL\s+AND\s+CERTIFICATE\s+OF\s+CONSTRUCTION\b", normalized, flags=re.IGNORECASE):
+        return ""
+    known = (
+        (r"\bTRI\s*NITY\s+INDUSTR(?:IES|[A-Z]*)\b", "TRINITY INDUSTRIES, INC"),
+        (r"\bTRINITY\s+TANK\s+CAR\b", "TRINITY TANK CAR, INC"),
+        (r"\bGUNDERSON\b", "Gunderson"),
+    )
+    for pattern, value in known:
+        if re.search(pattern, normalized, flags=re.IGNORECASE):
+            return value
+    applicant_match = re.search(
+        r"\b6\s+(?:APP[A-Z' ]{0,24}|APR[0-9A-Z' ]{0,24}|IPO['A-Z ]{0,24})\s+"
+        r"([A-Z][A-Z0-9 .,&'-]{2,120}?)(?=\s+(?:PO\s+BOX|[0-9]{2,6}\s|"
+        r"7\s+(?:TANK|TAN|RFL|TFL)|8\s+(?:STENC|STE)|9\s+(?:REPORT|REP)))",
+        normalized,
+        flags=re.IGNORECASE,
+    )
+    if not applicant_match:
+        return ""
+    applicant = re.sub(r"\b(?:PO\s+BOX|P\s*O\s*BOX)\b.*$", "", applicant_match.group(1), flags=re.IGNORECASE)
+    applicant = re.sub(r"\s+", " ", applicant).strip(" ,.-")
+    if len(applicant) < 3 or re.search(r"\b(?:TANK\s+SPECIFICATION|REPORTING\s+MARKS)\b", applicant, flags=re.IGNORECASE):
+        return ""
+    return applicant.title() if applicant.isupper() else applicant
+
+
+def _aar_certificate_approval_date(text: str) -> str:
+    normalized = re.sub(r"\s+", " ", text).strip()
+    approval_windows = re.findall(
+        r"\bAPPROVAL\s*[-–]\s*(?:AAR|MR)?\s*Tank\s+Car\s+C\w+\b(.{0,1200})",
+        normalized,
+        flags=re.IGNORECASE,
+    )
+    if not approval_windows:
+        return ""
+    month = (
+        r"jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|"
+        r"aug(?:ust)?|sep(?:t(?:ember)?)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?|"
+        r"ene(?:ro)?|feb(?:rero)?|mar(?:zo)?|abr(?:il)?|mayo|jun(?:io)?|jul(?:io)?|"
+        r"ago(?:sto)?|sept(?:iembre)?|oct(?:ubre)?|nov(?:iembre)?|dic(?:iembre)?"
+    )
+    date_patterns = (
+        rf"\b({month})\s+([0-9]{{1,2}})\s*,?\s+([0-9]{{2,4}})\b",
+        rf"\b([0-9]{{1,2}})\s+({month})\s+([0-9]{{2,4}})\b",
+        rf"\b([0-9]{{1,2}})/([0-9]{{1,2}})/([0-9]{{2,4}})\b",
+    )
+    for approval_window in reversed(approval_windows):
+        candidates: list[str] = []
+        for pattern in date_patterns:
+            for match in re.finditer(pattern, approval_window, flags=re.IGNORECASE):
+                context = approval_window[max(0, match.start() - 80) : match.end() + 80]
+                if not re.search(r"\bapproved\b", context, flags=re.IGNORECASE):
+                    continue
+                if re.search(r"\b(?:rev\.?|revised)\b", context, flags=re.IGNORECASE):
+                    continue
+                if re.match(r"[A-Za-z]", match.group(1)):
+                    candidates.append(_normalize_date_value(f"{match.group(2)} {match.group(1)} {match.group(3)}"))
+                elif "/" in match.group(0):
+                    candidates.append(match.group(0))
+                else:
+                    candidates.append(_normalize_date_value(match.group(0)))
+        if candidates:
+            return candidates[-1]
+    return ""
+
+
+def _design_spec_fallback_values(text: str) -> list[str]:
+    values: list[str] = []
+    for match in re.finditer(r"\b(?:DOT|AAR)\s*[0-9]{3}[A-Z][0-9A-Z]{3,}\b", text, flags=re.IGNORECASE):
+        value = re.sub(r"\s+", "", match.group(0).upper())
+        if value.startswith(("DOT173", "AAR173")):
+            continue
+        if value not in values:
+            values.append(value)
+    return values
+
+
 def _suggestion_from_item(item: dict[str, Any], field_id: str, value: str, confidence: float) -> dict[str, Any]:
     return {
         "field_id": field_id,
@@ -846,8 +1080,22 @@ def _nested_value(data: dict[str, Any], dotted_path: str) -> Any:
     return current
 
 
-def _expand_write_alias_suggestions(suggestions: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    by_field = {str(item.get("field_id")): item for item in suggestions}
+def _best_suggestion_per_field(suggestions: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    """When multiple suggestions target the same field_id, keep the highest-confidence row."""
+    best: dict[str, dict[str, Any]] = {}
+    for item in suggestions:
+        fid = str(item.get("field_id"))
+        if fid not in best:
+            best[fid] = item
+            continue
+        prev = best[fid]
+        if float(item.get("confidence") or 0.0) > float(prev.get("confidence") or 0.0):
+            best[fid] = item
+    return best
+
+
+def _expand_write_alias_suggestions(suggestions: list[dict[str, Any]], form: str = "") -> list[dict[str, Any]]:
+    by_field = _best_suggestion_per_field(suggestions)
     expanded = list(suggestions)
 
     def add_alias(source_field: str, target_field: str, value: str | None = None, confidence: float | None = None) -> None:
@@ -867,6 +1115,8 @@ def _expand_write_alias_suggestions(suggestions: list[dict[str, Any]]) -> list[d
 
     car_mark = str(by_field.get("car.mark", by_field.get("car_mark", {})).get("candidate_value") or "").strip()
     car_number = str(by_field.get("car_number", {}).get("candidate_value") or "").strip()
+    if re.fullmatch(r"and\s+number(?:\s+\S+)?", car_mark, flags=re.IGNORECASE):
+        car_mark = ""
     if car_mark and car_number:
         if "car_mark" in by_field:
             by_field["car_mark"]["candidate_value"] = f"{car_mark} {car_number}".strip()
@@ -878,14 +1128,35 @@ def _expand_write_alias_suggestions(suggestions: list[dict[str, Any]]) -> list[d
     add_alias("car_number", "car.mark")
     add_alias("car_number", "car_mark")
     add_alias("car.mark", "car_number", f"{car_mark} {car_number}".strip() if car_number else car_mark or None)
-    add_alias("tco.name", "facility_name")
-    add_alias("facility_name", "tco.name")
+    if form == "B24_RL2":
+        tco = by_field.get("tco.name")
+        if tco is not None:
+            fac = by_field.get("facility_name")
+            tco_cf = float(tco.get("confidence") or 0.0)
+            if fac is None or tco_cf > float(fac.get("confidence") or 0.0):
+                alias = dict(tco)
+                alias["field_id"] = "facility_name"
+                by_field["facility_name"] = alias
+                expanded.append(alias)
     add_alias("tco_permission_date", "tco.permission_date")
     add_alias("tco.permission_date", "tco_permission_date")
     add_alias("tco_written_instructions", "tco.instructions")
     add_alias("tco.instructions", "tco_written_instructions")
     add_alias("tank_design_spec", "car.design_spec")
     add_alias("car.design_spec", "tank_design_spec")
+    if "pitp.name" not in by_field and "pitp_document_name" not in by_field:
+        pitp_source = by_field.get("pitp.id") or by_field.get("pitp_id")
+        if pitp_source is not None:
+            alias = dict(pitp_source)
+            alias["field_id"] = "pitp.name"
+            alias["candidate_value"] = "PITP"
+            alias["confidence"] = max(float(alias.get("confidence") or 0.0), 0.88)
+            by_field["pitp.name"] = alias
+            expanded.append(alias)
+            legacy_alias = dict(alias)
+            legacy_alias["field_id"] = "pitp_document_name"
+            by_field["pitp_document_name"] = legacy_alias
+            expanded.append(legacy_alias)
     add_alias("pitp.name", "pitp_document_name")
     add_alias("pitp.id", "pitp_id")
     add_alias("pitp.approved_by", "pitp_approved_by")
@@ -923,11 +1194,15 @@ def _normalize_candidate_value(field: str, value: str) -> str:
         cleaned = re.sub(r"\bGrado\s+([0-9A-Z]+)\b", r"Gr. \1", cleaned, flags=re.IGNORECASE)
     if field == "test_fixture.weld.length":
         cleaned = re.sub(r"\s+(?:filete|fillet|mete)\b.*$", "", cleaned, flags=re.IGNORECASE).strip()
+    if field in {"tank_design_spec", "car.design_spec"}:
+        cleaned = re.sub(r"(?i)\bDOT\s+(?=[0-9])", "DOT", cleaned)
     return cleaned
 
 
 def _normalize_date_value(value: str) -> str:
     text = re.sub(r"\s+", " ", value).strip()
+    text = re.sub(r"/\s+", "/", text)
+    text = re.sub(r"(?<=/[0-9]{2})\s+(?=[0-9]{2}\b)", "", text)
     month_map = {
         "ene": "01",
         "enero": "01",
@@ -961,13 +1236,20 @@ def _normalize_date_value(value: str) -> str:
         "diciembre": "12",
     }
     match = re.fullmatch(r"([0-9]{1,2})[-\s]([A-Za-zÁÉÍÓÚáéíóúñÑ]+)[-\s]([0-9]{2,4})", text)
-    if not match:
-        return text
-    day = int(match.group(1))
-    month = month_map.get(match.group(2).lower())
+    if match:
+        day = int(match.group(1))
+        month_name = match.group(2)
+        year_raw = match.group(3)
+    else:
+        match = re.fullmatch(r"([A-Za-zÁÉÍÓÚáéíóúñÑ]+)[,\s]+([0-9]{1,2}),?\s+([0-9]{2,4})", text)
+        if not match:
+            return text
+        day = int(match.group(2))
+        month_name = match.group(1)
+        year_raw = match.group(3)
+    month = month_map.get(month_name.lower())
     if month is None:
         return text
-    year_raw = match.group(3)
     year = int(year_raw)
     if len(year_raw) == 2:
         year += 2000
@@ -1086,6 +1368,19 @@ def _required_field_ids_for_form(_form: str) -> tuple[str, ...]:
     return tuple(DEFAULT_REQUIRED_SUGGESTION_FIELDS)
 
 
+def _trim_concatenated_form_headers(value: str) -> str:
+    """When OCR text is compacted to one line, drop trailing sibling-form routing text."""
+    if not value:
+        return value
+    parts = re.split(
+        r"\s+(?=(?:B24\s+RL2\b|B81\b|B89\b|B90\b|Cover\s+Page\b)(?:\s|$|[,:]))",
+        value.strip(),
+        maxsplit=1,
+        flags=re.IGNORECASE,
+    )
+    return parts[0].strip()
+
+
 def _trim_before_next_field_marker(value: str) -> str:
     canonical_marker = re.search(r"\s+[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z0-9_]+)+\s*[:=-]", value)
     if canonical_marker:
@@ -1098,7 +1393,9 @@ def _trim_before_next_field_marker(value: str) -> str:
         r"B24\s+RL2|B81|B89|B90|Cover\s+Page|"
         r"Inspection\s+Date|Date|Fecha|Auditor|Inspector|"
         r"TCO\s+Name|TCO\s+Permission\s+Date|Written\s+Instructions|"
-        r"PITP|Design\s+Spec|Stencil\s+Spec|AAR\s+Form\s+4[- ]?2|Drawing(?:\s+Number)?|"
+        r"PITP(?:\s+(?:ID|Document\s+Name))?|Approved\s+By|Date\s+Approved|"
+        r"Design\s+Spec|Stencil\s+Spec|AAR\s+Form\s+4[- ]?2|Drawing(?:\s+Number)?|"
+        r"Car\s+Initial(?:s)?(?:\s+and\s+Number)?|Heat\s+#|"
         r"Car(?:\s+No\.?|\s+Number|(?:ro)?\s*/\s*Car)?|Tipo\s+de\s+Carro|"
         r"Facility|Company|Shop|Estaci[oó]n|Station|Taller|Planta"
         r")\s*[:=-]",
@@ -1119,7 +1416,10 @@ def _is_plausible_candidate_value(field: str, value: str) -> bool:
         return bool(
             re.fullmatch(r"[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}|[0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4}", cleaned)
             or re.fullmatch(r"[0-9]{1,2}[-\s][A-Za-zÁÉÍÓÚáéíóúñÑ]+[-\s][0-9]{2,4}", cleaned)
+            or re.fullmatch(r"[A-Za-zÁÉÍÓÚáéíóúñÑ]+[,\s]+[0-9]{1,2},?\s+[0-9]{2,4}", cleaned)
         )
+    if field in {"car_mark", "car.mark"} and lower.startswith("and number"):
+        return False
     if field != "facility_name":
         material_fields = {
             "materials.insulation.spec",

@@ -1,0 +1,35 @@
+{
+  "summary": "Validated and cleaned activity extraction outputs from ACTIVITYS SCHEMS 2026.zip. Outputs enforce form-scoped evidence, no guessing, null on conflicts, and warnings for missing audit-critical evidence.",
+  "files_created": [
+    "B24_strict_corrected.json",
+    "B89_strict_corrected.json",
+    "B90_strict_corrected.json"
+  ],
+  "major_corrections": {
+    "B24": [
+      "Station corrected to Taller México FTVM; demonstration date set to null.",
+      "Removed irrelevant welder list entries from B24 support data.",
+      "Removed Magnaflux UT-X from welding filler; treated as NDT consumable support instead.",
+      "Kept PITP and TCID null."
+    ],
+    "B89": [
+      "Corrected welding equipment to DLG-MS-20.",
+      "Removed DLG-MS-02 contamination from B90.",
+      "Set PITP and TCID to null; PC-TC-01 and car range were over-extractions.",
+      "Kept visual result null because final acceptance was not clearly identified."
+    ],
+    "B90": [
+      "Set welding machine fields to null due conflicting DLG-MS-02 vs DLG-MS-20 evidence.",
+      "Kept filler conflict warning E71T-1 vs E71T-9C H8.",
+      "Set PITP and TCID to null.",
+      "Kept inspection result/signoff null."
+    ]
+  },
+  "global_required_warnings": [
+    "Observed welding parameters actual amps/volts missing unless explicitly present.",
+    "PITP null unless explicitly identified as PITP.",
+    "TCID null unless job-specific TCID record is present.",
+    "Historical approvals cannot be used as current audit signoff.",
+    "Personnel names are support evidence only, not current signoff."
+  ]
+}

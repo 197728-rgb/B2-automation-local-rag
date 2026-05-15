@@ -65,6 +65,15 @@ LABEL_WORDS = (
     "method",
     "observed",
     "pitp",
+    "group",
+    "mtr",
+    "heat",
+    "width",
+    "height",
+    "thickness",
+    "type",
+    "coc",
+    "rev",
 )
 LABEL_STOPWORDS = {
     "a",
@@ -113,7 +122,12 @@ def _retrieval_summary(packets: dict[str, dict[str, Any]], forms: tuple[str, ...
     return "local semantic ranking: " + ", ".join(modes) + " (evidence-only; exact maps authorize writes)"
 
 
-def _stage_inbox_evidence(inbox: Path, run_dir: Path) -> Path:
+def _stage_inbox_evidence(inbox: Path, run_dir: Path) -> tuple[Path, list[str]]:
+    """Copy top-level evidence into ``run_dir/staged_inbox`` and unpack ``.zip`` members.
+
+    Returns the staging directory and human-readable notes (e.g. corrupt zip skips).
+    """
+    staging_notes: list[str] = []
     staging_dir = run_dir / "staged_inbox"
     if staging_dir.exists():
         shutil.rmtree(staging_dir)
@@ -126,11 +140,11 @@ def _stage_inbox_evidence(inbox: Path, run_dir: Path) -> Path:
                 with zipfile.ZipFile(path) as zf:
                     _stage_zip_members(zf, staging_dir, prefix=safe_archive_stem(path), depth=0)
             except zipfile.BadZipFile:
-                continue
+                staging_notes.append(f"zip_corrupt_or_unreadable:{path.name}")
             continue
         if path.suffix.lower() in LOCAL_EVIDENCE_EXTENSIONS:
             _copy_staged_file(path, staging_dir, safe_archive_member_name(path.name))
-    return staging_dir
+    return staging_dir, staging_notes
 
 
 def _stage_zip_members(zf: zipfile.ZipFile, staging_dir: Path, *, prefix: str, depth: int) -> None:
@@ -236,10 +250,14 @@ def _read_docx_table_pairs(path: Path) -> str:
             compact = _collapse_adjacent_duplicates(cells)
             row_text = " | ".join(cell for cell in compact if cell)
             _emit_unique(out, seen, f"table_{table_index}_row_{row_index}: {row_text}")
-        for label_cells, value_cells in zip(physical_rows, physical_rows[1:]):
+        for row_index in range(len(physical_rows) - 1):
+            label_cells = physical_rows[row_index]
+            value_cells = physical_rows[row_index + 1]
             labels = _expand_physical_cells(label_cells)
             values = _expand_physical_cells(value_cells)
-            if not _looks_like_label_row(labels) or _looks_like_label_row(values):
+            if row_index > 0 and _looks_like_label_row(expanded_rows[row_index - 1]):
+                continue
+            if not _looks_like_label_row(labels) or _looks_like_section_value_row(values):
                 continue
             for label_cell in label_cells:
                 label = _clean_cell(label_cell.text)
@@ -249,7 +267,7 @@ def _read_docx_table_pairs(path: Path) -> str:
                 if value_cell is None:
                     continue
                 value = _clean_cell(value_cell.text)
-                if not value or label == value or _looks_like_label(value):
+                if not value or label == value:
                     continue
                 _emit_unique(out, seen, f"{label}: {value}")
     return "\n".join(out)
@@ -291,19 +309,36 @@ def _value_cell_for_visual_col(cells: list[_DocxTableCell], visual_col: int) -> 
 
 
 def _looks_like_label_row(cells: list[str]) -> bool:
-    nonblank = [_clean_cell(cell) for cell in cells if _clean_cell(cell)]
+    nonblank = [_clean_cell(cell) for cell in _collapse_adjacent_duplicates(cells) if _clean_cell(cell)]
     if not nonblank or len({cell.lower() for cell in nonblank}) == 1:
         return False
     label_hits = sum(1 for cell in nonblank if _looks_like_label(cell))
-    value_hits = sum(1 for cell in nonblank if _looks_like_value(cell))
+    value_hits = sum(1 for cell in nonblank if _looks_like_value(cell) and not _looks_like_label(cell))
     return label_hits >= max(1, len(nonblank) // 3) and label_hits >= value_hits
 
 
+def _looks_like_section_value_row(cells: list[str]) -> bool:
+    """True for repeated section/title rows that should not be paired as values."""
+    compact = [_clean_cell(cell) for cell in _collapse_adjacent_duplicates(cells) if _clean_cell(cell)]
+    if not compact:
+        return True
+    if len(compact) != 1:
+        return False
+    text = compact[0]
+    if _looks_like_value(text):
+        return False
+    return bool(re.fullmatch(r"[A-Z0-9 /&(),.-]{3,80}", text)) and len(text.split()) <= 10
+
+
 def _looks_like_label(text: str) -> bool:
+    cleaned = _clean_cell(text)
     lower = _clean_cell(text).lower()
     if not lower:
         return False
-    return lower.endswith(":") or any(word in lower for word in LABEL_WORDS) or (lower.upper() == lower and len(lower.split()) <= 8)
+    if lower.endswith(":") or any(word in lower for word in LABEL_WORDS):
+        return True
+    has_alpha = bool(re.search(r"[A-Za-z]", cleaned))
+    return has_alpha and not re.search(r"\d", cleaned) and cleaned.upper() == cleaned and len(cleaned.split()) <= 8
 
 
 def _looks_like_value(text: str) -> bool:
@@ -673,7 +708,13 @@ def _is_template_placeholder(text: str) -> bool:
     lower = _clean_cell(text).lower()
     if not lower:
         return True
-    return lower in {"n/a", "na", "none", "-", "—"} or "click" in lower or "enter" in lower or lower.startswith("{{")
+    return (
+        lower in {"n/a", "na", "none", "-", "—"}
+        or "choose" in lower
+        or "click" in lower
+        or "enter" in lower
+        or lower.startswith("{{")
+    )
 
 
 def _slug_label(label: str) -> str:
@@ -882,10 +923,28 @@ def _run_local_rag_inbox_pipeline(*, root: Path, inbox: Path, out_dir: Path, rev
     for p in (raw_dir, review_dir, filled_dir):
         p.mkdir(parents=True, exist_ok=True)
 
-    staged_inbox = _stage_inbox_evidence(inbox, run_dir)
+    top_files = sorted(p for p in inbox.iterdir() if p.is_file()) if inbox.is_dir() else []
+    if not top_files:
+        raise FileNotFoundError(
+            f"No files found in inbox {inbox}. Add evidence at the inbox top level: "
+            f".pdf, .txt, .docx, .zip (archives whose members use those extensions), etc."
+        )
+
+    staged_inbox, staging_notes = _stage_inbox_evidence(inbox, run_dir)
     inputs = supported_evidence_files(staged_inbox)
     if not inputs:
-        raise FileNotFoundError(f"No supported local evidence files found in inbox: {inbox}")
+        top_names = ", ".join(p.name for p in top_files[:12])
+        if len(top_files) > 12:
+            top_names += ", …"
+        bits = [
+            f"No supported local evidence files after staging inbox {inbox}.",
+            f"Top-level inbox files: {top_names or '(none)'}",
+            f"Unpacked staging directory (inspect zip contents): {staged_inbox}",
+            f"Supported member extensions include: {', '.join(LOCAL_EVIDENCE_EXTENSIONS)}",
+        ]
+        if staging_notes:
+            bits.append("Staging notes: " + "; ".join(staging_notes))
+        raise FileNotFoundError(" ".join(bits))
 
     forms = normalize_review_forms(review_forms)
     _clear_scoped_filled_docx(filled_dir, forms)
@@ -935,7 +994,7 @@ def _run_local_rag_inbox_pipeline(*, root: Path, inbox: Path, out_dir: Path, rev
         for item in docx_results
         if item.get("auto_table_manual_fields")
     }
-    status = "review_required" if missing_context or failed_docx or manual_fields or auto_table_manual_fields else "success"
+    status = "review_required" if missing_context or failed_docx or manual_fields else "success"
 
     canonical_path = run_dir / "canonical_evidence.json"
     trace_path = run_dir / "field_traceability.json"

@@ -1,0 +1,105 @@
+{
+  "activity": {
+    "code": "B89",
+    "repairLevel": "RLJ",
+    "scope": "Maintenance, modification, and qualification for tank car jacket/insulation/patch work"
+  },
+  "demonstration": {
+    "carNumber": "PAWCT-RLJ",
+    "carType": "Tank Car",
+    "station": "Taller México FTVM",
+    "location": "DLGE",
+    "inspectionForm": null,
+    "date": null
+  },
+  "jacketPatch": {
+    "specimenPlate": "A36 1/8 in or A1110 cal. 11",
+    "specimenDimensions": "2 ft x 2 ft x 1/8 in",
+    "patchPlateSize": "12 in x 12 in",
+    "cornerRadius": "1 in",
+    "primer": "red/black/gray primer",
+    "targetFilletSize": "3/16 in",
+    "inspectionStandard": "AWS D15.1"
+  },
+  "welding": {
+    "wps": {
+      "number": "DLG GMAW WTCA W No 01",
+      "process": "GMAW",
+      "processSpecification": "AWS A5.18",
+      "fillerClassification": "ER70S-6",
+      "position": "2F",
+      "jointDesign": "T-joint",
+      "gasFlow": "40-60 CFH",
+      "electrical": {
+        "amperageRange": null,
+        "voltageRange": null
+      }
+    },
+    "welderQualification": {
+      "wqrNumber": "DLG GMAW WTCA W No 01",
+      "process": "GMAW",
+      "position": "2F",
+      "jointType": "T-joint",
+      "fillerClassification": "ER70S-6",
+      "electrodeDiameter": "0.035 in",
+      "qualificationResult": "Acceptable",
+      "filletMacroResult": "Acceptable",
+      "filletSizeTested": "4.7 mm"
+    },
+    "fillerMetal": {
+      "observedClassification": "ER70S-6",
+      "observedDiameter": "0.035 in / 0.9 mm",
+      "batchNumber": "25098002",
+      "manufacturerCertificatePresent": true
+    },
+    "observedParameters": {
+      "amps": null,
+      "volts": null,
+      "wireFeed": null
+    }
+  },
+  "equipment": {
+    "weldingMachine": {
+      "equipmentId": "DLG-MS-20",
+      "brand": "Miller",
+      "model": null,
+      "serialNumber": null,
+      "assignedArea": null,
+      "calibrationDate": "2025-09-15",
+      "calibrationDue": "2026-09-15",
+      "status": "OK",
+      "calibrationRecord": null
+    }
+  },
+  "inspection": {
+    "visual": {
+      "form": null,
+      "method": "VT",
+      "standard": "AWS D15.1",
+      "result": null,
+      "inspectorSignoff": null
+    }
+  },
+  "ndt": {
+    "technician": {
+      "qualificationMethod": "SNT-TC-1A",
+      "technique": "VT",
+      "certificationLevel": "Level II",
+      "certificateNumber": "DLGA/NDT-47",
+      "certificationExpiration": "2028-02-25",
+      "visionExamExpiration": "2026-01-16"
+    }
+  },
+  "pitp": null,
+  "tcid": null,
+  "warnings": [
+    "Observed welding parameters (actual amps/volts during demonstration) not identified.",
+    "Visual inspection final acceptance record not clearly identified for B89.",
+    "Inspector signoff not clearly identified.",
+    "PITP evidence not explicitly identified; PC-TC-01 is a control plan and was not treated as PITP.",
+    "TCID evidence not identified; car range text was not treated as a B89 TCID record.",
+    "Original extraction incorrectly selected DLG-MS-02; corrected B89 equipment is DLG-MS-20.",
+    "Do not use historical procedure approval signatures as current audit signoff."
+  ],
+  "sourceReference": "B89.pdf"
+}
