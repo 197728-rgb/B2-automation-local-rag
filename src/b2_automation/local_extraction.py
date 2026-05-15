@@ -536,7 +536,7 @@ def _field_suggestions(retrieved: list[dict[str, Any]], form: str = "") -> list[
             (
                 "tco_permission_date",
                 r"\b(?:date\s+permission(?:/instruction)?\s+received\s+from\s+TCO|"
-                r"date\s+permission|TCO\s+permission\s+date)\s*[:=-]\s*"
+                r"date\s+permission|TCO\s+permission\s+date|permission\s+received)\s*[:=-]\s*"
                 r"([0-9]{4}-[0-9]{2}-[0-9]{2}|[0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4}|"
                 r"[0-9]{1,2}[-\s](?:ene|enero|jan|january|feb|febrero|mar|marzo|apr|abril|abr|"
                 r"may|mayo|jun|junio|jul|julio|aug|agosto|ago|sep|sept|septiembre|oct|octubre|"
@@ -672,6 +672,10 @@ def _special_text_suggestions(item: dict[str, Any]) -> list[dict[str, Any]]:
         if len(pitp_parts) > 4:
             emit("pitp.revision", pitp_parts[4], 0.90)
             emit("pitp_rev", pitp_parts[4], 0.90)
+
+    split_mark_match = re.search(r"\bCar\s+Mark\s+([A-Z]{2,10})\b\s+Car\s+Number\b", compact, flags=re.IGNORECASE)
+    if split_mark_match:
+        emit("car_mark", split_mark_match.group(1).upper(), 0.95)
 
     tco_name_match = re.search(
         r"\b(?:tank\s+car\s+owner\s*(?:\(TCO\))?\s+name|TCO\s+name)\s*[:=-]\s*([A-Z0-9][A-Z0-9 .&/-]{1,80})",
@@ -921,6 +925,10 @@ def _normalize_candidate_value(field: str, value: str) -> str:
     if field in material_fields:
         cleaned = re.sub(r"\bA51G\b", "A516", cleaned, flags=re.IGNORECASE)
         cleaned = re.sub(r"\bGrado\s+([0-9A-Z]+)\b", r"Gr. \1", cleaned, flags=re.IGNORECASE)
+    if field == "car_mark":
+        split_mark = re.fullmatch(r"([A-Z]{2,10})-[0-9]{2,8}", cleaned, flags=re.IGNORECASE)
+        if split_mark:
+            cleaned = split_mark.group(1).upper()
     if field == "test_fixture.weld.length":
         cleaned = re.sub(r"\s+(?:filete|fillet|mete)\b.*$", "", cleaned, flags=re.IGNORECASE).strip()
     return cleaned
@@ -1136,6 +1144,8 @@ def _is_plausible_candidate_value(field: str, value: str) -> bool:
     if lower.startswith(("assigned ", "code ", "the ")):
         return False
     if lower in {"tank car", "car type", "description", "nominal", "actual"}:
+        return False
+    if re.search(r"\b(?:day\s+where\s+the\s+action|^a\)$)\b", lower):
         return False
     if lower.endswith(" for"):
         return False
