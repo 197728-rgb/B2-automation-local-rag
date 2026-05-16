@@ -4,8 +4,115 @@
   "manifest_path": "schemas/templates/Cover_Page.json",
   "template_path": "templates/Cover_Page.docx",
   "fields": {
-    "facility_name": {"field_id": "facility_name", "table_index": 0, "row": 4, "col": 0, "required": true, "cell_role": "target", "label": "Facility / Company Name"},
-    "date": {"field_id": "date", "table_index": 0, "row": 4, "col": 3, "required": true, "cell_role": "target", "label": "Audit Date"},
-    "evidence_notes": {"field_id": "evidence_notes", "table_index": 0, "row": 18, "col": 0, "required": false, "cell_role": "notes", "label": "Additional Auditor Objective Evidence/Comments/Notes"}
+    "station_stencil_code": {
+      "field_id": "station_stencil_code",
+      "table_index": 0,
+      "row": 1,
+      "col": 0,
+      "required": true,
+      "cell_role": "target",
+      "write_mode": "append_after_label",
+      "label": "Station Stencil/QA Code"
+    },
+    "audit_type": {
+      "field_id": "audit_type",
+      "table_index": 0,
+      "row": 1,
+      "col": 2,
+      "required": true,
+      "cell_role": "target",
+      "write_mode": "append_after_label",
+      "label": "Audit Type"
+    },
+    "facility_workforce_size": {
+      "field_id": "facility_workforce_size",
+      "table_index": 0,
+      "row": 1,
+      "col": 5,
+      "required": false,
+      "cell_role": "target",
+      "write_mode": "append_after_label",
+      "label": "Facility Workforce Size"
+    },
+    "open_meeting_date": {
+      "field_id": "open_meeting_date",
+      "table_index": 0,
+      "row": 2,
+      "col": 0,
+      "required": true,
+      "cell_role": "target",
+      "write_mode": "append_after_label",
+      "label": "Open Meeting Date"
+    },
+    "closing_meeting_date": {
+      "field_id": "closing_meeting_date",
+      "table_index": 0,
+      "row": 2,
+      "col": 3,
+      "required": true,
+      "cell_role": "target",
+      "write_mode": "append_after_label",
+      "label": "Closing Meeting Date"
+    },
+    "boe_lead_auditor": {
+      "field_id": "boe_lead_auditor",
+      "table_index": 0,
+      "row": 3,
+      "col": 0,
+      "required": true,
+      "cell_role": "target",
+      "write_mode": "append_after_label",
+      "label": "BOE Lead Auditor"
+    },
+    "aar_audit_team_size": {
+      "field_id": "aar_audit_team_size",
+      "table_index": 0,
+      "row": 3,
+      "col": 5,
+      "required": false,
+      "cell_role": "target",
+      "write_mode": "append_after_label",
+      "label": "AAR Audit Team Size"
+    },
+    "m1002_total_findings": {
+      "field_id": "m1002_total_findings",
+      "table_index": 0,
+      "row": 4,
+      "col": 0,
+      "required": false,
+      "cell_role": "target",
+      "write_mode": "append_after_label",
+      "label": "M-1002 Total # Findings"
+    },
+    "m1003_total_findings": {
+      "field_id": "m1003_total_findings",
+      "table_index": 0,
+      "row": 4,
+      "col": 1,
+      "required": false,
+      "cell_role": "target",
+      "write_mode": "append_after_label",
+      "label": "M-1003 Total # of Findings"
+    },
+    "total_findings": {
+      "field_id": "total_findings",
+      "table_index": 0,
+      "row": 4,
+      "col": 5,
+      "required": false,
+      "cell_role": "target",
+      "write_mode": "append_after_label",
+      "label": "Total # Findings"
+    },
+    "evidence_notes": {
+      "field_id": "evidence_notes",
+      "table_index": 2,
+      "row": 18,
+      "col": 0,
+      "required": false,
+      "cell_role": "notes",
+      "write_mode": "append_after_label",
+      "label": "Additional Auditor Objective Evidence/Comments/Notes"
+    }
   }
 }

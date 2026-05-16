@@ -260,18 +260,23 @@ class TestStructureGuardHandoff:
         inbox = tmp_path / "inbox"
         inbox.mkdir()
         (inbox / "evidence.txt").write_text(
-            "Cover Page Facility: Midwest Tank Rail Inc\n"
-            "B24 RL2 objective evidence Date: 2026-05-07\n",
+            "Cover Page\n"
+            "Station Stencil/QA Code: DLGA\n"
+            "Audit Type: SP\n"
+            "Open Meeting Date: 2026-05-05\n"
+            "Closing Meeting Date: 2026-05-07\n"
+            "BOE Lead Auditor: Lucho Rodriguez\n",
             encoding="utf-8",
         )
 
         run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run")
 
         doc = Document(tmp_path / "run" / "filled" / "Cover_Page_filled.docx")
-        facility_cell = doc.tables[0].rows[4].cells[0].text
-        date_cell = doc.tables[0].rows[4].cells[3].text
-        assert facility_cell == "Midwest Tank Rail Inc"
-        assert date_cell == "2026-05-07"
+        text = "\n".join(cell.text for table in doc.tables for row in table.rows for cell in row.cells)
+        assert "PART 1: General INFORMATiON" in doc.tables[0].rows[0].cells[0].text
+        assert "Station Stencil/QA Code: DLGA" in text
+        assert "Audit Type: SP" in text
+        assert "Open Meeting Date: 2026-05-05" in text
 
     def test_guard_fail_discards_filled_docx(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         root = _repo_root()
@@ -309,8 +314,9 @@ class TestStructureGuardHandoff:
 
         review = json.loads(result.review_json_path.read_text(encoding="utf-8"))
         assert review.get("structure_guard_failed_forms")
-        discard_detail = review.get("structure_guard_discard_detail") or []
-        assert len(discard_detail) >= 1
+        failed_rows = [item for item in manifest["docx_generation"] if item.get("failure_reason") == "structure_guard_failed"]
+        assert failed_rows
+        assert any("injected" in " ".join(item.get("errors") or ()) for item in failed_rows)
 
         filled_dir = tmp_path / "run" / "filled"
         filled_files = list(filled_dir.glob("*_filled.docx")) if filled_dir.is_dir() else []

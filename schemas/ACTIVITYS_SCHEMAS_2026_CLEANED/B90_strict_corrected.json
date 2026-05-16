@@ -1,0 +1,118 @@
+{
+  "activity": {
+    "code": "B90",
+    "repairLevel": "RLS",
+    "scope": "Maintenance, Alteration, and Qualification of Tank Car Stub Sills"
+  },
+  "demonstration": {
+    "carNumber": "PAWCT-B90",
+    "carType": "Tank Car",
+    "station": "Taller México FTVM",
+    "location": "DLGE",
+    "inspectionForm": "FOR-TC-26 Rev.1",
+    "date": null
+  },
+  "stubSill": {
+    "materialSpecification": "ASTM A572 Grade 50",
+    "specimenDimensions": "12 in x 12 in x 1/2 in",
+    "jointType": "T-joint",
+    "targetFilletSize": "3/8 in",
+    "inspectionStandard": "AWS D15.1"
+  },
+  "welding": {
+    "wps": {
+      "number": "DLG W-No.07-1",
+      "process": "FCAW",
+      "processSpecification": "AWS A5.20",
+      "fillerClassification": "E71T-1",
+      "position": "4F",
+      "jointDesign": "T-joint",
+      "shieldingGas": "CO2",
+      "gasFlow": "40-60 CFH",
+      "baseMaterial": "ASTM A572 Grade 50",
+      "preheat": {
+        "minimum": "32°F (0°C)",
+        "additionalRanges": [
+          ">3/4 in to 1-1/2 in = 150°F (65°C)",
+          ">1-1/2 in to 2-1/2 in = 225°F (104°C)",
+          ">2-1/2 in = 300°F (149°C)"
+        ]
+      },
+      "electrical": {
+        "polarity": "DCEP/CDEP",
+        "amperageRange": "190-240 A",
+        "voltageRange": "24-28 V"
+      }
+    },
+    "welderQualification": {
+      "wqrNumber": "DLG FCAW WTCF W No 08",
+      "process": "FCAW",
+      "position": "4F",
+      "jointType": "T-joint",
+      "fillerClassification": "E71T-1",
+      "electrodeDiameter": "0.045 in",
+      "shieldingGas": "CO2",
+      "gasFlow": "40 CFH",
+      "baseMaterial": "ASTM A572 G50",
+      "qualificationResult": "Acceptable",
+      "filletMacroResult": "Acceptable",
+      "filletSizeTested": "5.1 mm"
+    },
+    "fillerMetal": {
+      "observedClassification": "E71T-9C H8",
+      "observedDiameter": "0.045 in / 1.2 mm",
+      "batchNumber": "JUZ392509052",
+      "manufacturerCertificatePresent": true
+    },
+    "observedParameters": {
+      "amps": null,
+      "volts": null,
+      "wireFeed": null
+    }
+  },
+  "equipment": {
+    "weldingMachine": {
+      "equipmentId": null,
+      "brand": null,
+      "model": null,
+      "serialNumber": null,
+      "assignedArea": null,
+      "calibrationDate": null,
+      "calibrationDue": null,
+      "status": null,
+      "calibrationRecord": null
+    }
+  },
+  "inspection": {
+    "visual": {
+      "form": "FOR-TC-26 Rev.1",
+      "method": "VT",
+      "standard": "AWS D15.1",
+      "result": null,
+      "inspectorSignoff": null
+    }
+  },
+  "ndt": {
+    "technician": {
+      "qualificationMethod": "SNT-TC-1A",
+      "technique": "VT",
+      "certificationLevel": "Level II",
+      "certificateNumber": "DLGA/NDT-47",
+      "certificationExpiration": "2028-02-25",
+      "visionExamExpiration": null
+    }
+  },
+  "pitp": null,
+  "tcid": null,
+  "warnings": [
+    "Observed welding parameters (actual amps/volts during demonstration) not identified.",
+    "Visual inspection final acceptance disposition not clearly identified.",
+    "Inspector signoff not clearly identified.",
+    "PITP evidence not explicitly identified.",
+    "TCID evidence not identified.",
+    "Multiple B90 welding machine IDs found in source set (DLG-MS-02 and DLG-MS-20); equipment fields set to null for manual review.",
+    "Filler classification review required: WPS/WQR specify E71T-1 while observed spool shows E71T-9C H8.",
+    "Do not use historical procedure approval signatures as current audit signoff."
+  ],
+  "sourceReference": "b90.pdf"
+}

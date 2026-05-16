@@ -35,11 +35,17 @@ python -m venv .venv
 
 For scanned/image PDFs, install the Tesseract OCR engine on Windows and make sure `tesseract.exe` is on `PATH`. The Python OCR dependencies are installed with the project, but the OCR engine itself is a system dependency.
 
+## Verified source handoff
+
+A clean source handoff archive is complete when it contains the project source, tests, schemas/maps, templates, scripts, docs, and workflow files, but excludes local/runtime state such as `.git/`, `.venv/`, `inbox/`, `outputs/`, `.env*`, and pytest temp folders. A verified handoff should install from a fresh extraction, report `b2 0.1.0`, pass the full pytest suite, and run `b2 inbox` against a local inbox to generate the five filled DOCX files for `B24_RL2`, `B81`, `B89`, `B90`, and `Cover_Page`.
+
+`inbox/` is intentionally gitignored. Each user supplies their own evidence files locally; PDF and ZIP evidence in `inbox/` is supported at runtime but is not part of the source handoff.
+
 ## Run the local inbox command
 
 ```powershell
 New-Item -ItemType Directory -Force .\inbox | Out-Null
-# Put .pdf, .txt, .md, .json, or .csv evidence files in .\inbox
+# Put .pdf, .zip, .txt, .md, .json, or .csv evidence files in .\inbox
 .\.venv\Scripts\b2.exe inbox --inbox .\inbox --out .\outputs\local_rag_run
 ```
 
@@ -58,7 +64,7 @@ outputs/local_rag_run/review/*_evidence_packet.json
 outputs/local_rag_run/review/*_review.md
 ```
 
-The local inbox command is review-first when evidence is missing or guarded. When exact per-form approval maps and templates exist, it may emit filled DOCX under the run’s `filled/` directory only if the structure guard passes.
+The inbox command **fills the best extracted value** per approved cell and inserts **`REVIEW_REQUIRED:` text markers** into the DOCX for required map fields that still lack evidence. The run is **`review_required`** when those **manual markers** remain (see `manual_fields` in `run_manifest.json`) or when the **structure guard** fails; it is **`success`** only when there are no manual follow-ups and the guard passes. Filled outputs live under **`<out>/filled/`** (for example `outputs/local_rag_run/filled/`), not a repo-wide `outputs/filled/` folder.
 
 ## Other commands
 

@@ -29,6 +29,74 @@ class PatchOutcome:
     structure_guard_passed: bool
     patched_fields: tuple[str, ...]
     errors: tuple[str, ...]
+    table_fill_audit: Mapping[str, Any] | None = None
+
+
+def _strip_cell_plain_text(document_xml: str, cell_start: int, cell_end: int) -> str:
+    segment = document_xml[cell_start:cell_end]
+    pieces: list[str] = []
+    for match in re.finditer(r"<w:t(?:\s[^>]*)?>(.*?)</w:t>", segment, flags=re.DOTALL):
+        raw = match.group(1)
+        raw = re.sub(r"<w:tab[^>]*/>", "\t", raw)
+        pieces.append(html.unescape(raw))
+    joined = "".join(pieces)
+    return re.sub(r"\s+", " ", joined).replace("\u00a0", " ").strip()
+
+
+def audit_table_fill_completeness(
+    docx_path: Path,
+    manifest: Mapping[str, Any],
+    approval_map: Mapping[str, Any] | None,
+    *,
+    strict_approval_coverage: bool = True,
+) -> dict[str, Any]:
+    """Audit required target table cells: detect blanks after a patch (coordinate-safe)."""
+    docx_path = Path(docx_path)
+    errs: list[str] = []
+    specs = _approved_manifest_cells(manifest, approval_map, errs, strict_coverage=strict_approval_coverage)
+    with zipfile.ZipFile(docx_path, "r") as zf:
+        document_xml = zf.read("word/document.xml").decode("utf-8")
+    tables = _find_elements(document_xml, "w:tbl")
+    rows_detail: list[dict[str, Any]] = []
+    blank_required: list[str] = []
+    manual_required: list[str] = []
+    for spec in specs:
+        if _cell_role(spec) != "target":
+            continue
+        if not _required_for_spec(spec, set()):
+            continue
+        fid = str(spec["field_id"])
+        try:
+            cell_start, cell_end = _cell_range_for_spec(document_xml, tables, spec)
+            text = _strip_cell_plain_text(document_xml, cell_start, cell_end)
+        except (IndexError, ValueError) as exc:
+            rows_detail.append({"field_id": fid, "label": spec.get("label"), "status": "error", "error": str(exc)})
+            blank_required.append(fid)
+            continue
+        if not text:
+            status = "blank"
+            blank_required.append(fid)
+        elif REVIEW_REQUIRED_TEXT in text:
+            status = "manual_marker"
+            manual_required.append(fid)
+        else:
+            status = "filled"
+        rows_detail.append(
+            {
+                "field_id": fid,
+                "label": spec.get("label"),
+                "cell_text_preview": text[:120] + ("..." if len(text) > 120 else ""),
+                "status": status,
+            }
+        )
+    return {
+        "docx": str(docx_path.resolve()),
+        "required_targets": rows_detail,
+        "blank_required_field_ids": sorted(set(blank_required)),
+        "manual_marker_required_field_ids": sorted(set(manual_required)),
+        "required_targets_complete": not blank_required,
+        "approval_errors": list(errs),
+    }
 
 
 def patch_docx_cells(
@@ -43,12 +111,17 @@ def patch_docx_cells(
     structure_guard_report_path: Path | None = None,
     approval_map: Mapping[str, Any] | None = None,
     strict_approval_coverage: bool = True,
+    table_fill_audit_manifest: Mapping[str, Any] | None = None,
 ) -> PatchOutcome:
     """Patch approved manifest cells in a DOCX package.
 
     Missing optional values preserve the existing cell. Missing required values
     are written as review markers. Existing OOXML package parts are copied
     unchanged except for ``word/document.xml``.
+
+    When ``table_fill_audit_manifest`` is set, post-patch completeness is
+    checked against that manifest (typically the full template manifest) while
+    ``manifest`` may list only the subset of cells being patched.
     """
 
     template_path = Path(template_path)
@@ -112,8 +185,13 @@ def patch_docx_cells(
             errors.append(f"{fid}: {exc}")
             continue
         else:
+            if str(spec.get("write_mode") or "").strip().lower() == "append_after_label":
+                existing_text = _strip_cell_plain_text(document_xml, cell_start, cell_end)
+                write_text = _append_after_label_text(existing_text, str(write_value))
+            else:
+                write_text = str(write_value)
             for idx, (text_start, text_end) in enumerate(text_ranges):
-                patches.append((text_start, text_end, _xml_text(write_value) if idx == 0 else "", fid))
+                patches.append((text_start, text_end, _xml_text(write_text) if idx == 0 else "", fid))
 
     patched_xml = document_xml
     patched_fields: list[str] = []
@@ -134,6 +212,14 @@ def patch_docx_cells(
     after_counts = count_docx_structure(output_path)
     guard = build_structure_guard(before_counts, after_counts, errors, intentional_text_node_creations)
     structure_guard_report_path.write_text(json.dumps(guard, indent=2, sort_keys=True), encoding="utf-8")
+    fill_audit: Mapping[str, Any] | None = None
+    if guard["pass"] and output_path.is_file():
+        fill_audit = audit_table_fill_completeness(
+            output_path,
+            table_fill_audit_manifest if table_fill_audit_manifest is not None else manifest,
+            approval_map,
+            strict_approval_coverage=strict_approval_coverage,
+        )
     if not guard["pass"]:
         try:
             output_path.unlink()
@@ -145,6 +231,7 @@ def patch_docx_cells(
         structure_guard_passed=bool(guard["pass"]),
         patched_fields=tuple(reversed(patched_fields)),
         errors=tuple(errors),
+        table_fill_audit=fill_audit,
     )
 
 
@@ -207,6 +294,8 @@ def _value_for_write(
         return None
     if not value_present:
         return _review_text(fid, "missing required value") if required else None
+    if str(value).startswith(REVIEW_REQUIRED_TEXT):
+        return str(value)
     decision = decide_cell(
         value,
         confidence=confidence,
@@ -349,15 +438,27 @@ def _text_ranges(xml: str, cell_start: int, cell_end: int) -> list[tuple[int, in
 
 def _unwrap_filled_content_controls(xml: str, written_values: set[str]) -> str:
     """Keep filled values as ordinary visible runs instead of placeholder SDTs."""
-    values = {_xml_text(value) for value in written_values if value}
-    if not values:
+
+    def visible_text_from_sdt_content(content_xml: str) -> str:
+        parts: list[str] = []
+        for inner in re.finditer(r"<w:t(?:\s[^>]*)?>(.*?)</w:t>", content_xml, flags=re.DOTALL):
+            raw = inner.group(1)
+            raw = re.sub(r"<w:tab[^>]*/>", "\t", raw)
+            parts.append(html.unescape(raw))
+        return "".join(parts)
+
+    plain_values = {str(value) for value in written_values if str(value).strip()}
+    if not plain_values:
         return xml
 
     def replace(match: re.Match[str]) -> str:
-        block = match.group(0)
-        if not any(value in block for value in values):
-            return block
+        full_sdt = match.group(0)
         content = match.group(1)
+        visible_plain = visible_text_from_sdt_content(content)
+        if not visible_plain.strip():
+            return full_sdt
+        if not any(value in visible_plain for value in plain_values):
+            return full_sdt
         return re.sub(r"<w:rStyle\b[^>]*\bw:val=\"PlaceholderText\"[^>]*/>", "", content)
 
     return re.sub(
@@ -381,6 +482,18 @@ def _paragraph_text_insert_at(xml: str, cell_start: int, cell_end: int) -> int:
 
 def _xml_text(value: str) -> str:
     return html.escape(str(value), quote=False)
+
+
+def _append_after_label_text(existing_text: str, write_value: str) -> str:
+    prefix = re.sub(r"\s+", " ", existing_text).strip()
+    value = re.sub(r"\s+", " ", write_value).strip()
+    if not prefix:
+        return value
+    if not value:
+        return prefix
+    if prefix.endswith((":", "：")):
+        return f"{prefix} {value}"
+    return f"{prefix}: {value}"
 
 
 def _bool_from_spec(value: Any, default: bool = False) -> bool:

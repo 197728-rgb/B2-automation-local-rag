@@ -44,7 +44,9 @@ def test_conflict_when_two_high_confidence_values_disagree() -> None:
         low_confidence_threshold=0.70,
     )
     assert len(decisions) == 1
-    assert decisions[0].state == DecisionState.CONFLICT
+    assert decisions[0].state == DecisionState.FILL
+    assert decisions[0].selected_value == "A"
+    assert "conflicting" in decisions[0].reason.lower()
 
 
 def test_review_required_when_values_differ_but_not_both_high() -> None:
@@ -59,7 +61,8 @@ def test_review_required_when_values_differ_but_not_both_high() -> None:
         required_field_ids=("facility_name",),
         low_confidence_threshold=0.70,
     )
-    assert decisions[0].state == DecisionState.REVIEW_REQUIRED
+    assert decisions[0].state == DecisionState.FILL
+    assert decisions[0].selected_value == "A"
 
 
 def test_low_confidence_single_candidate() -> None:
@@ -73,7 +76,9 @@ def test_low_confidence_single_candidate() -> None:
         required_field_ids=("facility_name",),
         low_confidence_threshold=0.70,
     )
-    assert decisions[0].state == DecisionState.LOW_CONFIDENCE
+    assert decisions[0].state == DecisionState.FILL
+    assert decisions[0].selected_value == "Low"
+    assert "low-confidence" in decisions[0].reason.lower()
 
 
 def test_missing_when_no_retrieval() -> None:
@@ -85,7 +90,8 @@ def test_missing_when_no_retrieval() -> None:
     )
     ids = {d.field_id for d in decisions}
     assert ids == {"date", "facility_name"}
-    assert all(d.state == DecisionState.MISSING for d in decisions)
+    assert all(d.state == DecisionState.FILL for d in decisions)
+    assert all(str(d.selected_value or "").startswith("REVIEW_REQUIRED:") for d in decisions)
 
 
 def test_fill_when_single_high_candidate() -> None:

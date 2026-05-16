@@ -28,12 +28,6 @@ Grouped summary for cleanup decisions. Applies to branch state at hygiene pass t
 |------|--------|--------|
 | `samples/docupipe/*.json` | KEEP | Optional fixtures for experiments or `sample-pipeline` |
 
-## Salvage reference → KEEP
-
-| Path | Action | Reason |
-|------|--------|--------|
-| `salvage/**` | KEEP | AGENTS.md: reference-only old tool material |
-
 ## Duplicates / parallel map files → KEEP (low cost)
 
 | Path | Action | Reason |
@@ -54,9 +48,11 @@ Grouped summary for cleanup decisions. Applies to branch state at hygiene pass t
 - `templates/*.docx` (first-class + `Cover_Page`)
 - `tests/**`, `mapping/cell_inventory.csv`, `scripts/**`, `.github/**`
 
-## Inbox samples → KEEP
+## Local inbox examples → KEEP LOCALLY / IGNORE-IN-GIT
 
-- `inbox/evidence.txt` — multi-form smoke text
-- `inbox/evidence_sample.txt` — minimal line sample
+`inbox/` is intentionally ignored by `.gitignore`, so these paths describe recommended local smoke inputs, not tracked repository contents.
 
-No scratch-only files removed (both are intentional).
+- `inbox/evidence.txt` — optional multi-form smoke text for local runs
+- `inbox/evidence_sample.txt` — optional minimal line sample for local runs
+
+No scratch-only files removed when present locally; do not commit `inbox/` contents unless `.gitignore` is deliberately changed for a specific fixture.

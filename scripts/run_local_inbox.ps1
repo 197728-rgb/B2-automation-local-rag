@@ -1,4 +1,5 @@
 # Run local inbox review into outputs/local_rag_run (repo root resolved for double-click usage).
+# Inbox may contain loose PDF/TXT/DOCX/... or .zip archives (members are staged under the run's staged_inbox).
 $ErrorActionPreference = "Stop"
 $RepoRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $RepoRoot

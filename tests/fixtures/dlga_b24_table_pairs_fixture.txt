@@ -1,0 +1,19 @@
+[structured_docx_table_evidence]
+table_0_row_4: Tank Car Owner (TCO) Name | Date Permission/Instruction Received from TCO | Written Instructions from TCO
+Tank Car Owner (TCO) Name: CIT
+Date Permission/Instruction Received from TCO: 5/20/2024
+Written Instructions from TCO: Facility received written confirmation from owner Allowing FACILITY Procedures.
+table_0_row_6: PITP Document Name | PITP ID | Approved By | Date Approved | Rev
+PITP Document Name: PITP
+PITP ID: PC-TC-01
+Approved By: A Navarre
+Date Approved: 11/4/2021
+Rev: 0
+Date Approved: day where the action
+a): malformed OCR fragment
+table_0_row_9: Car Mark and Number | Tank Car Design Spec/Stencil Spec
+Car Mark and Number: DBUX 250086
+Tank Car Design Spec/Stencil Spec: DOT111A100W1 / AAR211A100W1
+table_0_row_11: AAR Form 4-2 (AAR No.) | Drawing Number
+AAR Form 4-2 (AAR No.): L016048A
+Drawing Number: D43520
