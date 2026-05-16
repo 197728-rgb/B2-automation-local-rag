@@ -33,6 +33,13 @@ DEFAULT_LOW_CONFIDENCE_THRESHOLD = 0.70
 SAMPLE_EVIDENCE_STEMS = {"evidence_sample", "sample_evidence"}
 PDF_RUN_SAMPLE_EVIDENCE_STEMS = SAMPLE_EVIDENCE_STEMS | {"evidence"}
 RUN_LEVEL_FILL_FIELDS = DEFAULT_REQUIRED_SUGGESTION_FIELDS
+CAR_IDENTITY_FIELDS = {"car_mark", "car.mark", "car_number"}
+FORM_CAR_CODE_MARKERS = {
+    "B24_RL2": ("B24",),
+    "B81": ("B81",),
+    "B89": ("B89", "RLJ"),
+    "B90": ("B90",),
+}
 
 @dataclass(frozen=True)
 class LocalEvidenceDocument:
@@ -472,6 +479,42 @@ def _date_from_source_name(source_file: str) -> str | None:
     return _normalize_date_value(f"{match.group(2)} {match.group(1)} {match.group(3)}")
 
 
+def _form_code_tokens(text: str) -> set[str]:
+    return {match.group(1).upper() for match in re.finditer(r"\b(B(?:24|81|89|90))\b", text, flags=re.IGNORECASE)}
+
+
+def _candidate_allowed_for_form(field_id: str, value: str, item: dict[str, Any], form: str) -> bool:
+    if field_id not in CAR_IDENTITY_FIELDS or form not in FORM_CAR_CODE_MARKERS:
+        return True
+    expected = set(FORM_CAR_CODE_MARKERS[form])
+    value_upper = str(value or "").upper()
+    value_codes = _form_code_tokens(value_upper)
+    if value_codes and not (value_codes & expected):
+        return False
+    source = str(item.get("source_file") or "")
+    text = str(item.get("full_text") or item.get("text") or "")
+    context_codes = _form_code_tokens(f"{source}\n{text}")
+    if context_codes and not (context_codes & expected):
+        return False
+    return True
+
+
+def _select_noisy_car_identity(text: str, form: str) -> str | None:
+    matches = [
+        _normalize_car_identity_value(match.group(1))
+        for match in re.finditer(r"\b(PAWCT[-\s]?[A-Z0-9.]{2,10})\b", text, flags=re.IGNORECASE)
+    ]
+    matches = [match for match in matches if match]
+    if not matches:
+        return None
+    for marker in FORM_CAR_CODE_MARKERS.get(form, ()):
+        marker_re = re.compile(rf"(?:^|[-\s]){re.escape(marker)}(?:$|[-\s])", flags=re.IGNORECASE)
+        for match in matches:
+            if marker_re.search(match):
+                return match
+    return matches[0]
+
+
 def _field_suggestions(retrieved: list[dict[str, Any]], form: str = "") -> list[dict[str, Any]]:
     suggestions: list[dict[str, Any]] = []
     patterns: list[tuple[str, str]] = []
@@ -581,6 +624,8 @@ def _field_suggestions(retrieved: list[dict[str, Any]], form: str = "") -> list[
             value = _normalize_candidate_value(field, value)
             if not _is_plausible_candidate_value(field, value):
                 continue
+            if not _candidate_allowed_for_form(field, value, item, form):
+                continue
             key = (field, value)
             if key in seen:
                 continue
@@ -610,6 +655,8 @@ def _special_text_suggestions(item: dict[str, Any], form: str = "") -> list[dict
     def emit(field_id: str, value: str, confidence: float = 0.92) -> None:
         normalized = _normalize_candidate_value("date" if field_id.endswith("date") else field_id, value)
         if not normalized or not _is_plausible_candidate_value(field_id, normalized):
+            return
+        if not _candidate_allowed_for_form(field_id, normalized, item, form):
             return
         out.append(_suggestion_from_item(item, field_id, normalized, confidence))
 
@@ -679,10 +726,10 @@ def _special_text_suggestions(item: dict[str, Any], form: str = "") -> list[dict
     if noisy_permission_match:
         emit("tco_permission_date", noisy_permission_match.group(1), 0.98)
 
-    noisy_car_match = re.search(r"\b(PAWCT[-\s]?[A-Z0-9.]{2,10})\b", compact, flags=re.IGNORECASE)
-    if noisy_car_match and form in {"B89", "B90", "B24_RL2"}:
+    noisy_car_identity = _select_noisy_car_identity(compact, form)
+    if noisy_car_identity and form in {"B89", "B90", "B24_RL2"}:
         for field_id in ("car.mark", "car_mark", "car_number"):
-            emit(field_id, noisy_car_match.group(1), 0.94)
+            emit(field_id, noisy_car_identity, 0.94)
 
     tco_name_match = re.search(
         r"\b(?:tank\s+car\s+owner\s*(?:\(TCO\))?\s+name|TCO\s+name)\s*[:=-]\s*([A-Z0-9][A-Z0-9 .&/-]{1,80})",
@@ -707,6 +754,18 @@ def _special_text_suggestions(item: dict[str, Any], form: str = "") -> list[dict
         flags=re.IGNORECASE,
     )
     stencil_spec_match = re.search(r"\b(?:Stencil\s+Specification|Stencil\s+Spec)\s*[:=-]\s*([A-Z0-9][A-Z0-9./ -]{1,60})", compact, flags=re.IGNORECASE)
+    if not design_spec_match:
+        design_spec_match = re.search(
+            r"\bTANK\s+SPECIFICATION\s*((?:DOT|AAR)\s*[0-9][A-Z0-9./ -]{3,60})",
+            compact,
+            flags=re.IGNORECASE,
+        )
+    if not stencil_spec_match:
+        stencil_spec_match = re.search(
+            r"\bSTENCILED\s+SPEC\s*[:=-]?\s*((?:DOT|AAR)\s*[0-9][A-Z0-9./ -]{3,60})",
+            compact,
+            flags=re.IGNORECASE,
+        )
     design_spec = _trim_before_next_field_marker(design_spec_match.group(1)).strip() if design_spec_match else ""
     stencil_spec = _trim_before_next_field_marker(stencil_spec_match.group(1)).strip() if stencil_spec_match else ""
     if design_spec:
