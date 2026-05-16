@@ -28,12 +28,6 @@ Grouped summary for cleanup decisions. Applies to branch state at hygiene pass t
 |------|--------|--------|
 | `samples/docupipe/*.json` | KEEP | Optional fixtures for experiments or `sample-pipeline` |
 
-## Salvage reference → KEEP
-
-| Path | Action | Reason |
-|------|--------|--------|
-| `salvage/**` | KEEP | AGENTS.md: reference-only old tool material |
-
 ## Duplicates / parallel map files → KEEP (low cost)
 
 | Path | Action | Reason |

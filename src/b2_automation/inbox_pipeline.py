@@ -442,6 +442,12 @@ def _value_looks_like_date(value: str) -> bool:
     )
 
 
+def _value_looks_like_design_spec(value: str) -> bool:
+    if re.fullmatch(r"(?:tank\s+car|car\s+type|t[-\s]?joint|junta\s+t)", value.strip(), flags=re.IGNORECASE):
+        return False
+    return bool(re.search(r"\b(?:DOT|AAR)\s*[0-9][A-Z0-9./-]{3,}\b", value, flags=re.IGNORECASE))
+
+
 def _label_value_is_compatible(label: str, value: str) -> bool:
     tokens = _label_tokens(label)
     cleaned = _clean_cell(value)
@@ -452,8 +458,26 @@ def _label_value_is_compatible(label: str, value: str) -> bool:
         return False
     if re.fullmatch(r"[a-z]\)", lower):
         return False
+    if re.search(r"(?:^|\s)[a-z]\)(?:\s+[a-z]\)){1,}", lower):
+        return False
+    if re.search(r"\bday\s+where\s+the\s+action\b", lower):
+        return False
+    if re.search(r"\b(?:equipment\s+red)(?:\s+equipment\s+red)+\b", lower):
+        return False
+    if re.search(r"(?:^|\s)121405\)(?:\s|$)", lower):
+        return False
+    if re.search(r"(?:^|\s)1j1~?'?(?:\s|$)", lower):
+        return False
+    if re.search(r"\bconfirmaci[oó6]n\s+por\s+correo\s+electr[oó6]nico\b", lower) and not (tokens & {"instruction", "instructions", "permission", "tco", "owner", "comments", "notes"}):
+        return False
+    if re.fullmatch(r"t[-\s]?joint", lower) and not (tokens & {"stub", "sill", "joint", "type", "description"}):
+        return False
+    if ({"design", "spec"} <= tokens or {"stencil", "spec"} <= tokens) and not _value_looks_like_design_spec(cleaned):
+        return False
     if "date" in tokens and not _value_looks_like_date(cleaned):
         return False
+    if "mark" in tokens and re.fullmatch(r"[A-Z]{2,10}(?:[-\s][A-Z0-9]{2,10})?", cleaned, flags=re.IGNORECASE):
+        return True
     numeric_label_tokens = {"id", "number", "no", "form", "drawing", "spec", "stencil", "mark", "mtr"}
     if tokens & numeric_label_tokens and not re.search(r"\d", cleaned):
         return False
@@ -590,6 +614,7 @@ def _preferred_evidence_keys(key: str) -> tuple[str, ...]:
 
 def _append_table_autofill_cells(
     *,
+    form: str,
     bundle: ApprovalBundle,
     fill_manifest: dict[str, Any],
     values: dict[str, str],
@@ -597,6 +622,11 @@ def _append_table_autofill_cells(
     label_evidence: Mapping[str, list[str]],
 ) -> tuple[list[str], list[str]]:
     """Add label-driven table cells so the output is not limited to the small approval map."""
+    if form == "Cover_Page":
+        # Cover page approval is intentionally limited to its exact map.
+        # Broad label/value auto-fill can otherwise pull B24 body evidence into
+        # a cover template that shares the same large grid structure.
+        return [], []
     cells = list(fill_manifest.get("cells") or [])
     existing_coords = {
         (int(cell["table_index"]), int(cell["row"]), int(cell["col"]))
@@ -809,6 +839,7 @@ def _write_local_filled_docx(
         fill_manifest = _manifest_cells_for_fill(bundle, values)
         form_label_evidence = _merge_label_evidence(_collect_packet_label_value_evidence(packet), label_evidence)
         auto_fields, auto_manual_fields = _append_table_autofill_cells(
+            form=form,
             bundle=bundle,
             fill_manifest=fill_manifest,
             values=values,

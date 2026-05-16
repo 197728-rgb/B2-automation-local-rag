@@ -45,6 +45,7 @@ Treat these forms equally:
 - Always write review JSON and Markdown for missing, conflicting, and low-confidence evidence.
 - Keep raw extraction, chunk, retrieval, and metadata artifacts for traceability.
 - Keep `inputs/`, `outputs/`, `.env`, and `.venv/` out of git.
+- **Inbox evidence:** put `.pdf`, `.txt`, `.docx`, and other supported types at the **top level** of the inbox folder, or add **`.zip`** archives whose *members* use those extensions. The pipeline unpacks each zip into `<out>/staged_inbox` before extraction (nested zips are supported up to an internal depth limit).
 
 ## Current filled-DOCX baseline
 
@@ -96,7 +97,6 @@ python -m venv .venv
 - `outputs/` generated artifacts, gitignored
 - `templates/` DOCX form templates
 - `schemas/` template maps and extraction schemas
-- `salvage/` old-tool reference material only
 
 ## Cursor Cloud specific instructions
 

@@ -1,4 +1,4 @@
-# Build dist/b2-automation-<version>.zip for sharing (no .venv, .git, inputs, outputs, salvage, .env*).
+# Build dist/b2-automation-<version>.zip for sharing (no .venv, .git, inputs, outputs, .env*).
 $ErrorActionPreference = "Stop"
 $RepoRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $RepoRoot
@@ -16,7 +16,7 @@ $staging = Join-Path $env:TEMP ("b2-automation-staging-" + [Guid]::NewGuid().ToS
 New-Item -ItemType Directory -Path $staging | Out-Null
 try {
     $exclude = @(
-        ".git", ".venv", "outputs", "inputs", "__pycache__", "dist", "salvage",
+        ".git", ".venv", "outputs", "inputs", "__pycache__", "dist",
         ".env", ".pytest_cache"
     )
     Get-ChildItem -LiteralPath $RepoRoot -Force | Where-Object {

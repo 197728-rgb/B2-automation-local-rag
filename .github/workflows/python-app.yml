@@ -31,7 +31,7 @@ jobs:
           if [ -f requirements.txt ]; then python -m pip install -r requirements.txt; fi
           if [ -f pyproject.toml ]; then python -m pip install -e ".[dev]"; fi
 
-      # Lint first-party code only. `flake8 .` fails on salvage/legacy (many F401) and is not CI signal.
+      # Lint first-party code only. `flake8 .` pulls in non-package noise; scoped paths are CI signal.
       - name: Lint with flake8
         run: |
           flake8 src tests scripts --count --select=E9,F63,F7,F82,F401 --show-source --statistics

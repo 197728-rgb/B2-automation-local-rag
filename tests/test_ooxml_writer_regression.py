@@ -49,6 +49,8 @@ def test_ooxml_patch_preserves_table_cell_structure(tmp_path: Path) -> None:
     )
 
     assert outcome.structure_guard_passed is True
+    assert outcome.table_fill_audit is not None
+    assert outcome.table_fill_audit.get("required_targets_complete") is True
     assert guard_path.is_file()
     guard = json.loads(guard_path.read_text(encoding="utf-8"))
     assert guard["pass"] is True
