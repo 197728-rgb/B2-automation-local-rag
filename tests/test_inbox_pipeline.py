@@ -10,7 +10,12 @@ import pytest
 from docx import Document
 
 from b2_automation.docupipe_client import DocuPipeConfigError, process_pdf
-from b2_automation.inbox_pipeline import _clear_scoped_filled_docx, _label_value_is_compatible, run_inbox_pipeline
+from b2_automation.inbox_pipeline import (
+    _best_value_for_label,
+    _clear_scoped_filled_docx,
+    _label_value_is_compatible,
+    run_inbox_pipeline,
+)
 from b2_automation.local_extraction import DEFAULT_REVIEW_FORMS, supported_evidence_files
 
 
@@ -42,8 +47,6 @@ def _docx_text(path: Path) -> str:
     return "\n".join(parts)
 
 
-
-
 def test_cover_page_does_not_auto_fill_b24_body_rows(tmp_path: Path) -> None:
     root = _repo_root()
     inbox = tmp_path / "inbox"
@@ -51,8 +54,12 @@ def test_cover_page_does_not_auto_fill_b24_body_rows(tmp_path: Path) -> None:
     (inbox / "mixed_cover_b24.txt").write_text(
         "\n".join(
             [
-                "Cover Page Facility: Midwest Tank Rail Inc",
-                "B24 RL2 objective evidence Date: 2026-05-07",
+                "Cover Page",
+                "Station Stencil/QA Code: DLGA",
+                "Audit Type: SP",
+                "Open Meeting Date: 2026-05-05",
+                "Closing Meeting Date: 2026-05-07",
+                "BOE Lead Auditor: Lucho Rodriguez",
                 "Tank Car Owner (TCO) Name: CIT",
                 "Car Mark and Number: DBUX 250086",
                 "AAR Form 4-2 (AAR No.): L016048A",
@@ -70,7 +77,10 @@ def test_cover_page_does_not_auto_fill_b24_body_rows(tmp_path: Path) -> None:
     assert cover_docx["auto_table_fields"] == []
     assert cover_docx["auto_table_manual_fields"] == []
     text = _docx_text(Path(cover_docx["filled_docx"]))
-    assert "Midwest Tank Rail Inc" in text
+    assert "PART 1: General INFORMATiON" in text
+    assert "Station Stencil/QA Code: DLGA" in text
+    assert "Open Meeting Date: 2026-05-05" in text
+    assert "CAR OWNER PERMISSIONS" not in text
     assert "DBUX 250086" not in text
     assert "L016048A" not in text
 
@@ -94,6 +104,16 @@ def test_auto_table_rejects_known_ocr_junk(label: str, value: str) -> None:
 def test_auto_table_allows_contextual_confirmation_and_stub_type_values() -> None:
     assert _label_value_is_compatible("Written Instructions from TCO", "Confirmacion por correo electronico") is True
     assert _label_value_is_compatible("Stub Sill Type", "T-joint") is True
+
+
+def test_auto_table_does_not_use_generic_control_text_for_thermocouples() -> None:
+    evidence = {
+        "control": [
+            "Action type + Facility + Date + Consecutive. The Date: day where the action is uploaded.",
+        ]
+    }
+
+    assert _best_value_for_label("Control thermocouples required procedure", evidence) is None
 
 
 def _assert_auto_table_manual_tracked_separate(manifest: dict[str, object]) -> None:
@@ -468,7 +488,7 @@ def test_inbox_pipeline_does_not_use_b24_activity_title_as_tco_instructions(tmp_
     _assert_auto_table_manual_tracked_separate(manifest)
 
 
-def test_inbox_pipeline_uses_email_confirmation_as_tco_instructions(tmp_path: Path) -> None:
+def test_inbox_pipeline_requires_tco_label_for_email_confirmation_instructions(tmp_path: Path) -> None:
     root = _repo_root()
     inbox = tmp_path / "inbox"
     inbox.mkdir()
@@ -493,11 +513,11 @@ def test_inbox_pipeline_uses_email_confirmation_as_tco_instructions(tmp_path: Pa
 
     result = run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run", review_forms=("B24_RL2",))
 
-    review = _review(result)
-    selected = {row["field_id"]: row["selected_value"] for row in review["form_packets"]["B24_RL2"]["field_decisions"]}
-    assert selected["tco_written_instructions"] == "Confirmacion por correo electronico"
+    manifest = _manifest(result)
+    assert "tco_written_instructions" in manifest["manual_fields"]["B24_RL2"]
     filled_doc = Document(str(result.filled_docx_path))
-    assert "Confirmacion por correo electronico" in filled_doc.tables[0].rows[4].cells[8].text
+    assert "Confirmacion por correo electronico" not in filled_doc.tables[0].rows[4].cells[8].text
+    assert "REVIEW_REQUIRED: tco_written_instructions" in filled_doc.tables[0].rows[4].cells[8].text
 
 
 def test_inbox_pipeline_recovers_b24_ocr_pitp_date_and_material(tmp_path: Path) -> None:
@@ -543,7 +563,7 @@ def test_inbox_pipeline_recovers_manual_b24_style_fields_and_rejects_junk_dates(
                 "B24 RL2 evidence",
                 "TCO Name: CIT",
                 "TCO Permission Date: 5/20/2024",
-                "Written Instructions: Facility received written confirmation from owner Allowing FACILITY Procedures.",
+                "Written Instructions from TCO: Facility received written confirmation from owner Allowing FACILITY Procedures.",
                 "Date Approved: day where the action",
                 "PITP: PITP / PC-TC-01 / A Navarre / 11/4/2021 / 0",
                 "Car Mark: DBUX 250086",
@@ -638,7 +658,7 @@ def test_inbox_pipeline_b24_aliases_prefer_tco_name_over_facility_alias_noise(tm
                 "facility_name: WRONG FACILITY VALUE",
                 "TCO Name: CIT",
                 "TCO Permission Date: 5/20/2024",
-                "Written Instructions: Facility received written confirmation from owner Allowing FACILITY Procedures.",
+                "Written Instructions from TCO: Facility received written confirmation from owner Allowing FACILITY Procedures.",
                 "PITP: PITP / PC-TC-01 / A Navarre / 11/4/2021 / 0",
                 "Car Mark: DBUX 250086",
                 "Design Spec: DOT111A100W1",
@@ -667,7 +687,7 @@ def test_inbox_pipeline_b24_aliases_do_not_hardcode_customer_name(tmp_path: Path
                 "B24 RL2 evidence",
                 "TCO Name: GATX",
                 "TCO Permission Date: 5/20/2024",
-                "Written Instructions: Owner approved procedures in writing.",
+                "Written Instructions from TCO: Owner approved procedures in writing.",
                 "PITP: PITP / PC-TC-77 / J Smith / 11/4/2021 / 0",
                 "Car Mark: DBUX 250086",
                 "Design Spec: DOT111A100W1",
@@ -834,6 +854,8 @@ def test_inbox_pipeline_patches_b90_from_stub_sill_packet_text(tmp_path: Path) -
                 "Written Instructions from TCO: Repair authorized per customer email.",
                 "Car Mark: PROBETA MUESTRA",
                 "Car Number: PAWCT-B90",
+                "Tank Car Design Specification: DOT111A100W1",
+                "Stencil Specification: AAR211A100W1",
                 "Car Type: TANK CAR",
                 "General Arrangement - D-41759 L056040A",
                 "Specimen plate A572 Grado 50",
@@ -867,6 +889,40 @@ def test_inbox_pipeline_patches_b90_from_stub_sill_packet_text(tmp_path: Path) -
     assert "Repair authorized" in filled_doc.tables[0].rows[4].cells[5].text
     _assert_auto_table_manual_tracked_separate(manifest)
 
+
+def test_inbox_pipeline_b90_rejects_b24_specimen_code_from_shared_inventory(tmp_path: Path) -> None:
+    root = _repo_root()
+    inbox = tmp_path / "inbox"
+    inbox.mkdir()
+    (inbox / "b90_packet.txt").write_text(
+        "\n".join(
+            [
+                "B90 Maintenance, Alteration, and Qualification of Tank Car Stub Sills",
+                "Tank Car Owner (TCO) Name: CIT",
+                "Date Permission Received from TCO: 2026-05-04",
+                "Written Instructions from TCO: Repair authorized per customer email.",
+                "Car Number: PAWCT-B90",
+                "Tank Car Design Specification: DOT111A100W1",
+                "Stencil Specification: AAR211A100W1",
+                "Specimen plate A572 Grado 50",
+                "Plan de control PC-TC-01",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    (inbox / "GQAP-2.16_preservation.txt").write_text(
+        "Identificacion como sigue: codigos asignados: PAWCT-B24, PAWCT-B90, PAWCT-RLJ",
+        encoding="utf-8",
+    )
+
+    result = run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run", review_forms=("B90",))
+
+    review = _review(result)
+    selected = {row["field_id"]: row["selected_value"] for row in review["form_packets"]["B90"]["field_decisions"]}
+    assert selected["car.mark"] == "PAWCT-B90"
+    text = _docx_text(result.filled_docx_path)
+    assert "PAWCT-B90" in text
+    assert "PAWCT-B24" not in text
 
 
 def test_inbox_pipeline_b90_rejects_t_joint_and_tank_car_as_design_specs(tmp_path: Path) -> None:

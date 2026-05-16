@@ -294,6 +294,8 @@ def _value_for_write(
         return None
     if not value_present:
         return _review_text(fid, "missing required value") if required else None
+    if str(value).startswith(REVIEW_REQUIRED_TEXT):
+        return str(value)
     decision = decide_cell(
         value,
         confidence=confidence,
