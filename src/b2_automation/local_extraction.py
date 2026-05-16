@@ -620,6 +620,14 @@ def _special_text_suggestions(item: dict[str, Any], form: str = "") -> list[dict
             return
         out.append(_suggestion_from_item(item, field_id, normalized, confidence))
 
+    b24_facility_match = re.search(
+        r"\b(?:facility|company|shop|estaci[o?]n\s*/?\s*station|station|taller|planta)\s*[:=-]\s*([^\n\r;]{2,80})",
+        text,
+        flags=re.IGNORECASE,
+    )
+    if form == "B24_RL2" and b24_facility_match:
+        emit("facility_name", _trim_before_next_field_marker(b24_facility_match.group(1)), 0.98)
+
     pc_match = re.search(r"\b(PC[-\s]?TC[-\s]?\d{2})\b", compact, flags=re.IGNORECASE)
     if pc_match:
         value = re.sub(r"\s+", "-", pc_match.group(1).upper())
