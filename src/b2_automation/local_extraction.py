@@ -32,42 +32,7 @@ DEFAULT_REQUIRED_SUGGESTION_FIELDS = ("facility_name", "date")
 DEFAULT_LOW_CONFIDENCE_THRESHOLD = 0.70
 SAMPLE_EVIDENCE_STEMS = {"evidence_sample", "sample_evidence"}
 PDF_RUN_SAMPLE_EVIDENCE_STEMS = SAMPLE_EVIDENCE_STEMS | {"evidence"}
-RUN_LEVEL_FILL_FIELDS = DEFAULT_REQUIRED_SUGGESTION_FIELDS + (
-    "car_number",
-    "car_mark",
-    "tco.name",
-    "tco.permission_date",
-    "tco.instructions",
-    "car.mark",
-    "car.design_spec",
-    "tco_permission_date",
-    "tco_written_instructions",
-    "tank_design_spec",
-    "pitp.name",
-    "pitp.id",
-    "pitp.approved_by",
-    "pitp.date_approved",
-    "safety_system.type",
-    "stub_sill.type",
-    "stub_sill.procedure.id",
-    "aar.form_4_2.number",
-    "car.stencil_spec",
-    "materials.insulation.spec",
-    "materials.jacket.spec",
-    "materials.stub_sill.spec",
-    "test_fixture.patch_plate.size",
-    "test_fixture.weld.length",
-    "pitp_document_name",
-    "pitp_id",
-    "pitp_approved_by",
-    "pitp_date_approved",
-    "aar_form_4_2_number",
-    "four_two_drawing_number",
-    "four_two_drawing_revision",
-    "test_plate_tank_mtr",
-    "test_plate_tank_material",
-    "attachment_material",
-)
+RUN_LEVEL_FILL_FIELDS = DEFAULT_REQUIRED_SUGGESTION_FIELDS
 
 @dataclass(frozen=True)
 class LocalEvidenceDocument:
@@ -428,6 +393,8 @@ def _with_run_level_required_suggestions(
 ) -> list[dict[str, Any]]:
     present = {str(item.get("field_id")) for item in suggestions}
     merged = list(suggestions)
+    if form == "Cover_Page":
+        return merged
     for field_id in RUN_LEVEL_FILL_FIELDS:
         if form == "B24_RL2" and field_id == "facility_name":
             continue
@@ -508,6 +475,32 @@ def _date_from_source_name(source_file: str) -> str | None:
 def _field_suggestions(retrieved: list[dict[str, Any]], form: str = "") -> list[dict[str, Any]]:
     suggestions: list[dict[str, Any]] = []
     patterns: list[tuple[str, str]] = []
+    if form == "Cover_Page":
+        patterns.extend(
+            [
+                ("station_stencil_code", r"\bStation\s+Stencil\s*/?\s*QA\s+Code\s*[:=-]\s*([^\n\r;]{1,40})"),
+                ("audit_type", r"\bAudit\s+Type\s*[:=-]\s*([^\n\r;]{1,40})"),
+                ("facility_workforce_size", r"\bFacility\s+Workforce\s+Size\s*[:=-]\s*([0-9]{1,6})"),
+                (
+                    "open_meeting_date",
+                    r"\bOpen\s+Meeting\s+Date\s*[:=-]\s*"
+                    r"([0-9]{4}-[0-9]{2}-[0-9]{2}|[0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4}|"
+                    r"[0-9]{1,2}[-\s](?:ene|enero|jan|january|feb|febrero|mar|marzo|apr|abril|abr|"
+                    r"may|mayo|jun|junio|jul|julio|aug|agosto|ago|sep|sept|septiembre|oct|octubre|"
+                    r"nov|noviembre|dec|dic|diciembre)[-\s][0-9]{2,4})",
+                ),
+                (
+                    "closing_meeting_date",
+                    r"\bClosing\s+Meeting\s+Date\s*[:=-]\s*"
+                    r"([0-9]{4}-[0-9]{2}-[0-9]{2}|[0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4}|"
+                    r"[0-9]{1,2}[-\s](?:ene|enero|jan|january|feb|febrero|mar|marzo|apr|abril|abr|"
+                    r"may|mayo|jun|junio|jul|julio|aug|agosto|ago|sep|sept|septiembre|oct|octubre|"
+                    r"nov|noviembre|dec|dic|diciembre)[-\s][0-9]{2,4})",
+                ),
+                ("boe_lead_auditor", r"\bBOE\s+Lead\s+Auditor\s*[:=-]\s*([^\n\r;]{2,80})"),
+                ("aar_audit_team_size", r"\bAAR\s+Audit\s+Team\s+Size\s*[:=-]\s*([0-9]{1,4})"),
+            ]
+        )
     if form != "B24_RL2":
         patterns.append(
             (
@@ -536,7 +529,7 @@ def _field_suggestions(retrieved: list[dict[str, Any]], form: str = "") -> list[
             (
                 "tco_permission_date",
                 r"\b(?:date\s+permission(?:/instruction)?\s+received\s+from\s+TCO|"
-                r"date\s+permission|TCO\s+permission\s+date|permission\s+received)\s*[:=-]\s*"
+                r"TCO\s+permission\s+date|permission\s+received\s+from\s+TCO)\s*[:=-]\s*"
                 r"([0-9]{4}-[0-9]{2}-[0-9]{2}|[0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4}|"
                 r"[0-9]{1,2}[-\s](?:ene|enero|jan|january|feb|febrero|mar|marzo|apr|abril|abr|"
                 r"may|mayo|jun|junio|jul|julio|aug|agosto|ago|sep|sept|septiembre|oct|octubre|"
@@ -544,7 +537,7 @@ def _field_suggestions(retrieved: list[dict[str, Any]], form: str = "") -> list[
             ),
             (
                 "tco_written_instructions",
-                r"\b(?:written\s+instructions(?:\s+from\s+TCO)?|instructions\s+received(?:\s+from\s+TCO)?|"
+                r"\b(?:written\s+instructions\s+from\s+TCO|instructions\s+received\s+from\s+TCO|"
                 r"TCO\s+written\s+instructions)\s*[:=-]\s*([^\n\r;]{2,160})",
             ),
             (
@@ -730,7 +723,12 @@ def _special_text_suggestions(item: dict[str, Any], form: str = "") -> list[dict
     if drawing_match:
         emit("drawing.number", _trim_before_next_field_marker(drawing_match.group(1)), 0.94)
 
-    if re.search(r"\bconfirmaci[oó6]n\s+por\s+correo\s+electr[oó6]nico\b", compact, flags=re.IGNORECASE):
+    confirmation_match = re.search(r"\bconfirmaci[oó6]n\s+por\s+correo\s+electr[oó6]nico\b", compact, flags=re.IGNORECASE)
+    if confirmation_match:
+        window = compact[max(0, confirmation_match.start() - 120) : confirmation_match.end() + 120]
+    else:
+        window = ""
+    if confirmation_match and re.search(r"\b(?:TCO|tank\s+car\s+owner|written\s+instructions\s+from\s+TCO)\b", window, flags=re.IGNORECASE):
         for field_id in ("tco.instructions", "tco_written_instructions"):
             emit(field_id, "Confirmacion por correo electronico", 0.86)
 
@@ -902,7 +900,6 @@ def _expand_write_alias_suggestions(suggestions: list[dict[str, Any]], form: str
         add_alias("car.mark", "car_number", car_mark or None)
     if form == "B24_RL2":
         add_alias("tco.name", "facility_name")
-        add_alias("facility_name", "tco.name")
     add_alias("tco_permission_date", "tco.permission_date")
     add_alias("tco.permission_date", "tco_permission_date")
     add_alias("tco_written_instructions", "tco.instructions")
@@ -1177,6 +1174,14 @@ def _field_aliases(field: dict[str, Any]) -> tuple[str, ...]:
 
 def _required_field_ids_for_form(_form: str) -> tuple[str, ...]:
     """Standard suggestion keys only; CSV inventory expands retrieval aliases but must not explode MISSING states."""
+    if _form == "Cover_Page":
+        return (
+            "station_stencil_code",
+            "audit_type",
+            "open_meeting_date",
+            "closing_meeting_date",
+            "boe_lead_auditor",
+        )
     return tuple(DEFAULT_REQUIRED_SUGGESTION_FIELDS)
 
 

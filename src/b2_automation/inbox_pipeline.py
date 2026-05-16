@@ -712,9 +712,10 @@ def _slug_label(label: str) -> str:
     return slug or "field"
 
 
-def _field_values_from_packet(packet: dict[str, Any]) -> tuple[dict[str, str], dict[str, float]]:
+def _field_values_from_packet(packet: dict[str, Any]) -> tuple[dict[str, str], dict[str, float], dict[str, str]]:
     values: dict[str, str] = {}
     confidences: dict[str, float] = {}
+    manual_reasons: dict[str, str] = {}
     for decision in packet.get("field_decisions", []):
         value = decision.get("selected_value")
         if value is None or str(value).strip() == "":
@@ -725,7 +726,10 @@ def _field_values_from_packet(packet: dict[str, Any]) -> tuple[dict[str, str], d
             continue
         values[field_id] = str(value).strip()
         confidences[field_id] = float(decision.get("confidence") or 1.0)
-    return values, confidences
+        reason = _review_marker_reason(field_id, str(value), str(decision.get("reason") or ""))
+        if reason:
+            manual_reasons[field_id] = reason
+    return values, confidences, manual_reasons
 
 
 def _manifest_cells_for_fill(bundle: ApprovalBundle, values: Mapping[str, str]) -> dict[str, Any]:
@@ -743,7 +747,23 @@ def _marker(field_id: str, reason: str) -> str:
     return f"{REVIEW_REQUIRED_TEXT}: {field_id} {reason}".strip()
 
 
-def _add_missing_required_map_markers(bundle: ApprovalBundle, values: dict[str, str], confidences: dict[str, float]) -> list[str]:
+def _review_marker_reason(field_id: str, value: str, fallback: str = "") -> str:
+    text = str(value or "").strip()
+    prefix = f"{REVIEW_REQUIRED_TEXT}: {field_id}"
+    if text.startswith(prefix):
+        reason = text[len(prefix):].strip()
+        return reason or fallback or "requires manual completion"
+    if text.startswith(REVIEW_REQUIRED_TEXT):
+        return text[len(REVIEW_REQUIRED_TEXT):].lstrip(": ").strip() or fallback or "requires manual completion"
+    return fallback if "review" in fallback.lower() or "missing" in fallback.lower() else ""
+
+
+def _add_missing_required_map_markers(
+    bundle: ApprovalBundle,
+    values: dict[str, str],
+    confidences: dict[str, float],
+    manual_reasons: dict[str, str],
+) -> list[str]:
     fields = bundle.approval_map.get("fields") or {}
     if not isinstance(fields, Mapping):
         return []
@@ -754,13 +774,21 @@ def _add_missing_required_map_markers(bundle: ApprovalBundle, values: dict[str, 
         fid = str(field_id)
         if str(values.get(fid) or "").strip():
             continue
-        values[fid] = _marker(fid, "needs manual completion")
+        reason = "missing PDF evidence candidate; needs manual completion"
+        values[fid] = _marker(fid, reason)
         confidences[fid] = 1.0
+        manual_reasons[fid] = reason
         manual.append(fid)
     return sorted(manual)
 
 
-def _sanitize_map_values_against_labels(bundle: ApprovalBundle, values: dict[str, str], confidences: dict[str, float]) -> None:
+def _sanitize_map_values_against_labels(
+    form: str,
+    bundle: ApprovalBundle,
+    values: dict[str, str],
+    confidences: dict[str, float],
+    manual_reasons: dict[str, str],
+) -> None:
     fields = bundle.approval_map.get("fields") or {}
     if not isinstance(fields, Mapping):
         return
@@ -773,18 +801,83 @@ def _sanitize_map_values_against_labels(bundle: ApprovalBundle, values: dict[str
             continue
         label = str(spec.get("label") or fid)
         required = bool(spec.get("required"))
-        if _label_value_is_compatible(label, current):
+        unsafe_reason = _unsafe_mapped_value_reason(form, fid, label, current)
+        if not unsafe_reason and _label_value_is_compatible(label, current):
             continue
         if required:
-            values[fid] = _marker(fid, "needs manual completion")
+            reason = unsafe_reason or "rejected incompatible PDF/autofill value; needs manual completion"
+            values[fid] = _marker(fid, reason)
             confidences[fid] = 1.0
+            manual_reasons[fid] = f"{reason}; rejected value: {current}"
         else:
             values.pop(fid, None)
             confidences.pop(fid, None)
 
 
+def _unsafe_mapped_value_reason(form: str, field_id: str, label: str, value: str) -> str:
+    fid = str(field_id)
+    lower = _clean_cell(value).lower()
+    if fid in {"car_mark", "car.mark", "car_number"}:
+        if re.search(r"\b(?:probeta|muestra|specimen)\b", lower):
+            return "rejected junk car identity text; needs manual completion"
+        if form == "B81" and re.search(r"\bpawct[-\s]?b90\b", lower):
+            return "rejected cross-form B90 car identity; needs manual completion"
+    if fid in {"pitp.name", "pitp_document_name"} and re.fullmatch(r"pc[-\s]?tc[-\s]?\d+", lower, flags=re.IGNORECASE):
+        return "rejected PITP ID in document-name cell; needs manual completion"
+    if fid in {"tank_design_spec", "car.design_spec", "car.stencil_spec"} and not _value_looks_like_design_spec(value):
+        return "rejected non-DOT/AAR design or stencil value; needs manual completion"
+    if fid.startswith("materials.") and re.fullmatch(
+        r"(?:rls|t[-\s]?joint|confirmaci[oó6]n\s+por\s+correo\s+electr[oó6]nico)",
+        lower,
+        flags=re.IGNORECASE,
+    ):
+        return "rejected cross-field text in material cell; needs manual completion"
+    if re.search(r"\b(?:rls|t[-\s]?joint|confirmaci[oó6]n\s+por\s+correo\s+electr[oó6]nico)\b", lower):
+        sensitive = {"material", "location", "facility", "design", "stencil", "specification"}
+        allowed = {"stub", "sill", "type", "instruction", "instructions", "permission", "tco", "owner"}
+        tokens = _label_tokens(label)
+        if tokens & sensitive and not (tokens & allowed):
+            return "rejected cross-field text in mapped cell; needs manual completion"
+    return ""
+
+
 def _manual_fields(values: Mapping[str, str]) -> list[str]:
     return sorted(fid for fid, value in values.items() if str(value).startswith(REVIEW_REQUIRED_TEXT))
+
+
+def _filled_docx_safety_errors(form: str, docx_path: Path, values: Mapping[str, str]) -> list[str]:
+    errors: list[str] = []
+    for field_id, value in values.items():
+        text = _clean_cell(str(value))
+        if text.startswith(REVIEW_REQUIRED_TEXT):
+            continue
+        reason = _unsafe_mapped_value_reason(form, str(field_id), str(field_id), text)
+        if reason:
+            errors.append(f"{form}/{field_id}: {reason}")
+    try:
+        with zipfile.ZipFile(docx_path) as zf:
+            xml = zf.read("word/document.xml").decode("utf-8", errors="replace")
+    except (OSError, zipfile.BadZipFile, KeyError):
+        return errors
+    text = " ".join(html_unescape(part) for part in re.findall(r"<w:t(?:\s[^>]*)?>(.*?)</w:t>", xml, flags=re.DOTALL))
+    text = re.sub(r"\s+", " ", text)
+    if form == "Cover_Page":
+        if "PART 1: General" not in text:
+            errors.append("Cover_Page: output does not contain PART 1: General Information")
+        if "CAR OWNER PERMISSIONS" in text or "Demonstration Type Repair Level" in text:
+            errors.append("Cover_Page: output appears to use a B24 body template")
+    return errors
+
+
+def html_unescape(value: str) -> str:
+    return (
+        str(value)
+        .replace("&lt;", "<")
+        .replace("&gt;", ">")
+        .replace("&amp;", "&")
+        .replace("&quot;", '"')
+        .replace("&apos;", "'")
+    )
 
 
 def _write_local_filled_docx(
@@ -803,7 +896,7 @@ def _write_local_filled_docx(
     results: list[dict[str, Any]] = []
 
     for form, packet in packets.items():
-        values, confidences = _field_values_from_packet(packet)
+        values, confidences, manual_reasons = _field_values_from_packet(packet)
         load_result = load_exact_approval_bundle_checked(root, form)
         bundle = load_result.bundle
         result: dict[str, Any] = {
@@ -817,6 +910,7 @@ def _write_local_filled_docx(
             "structure_guard_passed": False,
             "patched_fields": [],
             "manual_fields": [],
+            "manual_field_reasons": {},
             "auto_table_fields": [],
             "auto_table_manual_fields": [],
             "errors": list(load_result.errors),
@@ -830,8 +924,8 @@ def _write_local_filled_docx(
             results.append(result)
             continue
 
-        _sanitize_map_values_against_labels(bundle, values, confidences)
-        _add_missing_required_map_markers(bundle, values, confidences)
+        _sanitize_map_values_against_labels(form, bundle, values, confidences, manual_reasons)
+        _add_missing_required_map_markers(bundle, values, confidences, manual_reasons)
         if not values:
             results.append(result)
             continue
@@ -851,6 +945,7 @@ def _write_local_filled_docx(
         # True manual follow-ups: exact-map / decision REVIEW_REQUIRED markers only (never auto_table field_ids).
         map_manual_field_ids = sorted(_manual_fields(values))
         result["manual_fields"] = map_manual_field_ids
+        result["manual_field_reasons"] = {fid: manual_reasons.get(fid, "requires manual completion") for fid in map_manual_field_ids}
         if not fill_manifest.get("cells"):
             result["status"] = "skipped_no_matching_manifest_cells"
             result["errors"] = result["errors"] + ["No selected field IDs matched exact map cells or template table value rows."]
@@ -871,20 +966,26 @@ def _write_local_filled_docx(
             structure_guard_report_path=guard_path,
             approval_map=None,
         )
+        safety_errors = _filled_docx_safety_errors(form, candidate_docx, values) if outcome.structure_guard_passed else []
+        passed_all_guards = outcome.structure_guard_passed and not safety_errors
         result.update(
             {
                 "attempted": True,
-                "status": "filled" if outcome.structure_guard_passed else "discarded_structure_guard_failed",
+                "status": "filled" if passed_all_guards else "discarded_structure_guard_failed",
                 "structure_guard_report": str(outcome.structure_guard_report) if outcome.structure_guard_report else None,
-                "structure_guard_passed": outcome.structure_guard_passed,
+                "structure_guard_passed": passed_all_guards,
                 "patched_fields": list(outcome.patched_fields),
                 "manual_fields": sorted(set(map_manual_field_ids) & set(outcome.patched_fields)),
+                "manual_field_reasons": {
+                    fid: manual_reasons.get(fid, "requires manual completion")
+                    for fid in sorted(set(map_manual_field_ids) & set(outcome.patched_fields))
+                },
                 "auto_table_fields": sorted(set(auto_fields) & set(outcome.patched_fields)),
                 "auto_table_manual_fields": sorted(auto_manual_fields),
-                "errors": list(outcome.errors),
+                "errors": list(outcome.errors) + safety_errors,
             }
         )
-        if outcome.structure_guard_passed:
+        if passed_all_guards:
             final_docx.parent.mkdir(parents=True, exist_ok=True)
             shutil.move(str(candidate_docx), final_docx)
             result["filled_docx"] = str(final_docx)
@@ -896,6 +997,9 @@ def _write_local_filled_docx(
             guard_payload = json.loads(guard_path.read_text(encoding="utf-8")) if guard_path.is_file() else {}
             result["failure_reason"] = "structure_guard_failed"
             result["structure_guard_errors"] = list(guard_payload.get("errors") or [])
+            if safety_errors:
+                result["failure_reason"] = "filled_docx_safety_validation_failed"
+                result["structure_guard_errors"] = safety_errors
         results.append(result)
 
     attempted = [item for item in results if item.get("attempted")]
@@ -961,6 +1065,11 @@ def _run_local_rag_inbox_pipeline(*, root: Path, inbox: Path, out_dir: Path, rev
     )
     failed_docx = [item for item in docx_results if item.get("attempted") and not item.get("structure_guard_passed")]
     manual_fields = {str(item["form_id"]): list(item.get("manual_fields") or []) for item in docx_results if item.get("manual_fields")}
+    manual_field_reasons = {
+        str(item["form_id"]): dict(item.get("manual_field_reasons") or {})
+        for item in docx_results
+        if item.get("manual_field_reasons")
+    }
     auto_table_manual_fields = {
         str(item["form_id"]): list(item.get("auto_table_manual_fields") or [])
         for item in docx_results
@@ -993,6 +1102,7 @@ def _run_local_rag_inbox_pipeline(*, root: Path, inbox: Path, out_dir: Path, rev
         "review_blocked_forms": [],
         "blocking_review_reasons": {},
         "manual_fields": manual_fields,
+        "manual_field_reasons": manual_field_reasons,
         "auto_table_manual_fields": auto_table_manual_fields,
         "skipped_review_required": [],
         "structure_guard_failed_forms": [item["form_id"] for item in failed_docx],
@@ -1009,6 +1119,8 @@ def _run_local_rag_inbox_pipeline(*, root: Path, inbox: Path, out_dir: Path, rev
         auto_count = len(item.get("auto_table_fields") or [])
         auto_suffix = f", {auto_count} table-row autofill fields" if auto_count else ""
         lines.append(f"- {item['form_id']}: {item['status']}{suffix}{auto_suffix}")
+        for field_id, reason in sorted((item.get("manual_field_reasons") or {}).items()):
+            lines.append(f"  - {field_id}: {reason}")
     review_md.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
     rag_selection = {
@@ -1040,6 +1152,7 @@ def _run_local_rag_inbox_pipeline(*, root: Path, inbox: Path, out_dir: Path, rev
         "review_blocked_forms": [],
         "blocking_review_reasons": {},
         "manual_fields": manual_fields,
+        "manual_field_reasons": manual_field_reasons,
         "auto_table_manual_fields": auto_table_manual_fields,
         "skipped_review_required": [],
         "structure_guard_failed_forms": [item["form_id"] for item in failed_docx],

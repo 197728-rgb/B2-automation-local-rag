@@ -76,7 +76,7 @@ def audit_table_fill_completeness(
         if not text:
             status = "blank"
             blank_required.append(fid)
-        elif text.startswith(REVIEW_REQUIRED_TEXT):
+        elif REVIEW_REQUIRED_TEXT in text:
             status = "manual_marker"
             manual_required.append(fid)
         else:
@@ -185,8 +185,13 @@ def patch_docx_cells(
             errors.append(f"{fid}: {exc}")
             continue
         else:
+            if str(spec.get("write_mode") or "").strip().lower() == "append_after_label":
+                existing_text = _strip_cell_plain_text(document_xml, cell_start, cell_end)
+                write_text = _append_after_label_text(existing_text, str(write_value))
+            else:
+                write_text = str(write_value)
             for idx, (text_start, text_end) in enumerate(text_ranges):
-                patches.append((text_start, text_end, _xml_text(write_value) if idx == 0 else "", fid))
+                patches.append((text_start, text_end, _xml_text(write_text) if idx == 0 else "", fid))
 
     patched_xml = document_xml
     patched_fields: list[str] = []
@@ -475,6 +480,18 @@ def _paragraph_text_insert_at(xml: str, cell_start: int, cell_end: int) -> int:
 
 def _xml_text(value: str) -> str:
     return html.escape(str(value), quote=False)
+
+
+def _append_after_label_text(existing_text: str, write_value: str) -> str:
+    prefix = re.sub(r"\s+", " ", existing_text).strip()
+    value = re.sub(r"\s+", " ", write_value).strip()
+    if not prefix:
+        return value
+    if not value:
+        return prefix
+    if prefix.endswith((":", "：")):
+        return f"{prefix} {value}"
+    return f"{prefix}: {value}"
 
 
 def _bool_from_spec(value: Any, default: bool = False) -> bool:
