@@ -620,22 +620,14 @@ def _special_text_suggestions(item: dict[str, Any], form: str = "") -> list[dict
             return
         out.append(_suggestion_from_item(item, field_id, normalized, confidence))
 
-    b24_facility_match = re.search(
-        r"\b(?:facility|company|shop|estaci[o?]n\s*/?\s*station|station|taller|planta)\s*[:=-]\s*([^\n\r;]{2,80})",
-        text,
-        flags=re.IGNORECASE,
-    )
-    if form == "B24_RL2" and b24_facility_match:
-        emit("facility_name", _trim_before_next_field_marker(b24_facility_match.group(1)), 0.98)
-
     pc_match = re.search(r"\b(PC[-\s]?TC[-\s]?\d{2})\b", compact, flags=re.IGNORECASE)
     if pc_match:
         value = re.sub(r"\s+", "-", pc_match.group(1).upper())
         for field_id in ("pitp.id", "pitp_id"):
             emit(field_id, value, 0.94)
-        # Bare PC-TC is the PITP ID; the document name remains PITP unless an explicit PITP line overrides it.
+        # Keep permissive PITP-name fallback, but below explicit label-derived candidates.
         for field_id in ("pitp.name", "pitp_document_name"):
-            emit(field_id, "PITP", 0.80)
+            emit(field_id, value, 0.80)
         source = str(item.get("source_file") or "").lower()
         if "b90" in source or re.search(r"\bstu+b\s+sills?\b", compact, flags=re.IGNORECASE):
             emit("stub_sill.procedure.id", value, 0.92)
@@ -684,20 +676,6 @@ def _special_text_suggestions(item: dict[str, Any], form: str = "") -> list[dict
     split_mark_match = re.search(r"\bCar\s+Mark\s+([A-Z]{2,10})\b\s+Car\s+Number\b", compact, flags=re.IGNORECASE)
     if split_mark_match:
         emit("car_mark", split_mark_match.group(1).upper(), 0.95)
-
-    noisy_permission_match = re.search(
-        r"\b(?:date|dale)\s+permiss(?:ion|lon)\s+receiv(?:ed|ad)\s+from\s+TCO\b\D{0,30}"
-        r"([0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4}|[0-9]{4}-[0-9]{1,2}-[0-9]{1,2})",
-        compact,
-        flags=re.IGNORECASE,
-    )
-    if noisy_permission_match:
-        emit("tco_permission_date", noisy_permission_match.group(1), 0.98)
-
-    noisy_car_match = re.search(r"\b(PAWCT[-\s]?[A-Z0-9.]{2,10})\b", compact, flags=re.IGNORECASE)
-    if noisy_car_match and form in {"B89", "B90", "B24_RL2"}:
-        for field_id in ("car.mark", "car_mark", "car_number"):
-            emit(field_id, noisy_car_match.group(1), 0.94)
 
     tco_name_match = re.search(
         r"\b(?:tank\s+car\s+owner\s*(?:\(TCO\))?\s+name|TCO\s+name)\s*[:=-]\s*([A-Z0-9][A-Z0-9 .&/-]{1,80})",
