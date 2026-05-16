@@ -65,15 +65,6 @@ LABEL_WORDS = (
     "method",
     "observed",
     "pitp",
-    "group",
-    "mtr",
-    "heat",
-    "width",
-    "height",
-    "thickness",
-    "type",
-    "coc",
-    "rev",
 )
 LABEL_STOPWORDS = {
     "a",
@@ -122,12 +113,7 @@ def _retrieval_summary(packets: dict[str, dict[str, Any]], forms: tuple[str, ...
     return "local semantic ranking: " + ", ".join(modes) + " (evidence-only; exact maps authorize writes)"
 
 
-def _stage_inbox_evidence(inbox: Path, run_dir: Path) -> tuple[Path, list[str]]:
-    """Copy top-level evidence into ``run_dir/staged_inbox`` and unpack ``.zip`` members.
-
-    Returns the staging directory and human-readable notes (e.g. corrupt zip skips).
-    """
-    staging_notes: list[str] = []
+def _stage_inbox_evidence(inbox: Path, run_dir: Path) -> Path:
     staging_dir = run_dir / "staged_inbox"
     if staging_dir.exists():
         shutil.rmtree(staging_dir)
@@ -140,11 +126,11 @@ def _stage_inbox_evidence(inbox: Path, run_dir: Path) -> tuple[Path, list[str]]:
                 with zipfile.ZipFile(path) as zf:
                     _stage_zip_members(zf, staging_dir, prefix=safe_archive_stem(path), depth=0)
             except zipfile.BadZipFile:
-                staging_notes.append(f"zip_corrupt_or_unreadable:{path.name}")
+                continue
             continue
         if path.suffix.lower() in LOCAL_EVIDENCE_EXTENSIONS:
             _copy_staged_file(path, staging_dir, safe_archive_member_name(path.name))
-    return staging_dir, staging_notes
+    return staging_dir
 
 
 def _stage_zip_members(zf: zipfile.ZipFile, staging_dir: Path, *, prefix: str, depth: int) -> None:
@@ -250,14 +236,10 @@ def _read_docx_table_pairs(path: Path) -> str:
             compact = _collapse_adjacent_duplicates(cells)
             row_text = " | ".join(cell for cell in compact if cell)
             _emit_unique(out, seen, f"table_{table_index}_row_{row_index}: {row_text}")
-        for row_index in range(len(physical_rows) - 1):
-            label_cells = physical_rows[row_index]
-            value_cells = physical_rows[row_index + 1]
+        for label_cells, value_cells in zip(physical_rows, physical_rows[1:]):
             labels = _expand_physical_cells(label_cells)
             values = _expand_physical_cells(value_cells)
-            if row_index > 0 and _looks_like_label_row(expanded_rows[row_index - 1]):
-                continue
-            if not _looks_like_label_row(labels) or _looks_like_section_value_row(values):
+            if not _looks_like_label_row(labels) or _looks_like_label_row(values):
                 continue
             for label_cell in label_cells:
                 label = _clean_cell(label_cell.text)
@@ -267,7 +249,7 @@ def _read_docx_table_pairs(path: Path) -> str:
                 if value_cell is None:
                     continue
                 value = _clean_cell(value_cell.text)
-                if not value or label == value:
+                if not value or label == value or _looks_like_label(value):
                     continue
                 _emit_unique(out, seen, f"{label}: {value}")
     return "\n".join(out)
@@ -309,36 +291,19 @@ def _value_cell_for_visual_col(cells: list[_DocxTableCell], visual_col: int) -> 
 
 
 def _looks_like_label_row(cells: list[str]) -> bool:
-    nonblank = [_clean_cell(cell) for cell in _collapse_adjacent_duplicates(cells) if _clean_cell(cell)]
+    nonblank = [_clean_cell(cell) for cell in cells if _clean_cell(cell)]
     if not nonblank or len({cell.lower() for cell in nonblank}) == 1:
         return False
     label_hits = sum(1 for cell in nonblank if _looks_like_label(cell))
-    value_hits = sum(1 for cell in nonblank if _looks_like_value(cell) and not _looks_like_label(cell))
+    value_hits = sum(1 for cell in nonblank if _looks_like_value(cell))
     return label_hits >= max(1, len(nonblank) // 3) and label_hits >= value_hits
 
 
-def _looks_like_section_value_row(cells: list[str]) -> bool:
-    """True for repeated section/title rows that should not be paired as values."""
-    compact = [_clean_cell(cell) for cell in _collapse_adjacent_duplicates(cells) if _clean_cell(cell)]
-    if not compact:
-        return True
-    if len(compact) != 1:
-        return False
-    text = compact[0]
-    if _looks_like_value(text):
-        return False
-    return bool(re.fullmatch(r"[A-Z0-9 /&(),.-]{3,80}", text)) and len(text.split()) <= 10
-
-
 def _looks_like_label(text: str) -> bool:
-    cleaned = _clean_cell(text)
     lower = _clean_cell(text).lower()
     if not lower:
         return False
-    if lower.endswith(":") or any(word in lower for word in LABEL_WORDS):
-        return True
-    has_alpha = bool(re.search(r"[A-Za-z]", cleaned))
-    return has_alpha and not re.search(r"\d", cleaned) and cleaned.upper() == cleaned and len(cleaned.split()) <= 8
+    return lower.endswith(":") or any(word in lower for word in LABEL_WORDS) or (lower.upper() == lower and len(lower.split()) <= 8)
 
 
 def _looks_like_value(text: str) -> bool:
@@ -477,6 +442,12 @@ def _value_looks_like_date(value: str) -> bool:
     )
 
 
+def _value_looks_like_design_spec(value: str) -> bool:
+    if re.fullmatch(r"(?:tank\s+car|car\s+type|t[-\s]?joint|junta\s+t)", value.strip(), flags=re.IGNORECASE):
+        return False
+    return bool(re.search(r"\b(?:DOT|AAR)\s*[0-9][A-Z0-9./-]{3,}\b", value, flags=re.IGNORECASE))
+
+
 def _label_value_is_compatible(label: str, value: str) -> bool:
     tokens = _label_tokens(label)
     cleaned = _clean_cell(value)
@@ -487,8 +458,26 @@ def _label_value_is_compatible(label: str, value: str) -> bool:
         return False
     if re.fullmatch(r"[a-z]\)", lower):
         return False
+    if re.search(r"(?:^|\s)[a-z]\)(?:\s+[a-z]\)){1,}", lower):
+        return False
+    if re.search(r"\bday\s+where\s+the\s+action\b", lower):
+        return False
+    if re.search(r"\b(?:equipment\s+red)(?:\s+equipment\s+red)+\b", lower):
+        return False
+    if re.search(r"(?:^|\s)121405\)(?:\s|$)", lower):
+        return False
+    if re.search(r"(?:^|\s)1j1~?'?(?:\s|$)", lower):
+        return False
+    if re.search(r"\bconfirmaci[oó6]n\s+por\s+correo\s+electr[oó6]nico\b", lower) and not (tokens & {"instruction", "instructions", "permission", "tco", "owner", "comments", "notes"}):
+        return False
+    if re.fullmatch(r"t[-\s]?joint", lower) and not (tokens & {"stub", "sill", "joint", "type", "description"}):
+        return False
+    if ({"design", "spec"} <= tokens or {"stencil", "spec"} <= tokens) and not _value_looks_like_design_spec(cleaned):
+        return False
     if "date" in tokens and not _value_looks_like_date(cleaned):
         return False
+    if "mark" in tokens and re.fullmatch(r"[A-Z]{2,10}(?:[-\s][A-Z0-9]{2,10})?", cleaned, flags=re.IGNORECASE):
+        return True
     numeric_label_tokens = {"id", "number", "no", "form", "drawing", "spec", "stencil", "mark", "mtr"}
     if tokens & numeric_label_tokens and not re.search(r"\d", cleaned):
         return False
@@ -625,6 +614,7 @@ def _preferred_evidence_keys(key: str) -> tuple[str, ...]:
 
 def _append_table_autofill_cells(
     *,
+    form: str,
     bundle: ApprovalBundle,
     fill_manifest: dict[str, Any],
     values: dict[str, str],
@@ -632,6 +622,11 @@ def _append_table_autofill_cells(
     label_evidence: Mapping[str, list[str]],
 ) -> tuple[list[str], list[str]]:
     """Add label-driven table cells so the output is not limited to the small approval map."""
+    if form == "Cover_Page":
+        # Cover page approval is intentionally limited to its exact map.
+        # Broad label/value auto-fill can otherwise pull B24 body evidence into
+        # a cover template that shares the same large grid structure.
+        return [], []
     cells = list(fill_manifest.get("cells") or [])
     existing_coords = {
         (int(cell["table_index"]), int(cell["row"]), int(cell["col"]))
@@ -708,13 +703,7 @@ def _is_template_placeholder(text: str) -> bool:
     lower = _clean_cell(text).lower()
     if not lower:
         return True
-    return (
-        lower in {"n/a", "na", "none", "-", "—"}
-        or "choose" in lower
-        or "click" in lower
-        or "enter" in lower
-        or lower.startswith("{{")
-    )
+    return lower in {"n/a", "na", "none", "-", "—"} or "click" in lower or "enter" in lower or lower.startswith("{{")
 
 
 def _slug_label(label: str) -> str:
@@ -850,6 +839,7 @@ def _write_local_filled_docx(
         fill_manifest = _manifest_cells_for_fill(bundle, values)
         form_label_evidence = _merge_label_evidence(_collect_packet_label_value_evidence(packet), label_evidence)
         auto_fields, auto_manual_fields = _append_table_autofill_cells(
+            form=form,
             bundle=bundle,
             fill_manifest=fill_manifest,
             values=values,
@@ -923,28 +913,10 @@ def _run_local_rag_inbox_pipeline(*, root: Path, inbox: Path, out_dir: Path, rev
     for p in (raw_dir, review_dir, filled_dir):
         p.mkdir(parents=True, exist_ok=True)
 
-    top_files = sorted(p for p in inbox.iterdir() if p.is_file()) if inbox.is_dir() else []
-    if not top_files:
-        raise FileNotFoundError(
-            f"No files found in inbox {inbox}. Add evidence at the inbox top level: "
-            f".pdf, .txt, .docx, .zip (archives whose members use those extensions), etc."
-        )
-
-    staged_inbox, staging_notes = _stage_inbox_evidence(inbox, run_dir)
+    staged_inbox = _stage_inbox_evidence(inbox, run_dir)
     inputs = supported_evidence_files(staged_inbox)
     if not inputs:
-        top_names = ", ".join(p.name for p in top_files[:12])
-        if len(top_files) > 12:
-            top_names += ", …"
-        bits = [
-            f"No supported local evidence files after staging inbox {inbox}.",
-            f"Top-level inbox files: {top_names or '(none)'}",
-            f"Unpacked staging directory (inspect zip contents): {staged_inbox}",
-            f"Supported member extensions include: {', '.join(LOCAL_EVIDENCE_EXTENSIONS)}",
-        ]
-        if staging_notes:
-            bits.append("Staging notes: " + "; ".join(staging_notes))
-        raise FileNotFoundError(" ".join(bits))
+        raise FileNotFoundError(f"No supported local evidence files found in inbox: {inbox}")
 
     forms = normalize_review_forms(review_forms)
     _clear_scoped_filled_docx(filled_dir, forms)
@@ -994,7 +966,7 @@ def _run_local_rag_inbox_pipeline(*, root: Path, inbox: Path, out_dir: Path, rev
         for item in docx_results
         if item.get("auto_table_manual_fields")
     }
-    status = "review_required" if missing_context or failed_docx or manual_fields else "success"
+    status = "review_required" if missing_context or failed_docx or manual_fields or auto_table_manual_fields else "success"
 
     canonical_path = run_dir / "canonical_evidence.json"
     trace_path = run_dir / "field_traceability.json"
