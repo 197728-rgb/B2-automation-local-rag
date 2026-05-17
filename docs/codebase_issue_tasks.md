@@ -1,60 +1,23 @@
-# Codebase issue triage: actionable tasks with evidence
+# Codebase issue triage: actionable tasks
 
-## Task 1 — Typo/miswording fix
-- **Type:** Typo / wording correction
-- **Evidence:** Retrieval module docstring says fallback happens only when the corpus is empty, but implementation falls back whenever semantic scores are missing or non-positive.
-  - Wording location: `src/b2_automation/local_semantic_retrieval.py` module docstring (`"falls back ... if the corpus is empty"`).
-  - Behavior location: `retrieve_chunks_for_form()` falls back on `if not semantic_scores or all(s <= 0.0 for s in semantic_scores):`.
-- **Proposed task:** Update the docstring to describe the real behavior (fallback when semantic scoring yields no usable signal), not only the empty-corpus case.
+This review identifies one concrete task each for a typo/miswording fix, a bug fix, a docs discrepancy, and a test improvement.
 
-## Task 2 — Bug fix
-- **Type:** Functional bug
-- **Evidence:** `normalize_review_forms()` supports comma-separated values inside one token, but whitespace-separated values inside one token are rejected.
-  - Parsing code splits only by comma in `src/b2_automation/local_extraction.py`.
-  - The CLI can pass a single token like `"B81 B89"`, which becomes an unknown form.
-- **Proposed task:** Accept both comma and whitespace separators in normalization (while retaining validation and dedupe semantics).
-
-## Task 3 — Comment/docs discrepancy fix
-- **Type:** Documentation discrepancy
-- **Evidence:** README “Expected outputs” includes `raw/*.ocr.json`, while local extraction logic emphasizes local text/PDF extraction and emits metadata/chunks/retrieval artifacts.
-  - Docs location: `README.md` expected outputs list.
-  - Implementation references: `src/b2_automation/local_extraction.py` and local inbox review outputs in `src/b2_automation/inbox_pipeline.py`.
-- **Proposed task:** Reconcile README with actual default local outputs, or explicitly implement guaranteed OCR artifact emission and test it.
-
-## Task 4 — Test improvement
-- **Type:** Test coverage improvement
-- **Evidence:** `tests/test_cli.py` has coverage for comma-separated `--review-forms` only; it does not test whitespace-only or mixed separators.
-- **Proposed task:** Add parameterized cases for `"B81,B89"`, `"B81 B89"`, and `"B81, B89"`, asserting successful parse and stable command behavior.
-
-## Repo state note (from reviewer comment)
-- In this checkout, no `origin` remote is configured, so “behind origin/main by 7” cannot be verified or resolved here.
-- Current branch appears clean in this environment (`git status -sb` reports only `## work`).
-# Codebase issue triage: four concrete tasks
-
-## 1) Typo fix task
-**Issue:** A user-facing comment contains awkward phrasing: `pure-Python TF–IDF ... falls back ... if the corpus is empty` in `local_semantic_retrieval.py`, but the fallback is actually triggered when scores are empty/non-positive, not only when corpus is empty.
-
-**Task:** Update wording to remove the misleading phrase and align with the real condition (e.g., “falls back to keyword heuristic when semantic ranking yields no useful signal”).
-
-**Why this matters:** This is effectively a documentation typo/miswording that can mislead maintainers about fallback behavior.
+## 1) Typo / miswording task
+- **Area:** Retrieval fallback description.
+- **Evidence:** The module docstring in `src/b2_automation/local_semantic_retrieval.py` says fallback occurs when the corpus is empty, while the implementation in `retrieve_chunks_for_form()` falls back when semantic scores are empty or non-positive.
+- **Task:** Update the docstring wording to match runtime behavior (fallback when semantic ranking provides no usable signal).
 
 ## 2) Bug fix task
-**Issue:** `normalize_review_forms()` accepts comma-separated values but does not split on whitespace-separated multiple form IDs (e.g., `--review-forms "B81 B89"`), causing an “Unknown review form” error for a plausible CLI input.
-
-**Task:** Expand parsing to support both comma-separated and whitespace-separated tokens while preserving validation and deduplication behavior.
-
-**Why this matters:** It improves CLI robustness and prevents avoidable input failures for valid forms.
+- **Area:** CLI review form parsing.
+- **Evidence:** `normalize_review_forms()` in `src/b2_automation/local_extraction.py` splits only on commas, so a single token like `"B81 B89"` is treated as one unknown form instead of two valid forms.
+- **Task:** Support both comma and whitespace separators while preserving deduplication and strict validation of allowed form IDs.
 
 ## 3) Comment/documentation discrepancy task
-**Issue:** README says local inbox outputs include `raw/*.ocr.json`, but the local extraction path currently writes metadata/chunks/retrieval artifacts and does not guarantee an OCR-specific file for every run.
-
-**Task:** Reconcile README output examples with actual artifacts generated by the default local path (either adjust docs or add missing artifact generation intentionally).
-
-**Why this matters:** Keeps operator expectations aligned with current implementation and avoids confusion in audits.
+- **Area:** Output artifact expectations.
+- **Evidence:** `README.md` lists `raw/*.ocr.json` as expected output artifacts, but the default local-first extraction/reporting flow emphasizes metadata/chunks/retrieval artifacts and does not clearly guarantee OCR JSON for every run.
+- **Task:** Reconcile README output examples with actual default output behavior (either update docs to reflect current outputs or intentionally guarantee OCR artifact generation and document when it appears).
 
 ## 4) Test improvement task
-**Issue:** CLI tests currently verify comma-separated `--review-forms` parsing, but not whitespace-separated variants or mixed separators.
-
-**Task:** Add parameterized tests in `tests/test_cli.py` for inputs like `"B81,B89"`, `"B81 B89"`, and `"B81, B89"`, asserting successful parsing and stable behavior.
-
-**Why this matters:** Prevents regressions once parsing logic is expanded and documents accepted input forms.
+- **Area:** CLI input coverage.
+- **Evidence:** `tests/test_cli.py` validates comma-separated `--review-forms` inputs but lacks explicit coverage for whitespace-only and mixed separators.
+- **Task:** Add parameterized tests for `"B81,B89"`, `"B81 B89"`, and `"B81, B89"` to lock in accepted parsing behavior and prevent regressions.
