@@ -35,6 +35,22 @@ DOCX_TABLE_MARKER = "[structured_docx_table_evidence]"
 AUTO_TABLE_PREFIX = "auto_table"
 MAX_ZIP_EVIDENCE_DEPTH = 5
 WORD_NS = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
+QAM_PROCEDURE_ROWS: tuple[tuple[str, str], ...] = (
+    ("2.5", "Production, Inspection, and Test Plan (2.5)"),
+    ("2.7", "Document Control (2.7)"),
+    ("2.8", "Measure and Testing Equipment (2.8)"),
+    ("2.9", "Purchasing and Subcontracting (2.9)"),
+    ("2.10", "Incoming Material (2.10)"),
+    ("2.11", "In-Process Inspection (2.11)"),
+    ("2.12", "Final Inspection (2.12)"),
+    ("2.13", "Inspection Status (2.13)"),
+    ("2.14", "Identification and Traceability (2.14)"),
+    ("2.16", "Preservation, Packaging, and Shipping (2.16)"),
+    ("2.17", "Quality Records (2.17)"),
+    ("2.23", "Contract Review (2.23)"),
+    ("2.24", "Design Control (2.24)"),
+)
+QAM_PROCEDURE_SECTIONS = {section for section, _label in QAM_PROCEDURE_ROWS}
 LABEL_WORDS = (
     "name",
     "date",
@@ -422,6 +438,145 @@ def _merge_label_evidence(primary: Mapping[str, list[str]], fallback: Mapping[st
     return merged
 
 
+_MONTHS = {
+    "ene": 1,
+    "enero": 1,
+    "jan": 1,
+    "january": 1,
+    "feb": 2,
+    "febrero": 2,
+    "february": 2,
+    "mar": 3,
+    "marzo": 3,
+    "march": 3,
+    "abr": 4,
+    "abril": 4,
+    "apr": 4,
+    "april": 4,
+    "may": 5,
+    "mayo": 5,
+    "jun": 6,
+    "junio": 6,
+    "june": 6,
+    "jul": 7,
+    "julio": 7,
+    "july": 7,
+    "ago": 8,
+    "agosto": 8,
+    "aug": 8,
+    "august": 8,
+    "sep": 9,
+    "sept": 9,
+    "septiembre": 9,
+    "september": 9,
+    "oct": 10,
+    "octubre": 10,
+    "october": 10,
+    "nov": 11,
+    "noviembre": 11,
+    "november": 11,
+    "dic": 12,
+    "diciembre": 12,
+    "dec": 12,
+    "december": 12,
+}
+_MONTH_PATTERN = "|".join(sorted(map(re.escape, _MONTHS), key=len, reverse=True))
+
+
+def _extract_cover_qam_procedure_records(documents: list[LocalEvidenceDocument]) -> dict[str, dict[str, str]]:
+    records: dict[str, dict[str, str]] = {}
+    for doc in documents:
+        section = _extract_qam_section(doc.source_file, doc.text)
+        if section not in QAM_PROCEDURE_SECTIONS:
+            continue
+        record = {
+            "procedure_id": f"GQAP {section}",
+            "approved_by": _extract_qam_approver(doc.text),
+            "date_approved": _extract_qam_revision_date(doc.text),
+            "revision": _extract_qam_version(doc.text),
+        }
+        record = {key: value for key, value in record.items() if value}
+        if not record:
+            continue
+        existing = records.setdefault(section, {})
+        for key, value in record.items():
+            existing.setdefault(key, value)
+    approvers = {record.get("approved_by") for record in records.values() if record.get("approved_by")}
+    if len(approvers) == 1:
+        approver = next(iter(approvers))
+        for record in records.values():
+            record.setdefault("approved_by", approver)
+    return records
+
+
+def _extract_qam_section(source_file: str, text: str) -> str | None:
+    compact = _clean_cell(text)
+    match = re.search(r"\bCODIGO\b.{0,120}?\bGQAP\s*[-_ ]?\s*2\s*[._ -]\s*([0-9]{1,2})\b", compact, flags=re.IGNORECASE)
+    if match:
+        return f"2.{int(match.group(1))}"
+    matches = re.findall(r"\bGQAP\s*[-_ ]?\s*2\s*[._ -]\s*([0-9]{1,2})\b", str(source_file), flags=re.IGNORECASE)
+    if matches:
+        return f"2.{int(matches[-1])}"
+    return None
+
+
+def _extract_qam_approver(text: str) -> str:
+    if re.search(r"\bBenjamin\s+De\s+La\s+Garza\b", text, flags=re.IGNORECASE):
+        return "B. De La Garza"
+    compact = _clean_cell(text)
+    match = re.search(
+        r"\bAPROBO\s*/\s*APPRO(?:VED|VED|V?ED)\s+BY\b.{0,180}?\b(?:Ing|Lic)\.\s+([A-Z][A-Za-z]+(?:\s+[A-Z][A-Za-z]+){1,4})",
+        compact,
+        flags=re.IGNORECASE,
+    )
+    if not match:
+        return ""
+    parts = match.group(1).split()
+    if len(parts) >= 2:
+        return f"{parts[0][0]}. {' '.join(parts[1:])}"
+    return match.group(1)
+
+
+def _extract_qam_revision_date(text: str) -> str:
+    compact = _clean_cell(text).replace("–", "-").replace("—", "-")
+    prefix_match = re.search(r"\b(?:FECHA\s+DE\s+REVISION|Revision\s+Date|Revision\s+date)\b(.{0,240})", compact, flags=re.IGNORECASE)
+    search_texts = [prefix_match.group(1)] if prefix_match else []
+    search_texts.append(compact[:4000])
+    match = next(
+        (
+            found
+            for candidate in search_texts
+            if (found := re.search(rf"\b([0-9]{{1,2}})\s*-\s*({_MONTH_PATTERN})\s*-\s*([0-9]{{4}})\b", candidate, flags=re.IGNORECASE))
+        ),
+        None,
+    )
+    if match:
+        day = int(match.group(1))
+        month = _MONTHS[match.group(2).lower()]
+        year = int(match.group(3))
+        return f"{month}/{day}/{year}"
+    match = next(
+        (
+            found
+            for candidate in search_texts
+            if (found := re.search(rf"\b({_MONTH_PATTERN})\s*-\s*([0-9]{{1,2}})\s*-\s*([0-9]{{4}})\b", candidate, flags=re.IGNORECASE))
+        ),
+        None,
+    )
+    if match:
+        month = _MONTHS[match.group(1).lower()]
+        day = int(match.group(2))
+        year = int(match.group(3))
+        return f"{month}/{day}/{year}"
+    return ""
+
+
+def _extract_qam_version(text: str) -> str:
+    compact = _clean_cell(text)
+    match = re.search(r"\bNUMERO\s+DE\s+VERSION\b.{0,80}?\b([0-9]{1,2})\b", compact, flags=re.IGNORECASE)
+    return match.group(1) if match else ""
+
+
 def _normalize_label_key(label: str) -> str:
     label = _clean_cell(label).lower()
     label = label.replace("/", " ").replace("&", " and ")
@@ -646,13 +801,22 @@ def _append_table_autofill_cells(
     values: dict[str, str],
     confidences: dict[str, float],
     label_evidence: Mapping[str, list[str]],
+    qam_procedure_records: Mapping[str, Mapping[str, str]] | None = None,
 ) -> tuple[list[str], list[str]]:
     """Add label-driven table cells so the output is not limited to the small approval map."""
     if form == "Cover_Page":
         # Cover page approval is intentionally limited to its exact map.
         # Broad label/value auto-fill can otherwise pull B24 body evidence into
-        # a cover template that shares the same large grid structure.
-        return [], []
+        # a cover template that shares the same large grid structure. The QAM
+        # procedure table is safe because each row is keyed by explicit GQAP
+        # procedure headers in the evidence.
+        return _append_cover_page_qam_procedure_cells(
+            bundle=bundle,
+            fill_manifest=fill_manifest,
+            values=values,
+            confidences=confidences,
+            qam_procedure_records=qam_procedure_records or {},
+        )
     cells = list(fill_manifest.get("cells") or [])
     existing_coords = {
         (int(cell["table_index"]), int(cell["row"]), int(cell["col"]))
@@ -673,6 +837,113 @@ def _append_table_autofill_cells(
         added.append(fid)
     fill_manifest["cells"] = cells
     return added, manual
+
+
+def _append_cover_page_qam_procedure_cells(
+    *,
+    bundle: ApprovalBundle,
+    fill_manifest: dict[str, Any],
+    values: dict[str, str],
+    confidences: dict[str, float],
+    qam_procedure_records: Mapping[str, Mapping[str, str]],
+) -> tuple[list[str], list[str]]:
+    if not qam_procedure_records:
+        return [], []
+    cells = list(fill_manifest.get("cells") or [])
+    existing_coords = {
+        (int(cell["table_index"]), int(cell["row"]), int(cell["col"]))
+        for cell in cells
+        if isinstance(cell, Mapping) and {"table_index", "row", "col"} <= set(cell.keys())
+    }
+    added: list[str] = []
+    manual: list[str] = []
+    field_names = {
+        1: ("procedure_id", "Procedure ID"),
+        2: ("approved_by", "Approved By"),
+        3: ("date_approved", "Date Approved"),
+        4: ("revision", "Revision"),
+    }
+    for spec, section, field_name in _cover_page_qam_part4_specs(bundle.template_path, existing_coords):
+        record = qam_procedure_records.get(section) or {}
+        value = _clean_cell(str(record.get(field_name) or ""))
+        fid = str(spec["field_id"])
+        if not value:
+            value = _marker(fid, "missing QAM procedure metadata; needs manual completion")
+            manual.append(fid)
+        values[fid] = value
+        confidences[fid] = 0.99
+        spec["label"] = f"{dict(QAM_PROCEDURE_ROWS).get(section, section)} {field_names[int(spec['col'])][1]}"
+        cells.append(spec)
+        added.append(fid)
+    fill_manifest["cells"] = cells
+    return added, manual
+
+
+def _cover_page_qam_part4_specs(
+    template_path: Path,
+    existing_coords: set[tuple[int, int, int]],
+) -> list[tuple[dict[str, Any], str, str]]:
+    try:
+        with zipfile.ZipFile(template_path) as zf:
+            root = ET.fromstring(zf.read("word/document.xml"))
+    except (OSError, zipfile.BadZipFile, KeyError, ET.ParseError):
+        return []
+    specs: list[tuple[dict[str, Any], str, str]] = []
+    used_coords = set(existing_coords)
+    field_names = {
+        1: "procedure_id",
+        2: "approved_by",
+        3: "date_approved",
+        4: "revision",
+    }
+    for table_index, table in enumerate(root.iter(f"{WORD_NS}tbl")):
+        rows = list(table.iter(f"{WORD_NS}tr"))
+        expanded_rows = [_expand_physical_cells(_table_row_physical_cells(row)) for row in rows]
+        table_text = " ".join(_clean_cell(cell) for row in expanded_rows for cell in row)
+        if not re.search(r"\bPART\s*4\b", table_text, flags=re.IGNORECASE):
+            continue
+        if "Quality Assurance Manual" not in table_text:
+            continue
+        for row_index, row in enumerate(rows):
+            physical_cells = _table_row_physical_cells(row)
+            if len(physical_cells) < 5:
+                continue
+            label = _clean_cell(physical_cells[0].text)
+            section_match = re.search(r"\((2\.[0-9]{1,2})\)", label)
+            if not section_match:
+                continue
+            section = section_match.group(1)
+            if section not in QAM_PROCEDURE_SECTIONS:
+                continue
+            for col, field_name in field_names.items():
+                coord = (table_index, row_index, col)
+                if coord in used_coords:
+                    continue
+                current = ""
+                for cell in physical_cells:
+                    if cell.visual_col == col:
+                        current = _clean_cell(cell.text)
+                        break
+                if current and not _is_template_placeholder(current):
+                    continue
+                used_coords.add(coord)
+                field_id = f"{AUTO_TABLE_PREFIX}.cover_qam_part4.{section.replace('.', '_')}.{field_name}"
+                specs.append(
+                    (
+                        {
+                            "field_id": field_id,
+                            "table_index": table_index,
+                            "row": row_index,
+                            "col": col,
+                            "required": False,
+                            "cell_role": "target",
+                            "label": label,
+                        },
+                        section,
+                        field_name,
+                    )
+                )
+    return specs
 
 
 def _template_autofill_specs(template_path: Path, existing_coords: set[tuple[int, int, int]]) -> list[tuple[dict[str, Any], str]]:
@@ -921,6 +1192,7 @@ def _write_local_filled_docx(
     packets: dict[str, dict[str, Any]],
     low_confidence_threshold: float,
     label_evidence: Mapping[str, list[str]],
+    qam_procedure_records: Mapping[str, Mapping[str, str]],
 ) -> list[dict[str, Any]]:
     work_dir = run_dir / "patch_work"
     guard_dir = run_dir / "structure_guard_reports"
@@ -972,6 +1244,7 @@ def _write_local_filled_docx(
             values=values,
             confidences=confidences,
             label_evidence=form_label_evidence,
+            qam_procedure_records=qam_procedure_records,
         )
         result["auto_table_fields"] = auto_fields
         result["auto_table_manual_fields"] = sorted(auto_manual_fields)
@@ -1059,6 +1332,7 @@ def _run_local_rag_inbox_pipeline(*, root: Path, inbox: Path, out_dir: Path, rev
     _clear_scoped_filled_docx(filled_dir, forms)
     documents = _augment_docx_table_evidence([extract_local_document(path) for path in inputs])
     label_evidence = _collect_label_value_evidence(documents)
+    qam_procedure_records = _extract_cover_qam_procedure_records(documents)
     chunks_by_source = {}
     for doc in documents:
         chunks_by_source[doc.source_file] = [
@@ -1095,6 +1369,7 @@ def _run_local_rag_inbox_pipeline(*, root: Path, inbox: Path, out_dir: Path, rev
         packets=packets,
         low_confidence_threshold=low_confidence_threshold,
         label_evidence=label_evidence,
+        qam_procedure_records=qam_procedure_records,
     )
     failed_docx = [item for item in docx_results if item.get("attempted") and not item.get("structure_guard_passed")]
     manual_fields = {str(item["form_id"]): list(item.get("manual_fields") or []) for item in docx_results if item.get("manual_fields")}
