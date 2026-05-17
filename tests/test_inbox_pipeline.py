@@ -47,6 +47,15 @@ def _docx_text(path: Path) -> str:
     return "\n".join(parts)
 
 
+def _docx_table_rows_containing(path: Path, needle: str) -> list[list[str]]:
+    doc = Document(str(path))
+    for table in doc.tables:
+        rows = [[" ".join(cell.text.split()) for cell in row.cells] for row in table.rows]
+        if any(needle in " | ".join(row) for row in rows):
+            return rows
+    raise AssertionError(f"Could not find table containing {needle!r}")
+
+
 def test_cover_page_does_not_auto_fill_b24_body_rows(tmp_path: Path) -> None:
     root = _repo_root()
     inbox = tmp_path / "inbox"
@@ -83,6 +92,51 @@ def test_cover_page_does_not_auto_fill_b24_body_rows(tmp_path: Path) -> None:
     assert "CAR OWNER PERMISSIONS" not in text
     assert "DBUX 250086" not in text
     assert "L016048A" not in text
+
+
+def test_cover_page_fills_qam_part4_rows_from_gqap_headers(tmp_path: Path) -> None:
+    root = _repo_root()
+    inbox = tmp_path / "inbox"
+    inbox.mkdir()
+    (inbox / "cover.txt").write_text(
+        "\n".join(
+            [
+                "Cover Page",
+                "Station Stencil/QA Code: DLGA",
+                "Audit Type: SP",
+                "Open Meeting Date: 2026-05-05",
+                "Closing Meeting Date: 2026-05-07",
+                "BOE Lead Auditor: Lucho Rodriguez",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    (inbox / "GQAP-2_05.txt").write_text(
+        "\n".join(
+            [
+                "Manual de Procedimientos Generales",
+                "NUMERO DE VERSION (Version Number) 2",
+                "FECHA DE REVISION (Revision date) 20-Abril-2025 April-20-2025",
+                "CODIGO (Code) GQAP-2.5",
+                "ELABORO/ELABORATE BY REVISO/REVIEW BY APROBO/APPROVED BY",
+                "Ing. Marcos Serrano Ing. Roberto Bermeo Lic. Benjamin De La Garza",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run", review_forms=("Cover_Page",))
+
+    manifest = _manifest(result)
+    cover_docx = manifest["docx_generation"][0]
+    rows = _docx_table_rows_containing(Path(cover_docx["filled_docx"]), "PART 4")
+    production_row = next(row for row in rows if row[0] == "Production, Inspection, and Test Plan (2.5)")
+    inspection_status_row = next(row for row in rows if row[0] == "Inspection Status (2.13)")
+
+    assert production_row[1:5] == ["GQAP 2.5", "B. De La Garza", "4/20/2025", "2"]
+    assert inspection_status_row[1].startswith("REVIEW_REQUIRED: auto_table.cover_qam_part4.2_13.procedure_id")
+    assert "auto_table.cover_qam_part4.2_5.procedure_id" in cover_docx["auto_table_fields"]
+    assert "auto_table.cover_qam_part4.2_13.procedure_id" in cover_docx["auto_table_manual_fields"]
 
 
 @pytest.mark.parametrize(
