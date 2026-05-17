@@ -152,3 +152,22 @@ def test_bare_control_plan_id_does_not_become_pitp_document_name() -> None:
     by_field = {row["field_id"]: row["candidate_value"] for row in suggestions}
     assert by_field["pitp_id"] == "PC-TC-01"
     assert by_field["pitp_document_name"] == "PITP"
+
+
+def test_b90_car_identity_prefers_b90_code_from_multi_code_inventory() -> None:
+    """A generic inventory list must not make B90 choose the first B24 specimen code."""
+    text = """
+    GQAP preservation evidence
+    Identificacion como sigue: codigos asignados: PAWCT-B24, PAWCT-B90, PAWCT-RLJ
+    """
+    item = {
+        "source_file": "GQAP-2.16_PRESERVACION.txt",
+        "chunk_id": 1,
+        "score": 9,
+        "text": text,
+        "full_text": text,
+        "chunk_excerpt": text[:200],
+    }
+    vals = _values_for(item, "B90", "car.mark")
+    assert "PAWCT-B90" in vals
+    assert "PAWCT-B24" not in vals

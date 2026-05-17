@@ -64,19 +64,19 @@ def test_b24_gold_fixture_handles_staged_inbox_ocr_noise(tmp_path: Path) -> None
 
     review = _review(result)
     selected = {row["field_id"]: row["selected_value"] for row in review["form_packets"]["B24_RL2"]["field_decisions"]}
-    assert selected["facility_name"] == "Taller Mexico FTVM"
+    assert str(selected["facility_name"]).startswith("REVIEW_REQUIRED")
     assert selected["tco_permission_date"] == "5/20/2024"
     assert selected["tco.permission_date"] == "5/20/2024"
     assert selected["car_number"] == "PAWCT-824"
-    assert selected["car_mark"] == "PROBETA MUESTRA PAWCT-824"
+    assert selected["car_mark"] == "PAWCT-824"
     assert selected["tank_design_spec"] == "DOT111A100W1"
     assert selected["car.design_spec"] == "DOT111A100W1"
     assert selected["aar_form_4_2_number"] == "L056040A"
     assert selected["four_two_drawing_number"] == "D-41759"
 
     filled_text = _docx_text(result.filled_docx_path)
+    assert "REVIEW_REQUIRED: facility_name" in filled_text
     for marker in (
-        "REVIEW_REQUIRED: facility_name",
         "REVIEW_REQUIRED: tco_permission_date",
         "REVIEW_REQUIRED: tank_design_spec",
     ):
@@ -90,8 +90,8 @@ def test_b24_gold_fixture_accepts_short_reporting_marks_like_dotx() -> None:
         "source_file": "b24_ocr.txt",
         "chunk_id": 1,
         "score": 5,
-        "text": "Car Mark: DOTX\nDate Permission Received: 5/20/2024",
-        "full_text": "Car Mark: DOTX\nDate Permission Received: 5/20/2024",
+        "text": "Car Mark: DOTX\nDate Permission Received from TCO: 5/20/2024",
+        "full_text": "Car Mark: DOTX\nDate Permission Received from TCO: 5/20/2024",
         "chunk_excerpt": "Car Mark: DOTX",
     }
 

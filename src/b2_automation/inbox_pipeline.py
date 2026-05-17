@@ -470,8 +470,12 @@ def _label_value_is_compatible(label: str, value: str) -> bool:
         return False
     if re.search(r"\bconfirmaci[oó6]n\s+por\s+correo\s+electr[oó6]nico\b", lower) and not (tokens & {"instruction", "instructions", "permission", "tco", "owner", "comments", "notes"}):
         return False
+    if re.fullmatch(r"rls", lower) and (tokens & {"material", "description", "location", "facility", "design", "stencil", "specification"}) and not (tokens & {"stub", "sill", "type"}):
+        return False
     if re.fullmatch(r"t[-\s]?joint", lower) and not (tokens & {"stub", "sill", "joint", "type", "description"}):
         return False
+    if {"station", "stencil"} <= tokens:
+        return bool(re.fullmatch(r"[A-Z0-9.-]{1,16}", cleaned, flags=re.IGNORECASE))
     if ({"design", "spec"} <= tokens or {"stencil", "spec"} <= tokens) and not _value_looks_like_design_spec(cleaned):
         return False
     if "date" in tokens and not _value_looks_like_date(cleaned):
@@ -518,6 +522,23 @@ def _best_value_for_label(label: str, evidence: Mapping[str, list[str]]) -> str 
     if not tokens:
         return None
     numeric_label_tokens = {"id", "number", "no", "form", "drawing", "spec", "stencil", "mark", "mtr"}
+    sensitive_label_tokens = {
+        "calibration",
+        "equipment",
+        "function",
+        "location",
+        "material",
+        "method",
+        "ndt",
+        "personnel",
+        "procedure",
+        "stencil",
+        "stenciling",
+        "thermocouple",
+        "training",
+        "visual",
+        "welding",
+    }
     best_key = ""
     best_score = 0.0
     for candidate_key in evidence.keys():
@@ -533,6 +554,11 @@ def _best_value_for_label(label: str, evidence: Mapping[str, list[str]]) -> str 
             continue
         overlap = len(tokens & candidate_tokens)
         if overlap == 0:
+            continue
+        sensitive = tokens & sensitive_label_tokens
+        if sensitive and not (candidate_tokens & sensitive):
+            continue
+        if len(tokens) >= 3 and overlap < 2:
             continue
         score = overlap / max(len(tokens), len(candidate_tokens))
         if tokens <= candidate_tokens or candidate_tokens <= tokens:
@@ -820,8 +846,15 @@ def _unsafe_mapped_value_reason(form: str, field_id: str, label: str, value: str
     if fid in {"car_mark", "car.mark", "car_number"}:
         if re.search(r"\b(?:probeta|muestra|specimen)\b", lower):
             return "rejected junk car identity text; needs manual completion"
-        if form == "B81" and re.search(r"\bpawct[-\s]?b90\b", lower):
-            return "rejected cross-form B90 car identity; needs manual completion"
+        expected_codes = {
+            "B24_RL2": {"b24"},
+            "B81": {"b81"},
+            "B89": {"b89"},
+            "B90": {"b90"},
+        }.get(form, set())
+        value_codes = {match.group(1).lower() for match in re.finditer(r"\b(b(?:24|81|89|90))\b", lower)}
+        if expected_codes and value_codes and not (value_codes & expected_codes):
+            return "rejected cross-form car identity; needs manual completion"
     if fid in {"pitp.name", "pitp_document_name"} and re.fullmatch(r"pc[-\s]?tc[-\s]?\d+", lower, flags=re.IGNORECASE):
         return "rejected PITP ID in document-name cell; needs manual completion"
     if fid in {"tank_design_spec", "car.design_spec", "car.stencil_spec"} and not _value_looks_like_design_spec(value):
@@ -862,7 +895,7 @@ def _filled_docx_safety_errors(form: str, docx_path: Path, values: Mapping[str, 
     text = " ".join(html_unescape(part) for part in re.findall(r"<w:t(?:\s[^>]*)?>(.*?)</w:t>", xml, flags=re.DOTALL))
     text = re.sub(r"\s+", " ", text)
     if form == "Cover_Page":
-        if "PART 1: General" not in text:
+        if not re.search(r"\bPART\s+1\s*:\s*General", text, flags=re.IGNORECASE):
             errors.append("Cover_Page: output does not contain PART 1: General Information")
         if "CAR OWNER PERMISSIONS" in text or "Demonstration Type Repair Level" in text:
             errors.append("Cover_Page: output appears to use a B24 body template")
