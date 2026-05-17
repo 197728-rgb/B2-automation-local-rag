@@ -633,6 +633,14 @@ def _field_suggestions(retrieved: list[dict[str, Any]], form: str = "") -> list[
                 r"nov|noviembre|dec|dic|diciembre)[-\s][0-9]{2,4})",
             ),
             (
+                "tco_permission_date",
+                r"\b(?:d(?:a|o)te|dale)\s+permi(?:ss|s{2}|s)l?o?n\s+receiv(?:e|a)d?\s+from\s+TCO\b(?:\s*[:=-]\s*|\s{1,12})"
+                r"([0-9]{4}-[0-9]{2}-[0-9]{2}|[0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4}|"
+                r"[0-9]{1,2}[-\s](?:ene|enero|jan|january|feb|febrero|mar|marzo|apr|abril|abr|"
+                r"may|mayo|jun|junio|jul|julio|aug|agosto|ago|sep|sept|septiembre|oct|octubre|"
+                r"nov|noviembre|dec|dic|diciembre)[-\s][0-9]{2,4})",
+            ),
+            (
                 "tco_written_instructions",
                 r"\b(?:written\s+instructions\s+from\s+TCO|instructions\s+received\s+from\s+TCO|"
                 r"TCO\s+written\s+instructions)\s*[:=-]\s*([^\n\r;]{2,160})",
@@ -719,7 +727,6 @@ def _special_text_suggestions(item: dict[str, Any], form: str = "") -> list[dict
         value = re.sub(r"\s+", "-", pc_match.group(1).upper())
         for field_id in ("pitp.id", "pitp_id"):
             emit(field_id, value, 0.94)
-        # Bare PC-TC is the PITP ID; the document name remains PITP unless an explicit PITP line overrides it.
         for field_id in ("pitp.name", "pitp_document_name"):
             emit(field_id, "PITP", 0.80)
         source = str(item.get("source_file") or "").lower()
