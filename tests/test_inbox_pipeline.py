@@ -89,6 +89,7 @@ def test_cover_page_does_not_auto_fill_b24_body_rows(tmp_path: Path) -> None:
     ("label", "value"),
     [
         ("Date Approved", "day where the action"),
+        ("NDT Equipment", "equipment Red"),
         ("Equipment ID", "equipment Red equipment Red equipment Red"),
         ("Welder ID", "121405)"),
         ("Location", "1J1~'"),
