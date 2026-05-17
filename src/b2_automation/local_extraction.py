@@ -537,7 +537,7 @@ def _field_suggestions(retrieved: list[dict[str, Any]], form: str = "") -> list[
             ),
             (
                 "tco_permission_date",
-                r"\b(?:d(?:a|o)te|dale)\s+permi(?:ss|s{2}|s)l?o?n\s+receiv(?:e|a)d?\s+from\s+TCO\b[^\n\r;:=-]{0,12}"
+                r"\b(?:d(?:a|o)te|dale)\s+permi(?:ss|s{2}|s)l?o?n\s+receiv(?:e|a)d?\s+from\s+TCO\b(?:\s*[:=-]\s*|\s{1,12})"
                 r"([0-9]{4}-[0-9]{2}-[0-9]{2}|[0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4}|"
                 r"[0-9]{1,2}[-\s](?:ene|enero|jan|january|feb|febrero|mar|marzo|apr|abril|abr|"
                 r"may|mayo|jun|junio|jul|julio|aug|agosto|ago|sep|sept|septiembre|oct|octubre|"
