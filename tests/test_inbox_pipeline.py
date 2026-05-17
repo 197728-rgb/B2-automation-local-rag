@@ -94,7 +94,7 @@ def test_cover_page_does_not_auto_fill_b24_body_rows(tmp_path: Path) -> None:
     assert "L016048A" not in text
 
 
-def test_cover_page_fills_qam_part4_rows_from_gqap_headers(tmp_path: Path) -> None:
+def test_cover_page_fills_qam_part4_and_marks_part5_rows_from_gqap_headers(tmp_path: Path) -> None:
     root = _repo_root()
     inbox = tmp_path / "inbox"
     inbox.mkdir()
@@ -137,6 +137,20 @@ def test_cover_page_fills_qam_part4_rows_from_gqap_headers(tmp_path: Path) -> No
     assert inspection_status_row[1].startswith("REVIEW_REQUIRED: auto_table.cover_qam_part4.2_13.procedure_id")
     assert "auto_table.cover_qam_part4.2_5.procedure_id" in cover_docx["auto_table_fields"]
     assert "auto_table.cover_qam_part4.2_13.procedure_id" in cover_docx["auto_table_manual_fields"]
+
+    part5_rows = _docx_table_rows_containing(Path(cover_docx["filled_docx"]), "PART 5")
+    production_training_row = next(row for row in part5_rows if row[0] == "Production, Inspection, and Test Plan (2.5)")
+    inspection_status_training_row = next(row for row in part5_rows if row[0] == "Inspection Status (2.13)")
+
+    assert production_training_row[1].startswith("REVIEW_REQUIRED: auto_table.cover_qam_part5.2_5.personnel_id")
+    assert production_training_row[2] == "GQAP 2.5"
+    assert production_training_row[3].startswith("REVIEW_REQUIRED: auto_table.cover_qam_part5.2_5.training_date")
+    assert inspection_status_training_row[1].startswith("REVIEW_REQUIRED: auto_table.cover_qam_part5.2_13.personnel_id")
+    assert inspection_status_training_row[2].startswith("REVIEW_REQUIRED: auto_table.cover_qam_part5.2_13.procedure_id")
+    assert inspection_status_training_row[3].startswith("REVIEW_REQUIRED: auto_table.cover_qam_part5.2_13.training_date")
+    assert "auto_table.cover_qam_part5.2_5.procedure_id" in cover_docx["auto_table_fields"]
+    assert "auto_table.cover_qam_part5.2_5.personnel_id" in cover_docx["auto_table_manual_fields"]
+    assert "auto_table.cover_qam_part5.2_5.training_date" in cover_docx["auto_table_manual_fields"]
 
 
 @pytest.mark.parametrize(

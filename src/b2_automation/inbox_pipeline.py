@@ -857,13 +857,17 @@ def _append_cover_page_qam_procedure_cells(
     }
     added: list[str] = []
     manual: list[str] = []
-    field_names = {
-        1: ("procedure_id", "Procedure ID"),
-        2: ("approved_by", "Approved By"),
-        3: ("date_approved", "Date Approved"),
-        4: ("revision", "Revision"),
+    field_labels = {
+        "procedure_id": "Procedure ID",
+        "approved_by": "Approved By",
+        "date_approved": "Date Approved",
+        "revision": "Revision",
+        "personnel_id": "Personnel ID",
+        "training_date": "Function Specific Training Date",
     }
-    for spec, section, field_name in _cover_page_qam_part4_specs(bundle.template_path, existing_coords):
+    qam_specs = _cover_page_qam_part4_specs(bundle.template_path, existing_coords)
+    qam_specs.extend(_cover_page_qam_part5_specs(bundle.template_path, existing_coords))
+    for spec, section, field_name in qam_specs:
         record = qam_procedure_records.get(section) or {}
         value = _clean_cell(str(record.get(field_name) or ""))
         fid = str(spec["field_id"])
@@ -872,11 +876,77 @@ def _append_cover_page_qam_procedure_cells(
             manual.append(fid)
         values[fid] = value
         confidences[fid] = 0.99
-        spec["label"] = f"{dict(QAM_PROCEDURE_ROWS).get(section, section)} {field_names[int(spec['col'])][1]}"
+        spec["label"] = f"{dict(QAM_PROCEDURE_ROWS).get(section, section)} {field_labels.get(field_name, field_name)}"
         cells.append(spec)
         added.append(fid)
     fill_manifest["cells"] = cells
     return added, manual
+
+
+def _cover_page_qam_part5_specs(
+    template_path: Path,
+    existing_coords: set[tuple[int, int, int]],
+) -> list[tuple[dict[str, Any], str, str]]:
+    try:
+        with zipfile.ZipFile(template_path) as zf:
+            root = ET.fromstring(zf.read("word/document.xml"))
+    except (OSError, zipfile.BadZipFile, KeyError, ET.ParseError):
+        return []
+    specs: list[tuple[dict[str, Any], str, str]] = []
+    used_coords = set(existing_coords)
+    field_names = {
+        1: "personnel_id",
+        2: "procedure_id",
+        3: "training_date",
+    }
+    for table_index, table in enumerate(root.iter(f"{WORD_NS}tbl")):
+        rows = list(table.iter(f"{WORD_NS}tr"))
+        expanded_rows = [_expand_physical_cells(_table_row_physical_cells(row)) for row in rows]
+        table_text = " ".join(_clean_cell(cell) for row in expanded_rows for cell in row)
+        if not re.search(r"\bPART\s*5\b", table_text, flags=re.IGNORECASE):
+            continue
+        if "Function Specific Training" not in table_text:
+            continue
+        for row_index, row in enumerate(rows):
+            physical_cells = _table_row_physical_cells(row)
+            if len(physical_cells) < 4:
+                continue
+            label = _clean_cell(physical_cells[0].text)
+            section_match = re.search(r"\((2\.[0-9]{1,2})\)", label)
+            if not section_match:
+                continue
+            section = section_match.group(1)
+            if section not in QAM_PROCEDURE_SECTIONS:
+                continue
+            for col, field_name in field_names.items():
+                coord = (table_index, row_index, col)
+                if coord in used_coords:
+                    continue
+                current = ""
+                for cell in physical_cells:
+                    if cell.visual_col == col:
+                        current = _clean_cell(cell.text)
+                        break
+                if current and not _is_template_placeholder(current):
+                    continue
+                used_coords.add(coord)
+                field_id = f"{AUTO_TABLE_PREFIX}.cover_qam_part5.{section.replace('.', '_')}.{field_name}"
+                specs.append(
+                    (
+                        {
+                            "field_id": field_id,
+                            "table_index": table_index,
+                            "row": row_index,
+                            "col": col,
+                            "required": False,
+                            "cell_role": "target",
+                            "label": label,
+                        },
+                        section,
+                        field_name,
+                    )
+                )
+    return specs
 
 
 def _cover_page_qam_part4_specs(
