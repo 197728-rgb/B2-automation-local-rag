@@ -103,6 +103,59 @@ def normalize_review_forms(forms: Iterable[str] | None) -> tuple[str, ...]:
     return tuple(normalized or DEFAULT_REVIEW_FORMS)
 
 
+
+
+def _clean_ocr_text(text: str) -> str:
+    """Normalize common OCR fracturing artifacts before matching."""
+    if not text:
+        return ""
+    cleaned = text
+    cleaned = re.sub(
+        r"(\d{1,2})-+(ene|feb|mar|abr|may|jun|jul|ago|sep|oct|nov|dic)-+(\d{2,4})",
+        r"\1-\2-\3",
+        cleaned,
+        flags=re.IGNORECASE,
+    )
+    cleaned = re.sub(r"A51G\s*Grado\s*70", "A516 Gr. 70", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\bA51G\b", "A516", cleaned, flags=re.IGNORECASE)
+    return cleaned
+
+
+def _apply_post_extraction_normalizations(extracted_data: dict[str, Any]) -> dict[str, Any]:
+    """Apply stable, value-level normalizations (dates/fractions/ranges)."""
+    for key, value in list(extracted_data.items()):
+        if not isinstance(value, str) or not value.strip():
+            continue
+
+        month_match = re.search(
+            r"(\d{1,2})-(ene|feb|mar|abr|abril|may|jun|jul|ago|sep|oct|nov|dic)[a-z]*-(\d{2,4})",
+            value,
+            re.IGNORECASE,
+        )
+        if month_match:
+            day, month_str, year = month_match.groups()
+            month_map = {"ene": "01", "feb": "02", "mar": "03", "abr": "04", "may": "05", "jun": "06", "jul": "07", "ago": "08", "sep": "09", "oct": "10", "nov": "11", "dic": "12"}
+            month = month_map.get(month_str.lower()[:3], "01")
+            if len(year) == 2:
+                year = f"20{year}"
+            extracted_data[key] = f"{year}-{month}-{day.zfill(2)}"
+            continue
+
+        frac_match = re.search(r"^(\d+)/(\d+)\"?$", value.strip())
+        if frac_match:
+            numerator = float(frac_match.group(1))
+            denominator = float(frac_match.group(2))
+            if denominator != 0:
+                extracted_data[key] = str(numerator / denominator)
+            continue
+
+        key_l = key.lower()
+        if any(token in key_l for token in ("voltage", "amps", "travel_speed")):
+            range_match = re.search(r"^(\d+(?:\.\d+)?)\s*-\s*(\d+(?:\.\d+)?)$", value.strip())
+            if range_match:
+                extracted_data[key] = f"min: {range_match.group(1)}, max: {range_match.group(2)}"
+
+    return extracted_data
 def supported_evidence_files(inbox: Path) -> list[Path]:
     files = sorted(
         p
@@ -172,6 +225,7 @@ def extract_local_document(path: Path) -> LocalEvidenceDocument:
     else:
         raise ValueError(f"Unsupported local evidence file: {path}")
 
+    text = _clean_ocr_text(text)
     metadata["extraction_method"] = method
     metadata["characters"] = len(text)
     return LocalEvidenceDocument(
