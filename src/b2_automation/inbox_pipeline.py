@@ -462,7 +462,7 @@ def _label_value_is_compatible(label: str, value: str) -> bool:
         return False
     if re.search(r"\bday\s+where\s+the\s+action\b", lower):
         return False
-    if re.search(r"\b(?:equipment\s+red)(?:\s+equipment\s+red)+\b", lower):
+    if re.fullmatch(r"equipment\s+red(?:\s+equipment\s+red)*", lower):
         return False
     if re.search(r"(?:^|\s)121405\)(?:\s|$)", lower):
         return False
