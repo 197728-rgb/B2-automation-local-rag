@@ -495,7 +495,7 @@ def test_inbox_pipeline_aliases_car_number_to_b81_car_mark(tmp_path: Path) -> No
     docx = manifest["docx_generation"][0]
     assert "car.mark" in docx["patched_fields"]
     filled_doc = Document(str(result.filled_docx_path))
-    assert "DOTX 123456" in filled_doc.tables[0].rows[6].cells[0].text
+    assert "DOTX 123456" in filled_doc.tables[0].rows[7].cells[0].text
 
 
 def test_inbox_pipeline_fills_b81_docx_when_only_basic_fields_are_present(tmp_path: Path) -> None:

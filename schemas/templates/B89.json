@@ -101,7 +101,7 @@
       "field_id": "pitp.id",
       "table_index": 1,
       "row": 5,
-      "col": 14,
+      "col": 16,
       "label": "PITP ID",
       "required": true
     }

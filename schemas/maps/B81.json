@@ -4,105 +4,16 @@
   "manifest_path": "schemas/templates/B81.json",
   "template_path": "templates/B81_B24_ONLY.docx",
   "fields": {
-    "tco.name": {
-      "field_id": "tco.name",
-      "table_index": 0,
-      "row": 3,
-      "col": 0,
-      "required": true,
-      "cell_role": "target",
-      "label": "Tank Car Owner (TCO) Name"
-    },
-    "tco.permission_date": {
-      "field_id": "tco.permission_date",
-      "table_index": 0,
-      "row": 3,
-      "col": 2,
-      "required": true,
-      "cell_role": "target",
-      "label": "Date Permission/Instruction Received from TCO"
-    },
-    "tco.instructions": {
-      "field_id": "tco.instructions",
-      "table_index": 0,
-      "row": 3,
-      "col": 5,
-      "required": true,
-      "cell_role": "target",
-      "label": "Written Instructions from TCO"
-    },
-    "car.mark": {
-      "field_id": "car.mark",
-      "table_index": 0,
-      "row": 6,
-      "col": 0,
-      "required": true,
-      "cell_role": "target",
-      "label": "Car Mark and Number"
-    },
-    "car.design_spec": {
-      "field_id": "car.design_spec",
-      "table_index": 0,
-      "row": 6,
-      "col": 1,
-      "required": true,
-      "cell_role": "target",
-      "label": "Tank Car Design Specification"
-    },
-    "car.stencil_spec": {
-      "field_id": "car.stencil_spec",
-      "table_index": 0,
-      "row": 6,
-      "col": 5,
-      "required": false,
-      "cell_role": "target",
-      "label": "Stencil Specification"
-    },
-    "aar.form_4_2.number": {
-      "field_id": "aar.form_4_2.number",
-      "table_index": 0,
-      "row": 6,
-      "col": 7,
-      "required": true,
-      "cell_role": "target",
-      "label": "AAR Form 4-2 (AAR No.)"
-    },
-    "pitp.name": {
-      "field_id": "pitp.name",
-      "table_index": 1,
-      "row": 5,
-      "col": 0,
-      "required": true,
-      "cell_role": "target",
-      "label": "PITP Document Name"
-    },
-    "pitp.id": {
-      "field_id": "pitp.id",
-      "table_index": 1,
-      "row": 5,
-      "col": 11,
-      "required": true,
-      "cell_role": "target",
-      "label": "PITP ID"
-    },
-    "pitp.approved_by": {
-      "field_id": "pitp.approved_by",
-      "table_index": 1,
-      "row": 5,
-      "col": 20,
-      "required": true,
-      "cell_role": "target",
-      "label": "Approved By"
-    },
-    "pitp.date_approved": {
-      "field_id": "pitp.date_approved",
-      "table_index": 1,
-      "row": 5,
-      "col": 27,
-      "required": true,
-      "cell_role": "target",
-      "label": "Date Approved"
-    }
+    "tco.name": {"field_id": "tco.name", "table_index": 0, "row": 4, "col": 0, "required": true, "cell_role": "target", "label": "Tank Car Owner (TCO) Name"},
+    "tco.permission_date": {"field_id": "tco.permission_date", "table_index": 0, "row": 4, "col": 2, "required": true, "cell_role": "target", "label": "Date Permission/Instruction Received from TCO"},
+    "tco.instructions": {"field_id": "tco.instructions", "table_index": 0, "row": 4, "col": 6, "required": true, "cell_role": "target", "label": "Written Instructions from TCO"},
+    "car.mark": {"field_id": "car.mark", "table_index": 0, "row": 7, "col": 0, "required": true, "cell_role": "target", "label": "Car Mark and Number"},
+    "car.design_spec": {"field_id": "car.design_spec", "table_index": 0, "row": 7, "col": 1, "required": true, "cell_role": "target", "label": "Tank Car Design Specification"},
+    "car.stencil_spec": {"field_id": "car.stencil_spec", "table_index": 0, "row": 7, "col": 6, "required": false, "cell_role": "target", "label": "Stencil Specification"},
+    "aar.form_4_2.number": {"field_id": "aar.form_4_2.number", "table_index": 0, "row": 7, "col": 8, "required": true, "cell_role": "target", "label": "AAR Form 4-2 (AAR No.)"},
+    "pitp.name": {"field_id": "pitp.name", "table_index": 1, "row": 5, "col": 0, "required": true, "cell_role": "target", "label": "PITP Document Name"},
+    "pitp.id": {"field_id": "pitp.id", "table_index": 1, "row": 5, "col": 6, "required": true, "cell_role": "target", "label": "PITP ID"},
+    "pitp.approved_by": {"field_id": "pitp.approved_by", "table_index": 1, "row": 5, "col": 11, "required": true, "cell_role": "target", "label": "Approved By"},
+    "pitp.date_approved": {"field_id": "pitp.date_approved", "table_index": 1, "row": 5, "col": 15, "required": true, "cell_role": "target", "label": "Date Approved"}
   }
 }
-

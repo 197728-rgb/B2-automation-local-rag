@@ -116,7 +116,7 @@
       "field_id": "pitp.id",
       "table_index": 1,
       "row": 5,
-      "col": 14,
+      "col": 16,
       "required": true,
       "cell_role": "target",
       "label": "PITP ID"

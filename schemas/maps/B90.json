@@ -98,7 +98,7 @@
       "field_id": "pitp.id",
       "table_index": 1,
       "row": 5,
-      "col": 17,
+      "col": 4,
       "required": true,
       "cell_role": "target",
       "label": "PITP ID"
@@ -107,7 +107,7 @@
       "field_id": "stub_sill.procedure.id",
       "table_index": 1,
       "row": 7,
-      "col": 14,
+      "col": 3,
       "required": true,
       "cell_role": "target",
       "label": "Procedure ID"
