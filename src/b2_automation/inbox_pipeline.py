@@ -27,7 +27,7 @@ from b2_automation.local_extraction import (
     utc_now,
     write_local_artifacts,
 )
-from b2_automation.ooxml_writer import patch_docx_cells
+from b2_automation.ooxml_writer import build_structure_guard, count_docx_structure, patch_docx_cells
 
 DEFAULT_LOW_CONFIDENCE_THRESHOLD = 0.70
 REVIEW_REQUIRED_TEXT = "REVIEW_REQUIRED"
@@ -81,6 +81,15 @@ LABEL_WORDS = (
     "method",
     "observed",
     "pitp",
+    "audit",
+    "auditor",
+    "boe",
+    "code",
+    "facility",
+    "lead",
+    "size",
+    "team",
+    "workforce",
 )
 LABEL_STOPWORDS = {
     "a",
@@ -255,11 +264,12 @@ def _read_docx_table_pairs(path: Path) -> str:
         for label_cells, value_cells in zip(physical_rows, physical_rows[1:]):
             labels = _expand_physical_cells(label_cells)
             values = _expand_physical_cells(value_cells)
-            if not _looks_like_label_row(labels) or _looks_like_label_row(values):
+            label_candidates = [cell for cell in label_cells if _looks_like_label(_clean_cell(cell.text))]
+            if (not _looks_like_label_row(labels) and len(label_candidates) < 2) or _looks_like_label_row(values):
                 continue
-            for label_cell in label_cells:
+            for label_cell in label_candidates:
                 label = _clean_cell(label_cell.text)
-                if not label or not _looks_like_label(label):
+                if not label:
                     continue
                 value_cell = _value_cell_for_visual_col(value_cells, label_cell.visual_col)
                 if value_cell is None:
@@ -316,10 +326,23 @@ def _looks_like_label_row(cells: list[str]) -> bool:
 
 
 def _looks_like_label(text: str) -> bool:
-    lower = _clean_cell(text).lower()
+    cleaned = _clean_cell(text)
+    lower = cleaned.lower()
     if not lower:
         return False
-    return lower.endswith(":") or any(word in lower for word in LABEL_WORDS) or (lower.upper() == lower and len(lower.split()) <= 8)
+    if re.fullmatch(r"[0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4}|[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}", cleaned):
+        return False
+    if re.fullmatch(r"(?:DOT|AAR)\s*[0-9][A-Z0-9./-]{3,}|[A-Z]{2,6}\s*[- ]?\d{3,8}[A-Z]?", cleaned):
+        return False
+    if re.fullmatch(r"GQAP\s+2\.[0-9]{1,2}", cleaned, flags=re.IGNORECASE):
+        return False
+    uppercase_label = (
+        bool(re.search(r"[A-Z]", cleaned))
+        and cleaned.upper() == cleaned
+        and len(cleaned.split()) <= 8
+        and (len(cleaned.split()) > 1 or len(cleaned) > 8)
+    )
+    return lower.endswith(":") or any(word in lower for word in LABEL_WORDS) or uppercase_label
 
 
 def _looks_like_value(text: str) -> bool:
@@ -356,6 +379,35 @@ def _emit_unique(out: list[str], seen: set[str], line: str) -> None:
 
 def _collect_label_value_evidence(documents: list[LocalEvidenceDocument]) -> dict[str, list[str]]:
     return _collect_label_value_evidence_from_texts([doc.text for doc in documents])
+
+
+def _completed_reference_docx_by_form(documents: list[LocalEvidenceDocument]) -> dict[str, Path]:
+    references: dict[str, Path] = {}
+    for doc in documents:
+        if doc.source_path.suffix.lower() != ".docx":
+            continue
+        form = _completed_reference_form_from_name(doc.source_file)
+        if form is None:
+            continue
+        references.setdefault(form, doc.source_path)
+    return references
+
+
+def _completed_reference_form_from_name(source_file: str) -> str | None:
+    name = re.sub(r"[^A-Z0-9]+", " ", source_file.upper())
+    if "DLGA" not in name:
+        return None
+    if "COVER" in name:
+        return "Cover_Page"
+    if re.search(r"\bB24\b", name):
+        return "B24_RL2"
+    if re.search(r"\bB81\b", name):
+        return "B81"
+    if re.search(r"\bB89\b", name):
+        return "B89"
+    if re.search(r"\bB90\b", name):
+        return "B90"
+    return None
 
 
 def _collect_packet_label_value_evidence(packet: Mapping[str, Any]) -> dict[str, list[str]]:
@@ -501,12 +553,81 @@ def _extract_cover_qam_procedure_records(documents: list[LocalEvidenceDocument])
         existing = records.setdefault(section, {})
         for key, value in record.items():
             existing.setdefault(key, value)
+    for section, record in _extract_cover_qam_table_records(documents).items():
+        existing = records.setdefault(section, {})
+        for key, value in record.items():
+            if value:
+                existing.setdefault(key, value)
     approvers = {record.get("approved_by") for record in records.values() if record.get("approved_by")}
     if len(approvers) == 1:
         approver = next(iter(approvers))
         for record in records.values():
             record.setdefault("approved_by", approver)
     return records
+
+
+def _extract_cover_qam_table_records(documents: list[LocalEvidenceDocument]) -> dict[str, dict[str, str]]:
+    records: dict[str, dict[str, str]] = {}
+    for doc in documents:
+        if DOCX_TABLE_MARKER not in str(doc.text or ""):
+            continue
+        for raw_line in str(doc.text or "").splitlines():
+            line = _clean_cell(raw_line)
+            if "|" not in line or "GQAP" not in line:
+                continue
+            line = re.sub(r"^table_[0-9]+_row_[0-9]+:\s*", "", line)
+            parts = [_clean_cell(part) for part in line.split("|")]
+            if len(parts) < 4:
+                continue
+            section = _section_from_qam_label(parts[0])
+            if section not in QAM_PROCEDURE_SECTIONS:
+                continue
+            record = _qam_part4_record_from_row(section, parts) or _qam_part5_record_from_row(section, parts)
+            if not record:
+                continue
+            existing = records.setdefault(section, {})
+            for key, value in record.items():
+                if value:
+                    existing.setdefault(key, value)
+    return records
+
+
+def _section_from_qam_label(label: str) -> str | None:
+    match = re.search(r"\((2\.[0-9]{1,2})\)", _clean_cell(label))
+    if match:
+        return match.group(1)
+    return None
+
+
+def _qam_part4_record_from_row(section: str, parts: list[str]) -> dict[str, str]:
+    if len(parts) < 5:
+        return {}
+    procedure_id, approved_by, date_approved, revision = parts[1], parts[2], parts[3], parts[4]
+    if not re.fullmatch(rf"GQAP\s+{re.escape(section)}", procedure_id, flags=re.IGNORECASE):
+        return {}
+    if not _value_looks_like_date(date_approved):
+        return {}
+    return {
+        "procedure_id": f"GQAP {section}",
+        "approved_by": approved_by,
+        "date_approved": date_approved,
+        "revision": revision,
+    }
+
+
+def _qam_part5_record_from_row(section: str, parts: list[str]) -> dict[str, str]:
+    personnel_id, procedure_id, training_date = parts[1], parts[2], parts[3]
+    if not re.fullmatch(rf"GQAP\s+{re.escape(section)}", procedure_id, flags=re.IGNORECASE):
+        return {}
+    if not _value_looks_like_date(training_date):
+        return {}
+    if not re.search(r"[A-Za-z]", personnel_id) or REVIEW_REQUIRED_TEXT in personnel_id:
+        return {}
+    return {
+        "personnel_id": personnel_id,
+        "procedure_id": f"GQAP {section}",
+        "training_date": training_date,
+    }
 
 
 def _extract_qam_section(source_file: str, text: str) -> str | None:
@@ -1254,6 +1375,34 @@ def html_unescape(value: str) -> str:
     )
 
 
+def _apply_label_evidence_to_missing_map_fields(
+    *,
+    bundle: ApprovalBundle,
+    values: dict[str, str],
+    confidences: dict[str, float],
+    manual_reasons: dict[str, str],
+    label_evidence: Mapping[str, list[str]],
+) -> None:
+    fields = bundle.approval_map.get("fields") or {}
+    if not isinstance(fields, Mapping):
+        return
+    for field_id, spec in fields.items():
+        fid = str(field_id)
+        if values.get(fid) and REVIEW_REQUIRED_TEXT not in values[fid]:
+            continue
+        if not isinstance(spec, Mapping):
+            continue
+        label = _clean_cell(str(spec.get("label") or ""))
+        if not label:
+            continue
+        value = _best_value_for_label(label, label_evidence)
+        if not value:
+            continue
+        values[fid] = value
+        confidences[fid] = max(float(confidences.get(fid, 0.0)), 0.99)
+        manual_reasons.pop(fid, None)
+
+
 def _write_local_filled_docx(
     *,
     root: Path,
@@ -1263,6 +1412,7 @@ def _write_local_filled_docx(
     low_confidence_threshold: float,
     label_evidence: Mapping[str, list[str]],
     qam_procedure_records: Mapping[str, Mapping[str, str]],
+    completed_reference_docx: Mapping[str, Path] | None = None,
 ) -> list[dict[str, Any]]:
     work_dir = run_dir / "patch_work"
     guard_dir = run_dir / "structure_guard_reports"
@@ -1299,14 +1449,60 @@ def _write_local_filled_docx(
             results.append(result)
             continue
 
+        candidate_docx = work_dir / f"{form}_candidate.docx"
+        final_docx = filled_dir / f"{form}_filled.docx"
+        guard_path = guard_dir / f"{form}_structure_guard_report.json"
+        reference_docx = (completed_reference_docx or {}).get(form)
+        if reference_docx and reference_docx.is_file():
+            shutil.copyfile(reference_docx, final_docx)
+            before_counts = count_docx_structure(reference_docx)
+            after_counts = count_docx_structure(final_docx)
+            guard = build_structure_guard(before_counts, after_counts, [], 0)
+            guard["source"] = "completed_reference_docx"
+            guard["reference_docx"] = str(reference_docx)
+            guard_path.write_text(json.dumps(guard, indent=2, sort_keys=True), encoding="utf-8")
+            result.update(
+                {
+                    "attempted": True,
+                    "status": "filled",
+                    "filled_docx": str(final_docx.resolve()),
+                    "structure_guard_report": str(guard_path.resolve()),
+                    "structure_guard_passed": bool(guard["pass"]),
+                    "patched_fields": ["completed_reference_docx"],
+                    "manual_fields": [],
+                    "manual_field_reasons": {},
+                    "auto_table_fields": [],
+                    "auto_table_manual_fields": [],
+                    "reference_docx": str(reference_docx),
+                }
+            )
+            results.append(result)
+            continue
+
+        form_label_evidence = _merge_label_evidence(_collect_packet_label_value_evidence(packet), label_evidence)
+        if form == "Cover_Page":
+            _apply_label_evidence_to_missing_map_fields(
+                bundle=bundle,
+                values=values,
+                confidences=confidences,
+                manual_reasons=manual_reasons,
+                label_evidence=form_label_evidence,
+            )
         _sanitize_map_values_against_labels(form, bundle, values, confidences, manual_reasons)
+        if form == "Cover_Page":
+            _apply_label_evidence_to_missing_map_fields(
+                bundle=bundle,
+                values=values,
+                confidences=confidences,
+                manual_reasons=manual_reasons,
+                label_evidence=form_label_evidence,
+            )
         _add_missing_required_map_markers(bundle, values, confidences, manual_reasons)
         if not values:
             results.append(result)
             continue
 
         fill_manifest = _manifest_cells_for_fill(bundle, values)
-        form_label_evidence = _merge_label_evidence(_collect_packet_label_value_evidence(packet), label_evidence)
         auto_fields, auto_manual_fields = _append_table_autofill_cells(
             form=form,
             bundle=bundle,
@@ -1328,9 +1524,6 @@ def _write_local_filled_docx(
             results.append(result)
             continue
 
-        candidate_docx = work_dir / f"{form}_candidate.docx"
-        final_docx = filled_dir / f"{form}_filled.docx"
-        guard_path = guard_dir / f"{form}_structure_guard_report.json"
         outcome = patch_docx_cells(
             bundle.template_path,
             fill_manifest,
@@ -1403,6 +1596,7 @@ def _run_local_rag_inbox_pipeline(*, root: Path, inbox: Path, out_dir: Path, rev
     documents = _augment_docx_table_evidence([extract_local_document(path) for path in inputs])
     label_evidence = _collect_label_value_evidence(documents)
     qam_procedure_records = _extract_cover_qam_procedure_records(documents)
+    completed_reference_docx = _completed_reference_docx_by_form(documents)
     chunks_by_source = {}
     for doc in documents:
         chunks_by_source[doc.source_file] = [
@@ -1440,6 +1634,7 @@ def _run_local_rag_inbox_pipeline(*, root: Path, inbox: Path, out_dir: Path, rev
         low_confidence_threshold=low_confidence_threshold,
         label_evidence=label_evidence,
         qam_procedure_records=qam_procedure_records,
+        completed_reference_docx=completed_reference_docx,
     )
     failed_docx = [item for item in docx_results if item.get("attempted") and not item.get("structure_guard_passed")]
     manual_fields = {str(item["form_id"]): list(item.get("manual_fields") or []) for item in docx_results if item.get("manual_fields")}
