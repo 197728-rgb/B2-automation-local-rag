@@ -56,6 +56,57 @@ def _docx_table_rows_containing(path: Path, needle: str) -> list[list[str]]:
     raise AssertionError(f"Could not find table containing {needle!r}")
 
 
+def _write_cover_reference_docx(path: Path) -> None:
+    doc = Document()
+    general = doc.add_table(rows=2, cols=6)
+    general.rows[0].cells[0].text = "Station Stencil/QA Code"
+    general.rows[0].cells[1].text = "Audit Type"
+    general.rows[0].cells[2].text = "Facility Workforce Size"
+    general.rows[0].cells[3].text = "Open Meeting Date"
+    general.rows[0].cells[4].text = "Closing Meeting Date"
+    general.rows[0].cells[5].text = "BOE Lead Auditor"
+    general.rows[1].cells[0].text = "DLGA"
+    general.rows[1].cells[1].text = "SP"
+    general.rows[1].cells[2].text = "50"
+    general.rows[1].cells[3].text = "5/5/2026"
+    general.rows[1].cells[4].text = "5/7/2026"
+    general.rows[1].cells[5].text = "Lucho Rodriguez"
+
+    part4 = doc.add_table(rows=4, cols=5)
+    part4.rows[0].cells[0].text = "PART 4: KEY QUALITY PROCEDURES"
+    part4.rows[1].cells[0].text = "Procedures Traceable to the Quality Assurance Manual"
+    part4.rows[1].cells[1].text = "Procedure ID"
+    part4.rows[1].cells[2].text = "Approved By"
+    part4.rows[1].cells[3].text = "Date Approved"
+    part4.rows[1].cells[4].text = "Revision"
+    part4.rows[2].cells[0].text = "Production, Inspection, and Test Plan (2.5)"
+    part4.rows[2].cells[1].text = "GQAP 2.5"
+    part4.rows[2].cells[2].text = "B. De La Garza"
+    part4.rows[2].cells[3].text = "4/20/2025"
+    part4.rows[2].cells[4].text = "2"
+    part4.rows[3].cells[0].text = "Inspection Status (2.13)"
+    part4.rows[3].cells[1].text = "GQAP 2.13"
+    part4.rows[3].cells[2].text = "B. De La Garza"
+    part4.rows[3].cells[3].text = "4/15/2025"
+    part4.rows[3].cells[4].text = "1"
+
+    part5 = doc.add_table(rows=4, cols=4)
+    part5.rows[0].cells[0].text = "PART 5: key Quality procedures Function Specific Training"
+    part5.rows[1].cells[0].text = "Procedures Traceable to the Quality Assurance Manual"
+    part5.rows[1].cells[1].text = "Personnel ID #"
+    part5.rows[1].cells[2].text = "Procedure ID #"
+    part5.rows[1].cells[3].text = "Function Specific Training Date"
+    part5.rows[2].cells[0].text = "Production, Inspection, and Test Plan (2.5)"
+    part5.rows[2].cells[1].text = "Alondra Navarro"
+    part5.rows[2].cells[2].text = "GQAP 2.5"
+    part5.rows[2].cells[3].text = "4/20/2025"
+    part5.rows[3].cells[0].text = "Inspection Status (2.13)"
+    part5.rows[3].cells[1].text = "Elías Hernandez"
+    part5.rows[3].cells[2].text = "GQAP 2.13"
+    part5.rows[3].cells[3].text = "4/20/2025"
+    doc.save(path)
+
+
 def test_cover_page_does_not_auto_fill_b24_body_rows(tmp_path: Path) -> None:
     root = _repo_root()
     inbox = tmp_path / "inbox"
@@ -151,6 +202,55 @@ def test_cover_page_fills_qam_part4_and_marks_part5_rows_from_gqap_headers(tmp_p
     assert "auto_table.cover_qam_part5.2_5.procedure_id" in cover_docx["auto_table_fields"]
     assert "auto_table.cover_qam_part5.2_5.personnel_id" in cover_docx["auto_table_manual_fields"]
     assert "auto_table.cover_qam_part5.2_5.training_date" in cover_docx["auto_table_manual_fields"]
+
+
+def test_cover_page_uses_structured_reference_rows_without_review_markers(tmp_path: Path) -> None:
+    root = _repo_root()
+    inbox = tmp_path / "inbox"
+    inbox.mkdir()
+    _write_cover_reference_docx(inbox / "cover_table_evidence.docx")
+
+    result = run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run", review_forms=("Cover_Page",))
+
+    manifest = _manifest(result)
+    cover_docx = manifest["docx_generation"][0]
+    text = _docx_text(Path(cover_docx["filled_docx"]))
+    assert "Station Stencil/QA Code: DLGA" in text
+    assert "Audit Type: SP" in text
+    assert "Open Meeting Date: 5/5/2026" in text
+    assert "Closing Meeting Date: 5/7/2026" in text
+    assert "BOE Lead Auditor: Lucho Rodriguez" in text
+
+    part4_rows = _docx_table_rows_containing(Path(cover_docx["filled_docx"]), "PART 4")
+    inspection_status_row = next(row for row in part4_rows if row[0] == "Inspection Status (2.13)")
+    assert inspection_status_row[1:5] == ["GQAP 2.13", "B. De La Garza", "4/15/2025", "1"]
+
+    part5_rows = _docx_table_rows_containing(Path(cover_docx["filled_docx"]), "PART 5")
+    production_training_row = next(row for row in part5_rows if row[0] == "Production, Inspection, and Test Plan (2.5)")
+    inspection_status_training_row = next(row for row in part5_rows if row[0] == "Inspection Status (2.13)")
+    assert production_training_row[1:4] == ["Alondra Navarro", "GQAP 2.5", "4/20/2025"]
+    assert inspection_status_training_row[1:4] == ["Elías Hernandez", "GQAP 2.13", "4/20/2025"]
+    assert "auto_table.cover_qam_part5.2_5.personnel_id" not in cover_docx["auto_table_manual_fields"]
+    assert "auto_table.cover_qam_part5.2_13.procedure_id" not in cover_docx["auto_table_manual_fields"]
+
+
+def test_completed_reference_docx_is_handed_off_without_rewrite(tmp_path: Path) -> None:
+    root = _repo_root()
+    inbox = tmp_path / "inbox"
+    inbox.mkdir()
+    reference = inbox / "DLGA-COVER PAGE.docx"
+    _write_cover_reference_docx(reference)
+
+    result = run_inbox_pipeline(root=root, inbox=inbox, out_dir=tmp_path / "run", review_forms=("Cover_Page",))
+
+    manifest = _manifest(result)
+    cover_docx = manifest["docx_generation"][0]
+    filled = Path(cover_docx["filled_docx"])
+    assert filled.read_bytes() == reference.read_bytes()
+    assert cover_docx["patched_fields"] == ["completed_reference_docx"]
+    assert cover_docx["manual_fields"] == []
+    assert cover_docx["auto_table_manual_fields"] == []
+    assert cover_docx["structure_guard_passed"] is True
 
 
 @pytest.mark.parametrize(
