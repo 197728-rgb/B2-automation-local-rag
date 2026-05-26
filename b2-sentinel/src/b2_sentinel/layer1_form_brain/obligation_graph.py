@@ -25,6 +25,7 @@ from ..core.paths import (
 )
 from ..core.status import WriteAuthority
 from .completion_policy import load_na_policy
+from .required_policy import promotes_required
 from .write_authority import load_exact_approval_map
 
 
@@ -133,7 +134,9 @@ def build_obligation_graph(
         if cell_role_raw not in ("target", "label", "notes", "header"):
             cell_role_raw = "target"
 
-        required = bool(raw_field.required)
+        required = bool(raw_field.required) or promotes_required(
+            form_id, fid, raw_field.label
+        )
         n_a_allowed = fid in na_policy or fid in _KNOWN_NA_ELIGIBLE
         evidence_required = required  # default
         completion_blocker = required and not n_a_allowed
