@@ -1,0 +1,266 @@
+{
+  "docx_path": "C:\\Projects\\templates_extracted\\templates\\FILLED_Cover Sheet..docx",
+  "form_id": "Cover_Page",
+  "validated_at": "2026-05-25T08:17:38+00:00",
+  "environment_notes": [
+    "Windows + Office 365 64-bit + Acrobat DC + VM mixed PDF/DOCX workflow assumed",
+    "Word merge-cell OOXML treated as fragile; no auto geometry repair"
+  ],
+  "safe_text_patch_only": true,
+  "structure_guard": null,
+  "layout_integrity_warnings": [],
+  "normalization_issues": [
+    {
+      "form_location": "Cover_Page/T0R1C0",
+      "notes": [
+        {
+          "code": "whitespace",
+          "detail": "Collapsed duplicate whitespace safely",
+          "before_preview": "",
+          "after_preview": ""
+        }
+      ]
+    }
+  ],
+  "fingerprint_comparisons": [
+    {
+      "table_index": 0,
+      "status": "missing_expected",
+      "expected_digest": null,
+      "actual_digest": "e91b0922698da293",
+      "expected_headers": null,
+      "actual_headers": [
+        [
+          "PART 1: General INFORMATiON"
+        ],
+        [
+          "Station Stencil/QA Code: UTBC",
+          "Audit Type: C1",
+          "Facility Workforce Size: 6"
+        ],
+        [
+          "Open Meeting Date: 6/10/2025",
+          "Closing Meeting Date: 6/11/2025"
+        ]
+      ],
+      "detail": "No fingerprint schema for form 'Cover_Page'; table 0 not validated"
+    },
+    {
+      "table_index": 1,
+      "status": "missing_expected",
+      "expected_digest": null,
+      "actual_digest": "dde0620646929db6",
+      "expected_headers": null,
+      "actual_headers": [
+        [
+          "PART 2: M-1002/M-1003 Audit Attendance Record"
+        ],
+        [
+          "Name",
+          "Title",
+          "Company",
+          "Meeting"
+        ],
+        [
+          "Marty Rich",
+          "Field Auditor",
+          "AAR/BoE",
+          "Opening Closing"
+        ]
+      ],
+      "detail": "No fingerprint schema for form 'Cover_Page'; table 1 not validated"
+    },
+    {
+      "table_index": 2,
+      "status": "missing_expected",
+      "expected_digest": null,
+      "actual_digest": "91cd859eb69e10c3",
+      "expected_headers": null,
+      "actual_headers": [
+        [
+          "Part 3: Publications"
+        ],
+        [
+          "The documented evaluation in this section of the Exhibit B-2 is to document verification of compliance with AAR MSRP C-III Appendix B paragraph 3.2 and the physical demonstration under each activity code regarding the possession of all applicable AAR publications and access to federal regulations (AAR M-1003 QA ELEMENT 2.3, 2.7)"
+        ],
+        [
+          "DOCUMENTS"
+        ]
+      ],
+      "detail": "No fingerprint schema for form 'Cover_Page'; table 2 not validated"
+    },
+    {
+      "table_index": 3,
+      "status": "missing_expected",
+      "expected_digest": null,
+      "actual_digest": "4f45cec3f8e09575",
+      "expected_headers": null,
+      "actual_headers": [
+        [
+          "PART 4: key Quality procedures"
+        ],
+        [
+          "QA PROCEDURES"
+        ],
+        [
+          "Procedures Traceable to the Quality Assurance Manual",
+          "Procedure ID",
+          "Approved By",
+          "Date Approved",
+          "Revision"
+        ]
+      ],
+      "detail": "No fingerprint schema for form 'Cover_Page'; table 3 not validated"
+    },
+    {
+      "table_index": 4,
+      "status": "missing_expected",
+      "expected_digest": null,
+      "actual_digest": "2bb4c27953e36c98",
+      "expected_headers": null,
+      "actual_headers": [
+        [
+          "PART 5: key Quality procedures Function Specific Training"
+        ],
+        [
+          "QA PROCEDURES FUNCTION SPECIFIC TRAINING"
+        ],
+        [
+          "Procedures Traceable to the Quality Assurance Manual",
+          "Personnel ID #",
+          "Procedure ID #",
+          "Function Specific Training Date"
+        ]
+      ],
+      "detail": "No fingerprint schema for form 'Cover_Page'; table 4 not validated"
+    },
+    {
+      "table_index": 5,
+      "status": "missing_expected",
+      "expected_digest": null,
+      "actual_digest": "c988ca5960c226a6",
+      "expected_headers": null,
+      "actual_headers": [
+        [
+          "PART 6: Non-Destuctive Testing (NDT) Administration"
+        ],
+        [
+          "PERSONNEL"
+        ],
+        [
+          "NDT Level III ID",
+          "NDT Level III Method(s)",
+          "Date Level III Qualified",
+          "Qualification Expiration Date",
+          "Date of Visual Acuity Exam",
+          "Due Date Visual Acuity Exam"
+        ]
+      ],
+      "detail": "No fingerprint schema for form 'Cover_Page'; table 5 not validated"
+    },
+    {
+      "table_index": 6,
+      "status": "missing_expected",
+      "expected_digest": null,
+      "actual_digest": "d3e0c9584e44f3e5",
+      "expected_headers": null,
+      "actual_headers": [
+        [
+          "PART 7: Subcontracted services (Exhibit B-1)"
+        ],
+        [
+          "SUBCONTRACTED Products, Services, and/or Equipment"
+        ],
+        [
+          "Subcontracted Product, Service, and/or Equipment",
+          "Exhibit B-1 Company Name",
+          "Exhibit B-1 Verification Method",
+          "Exhibit B-1 Facility Contact Name Attesting",
+          "Exhibit B-1 Attest Date",
+          "Exhibit B-1 Expiration Date"
+        ]
+      ],
+      "detail": "No fingerprint schema for form 'Cover_Page'; table 6 not validated"
+    },
+    {
+      "table_index": 7,
+      "status": "missing_expected",
+      "expected_digest": null,
+      "actual_digest": "38e64bdda5312c05",
+      "expected_headers": null,
+      "actual_headers": [
+        [
+          "PART 8: mOBILE oPERATIONS"
+        ],
+        [
+          "Mobile Units Operated From This Location"
+        ],
+        [
+          "Mobile Unit ID",
+          "Activity Code(s) Performed",
+          "Assigned Facility (Station Stencil)",
+          "Physically Present at Audit"
+        ]
+      ],
+      "detail": "No fingerprint schema for form 'Cover_Page'; table 7 not validated"
+    },
+    {
+      "table_index": 8,
+      "status": "missing_expected",
+      "expected_digest": null,
+      "actual_digest": "d9bafc0e0a8163d7",
+      "expected_headers": null,
+      "actual_headers": [
+        [
+          "PART 9: AAR BOE Lead Auditor attestment"
+        ],
+        [
+          "The AAR BOE Lead Auditor is attesting that all information provided in this form and applicable additional Exhibit B-2 forms are accurate and complete based on the minimum demonstrations performed by the facility and physically witnessing during the on-site audit in accordance with AAR MSRP C-III (M-1002) Appendix B."
+        ],
+        [
+          "Name of Lead Auditor: Marty Rich",
+          "Signature:"
+        ]
+      ],
+      "detail": "No fingerprint schema for form 'Cover_Page'; table 8 not validated"
+    }
+  ],
+  "cell_boundary_issues": [],
+  "date_format_issues": [],
+  "calibration_anomalies": [],
+  "flagged_only_inconsistencies": [],
+  "typo_fixes_applied": [],
+  "unresolved_conflicts": [],
+  "visual_export_checks": [
+    {
+      "check": "docx_opens",
+      "pass": true,
+      "detail": "python-docx loaded document"
+    },
+    {
+      "check": "has_tables",
+      "pass": true,
+      "detail": "table_count=9"
+    },
+    {
+      "check": "non_empty_paragraphs",
+      "pass": true,
+      "detail": "paragraph_count=10"
+    },
+    {
+      "check": "pdf_export_hint",
+      "pass": true,
+      "detail": "Manual: export PDF in Acrobat/Word and confirm cell alignment visually"
+    }
+  ],
+  "summary": {
+    "fingerprint_drift_tables": 0,
+    "cell_boundary_issues": 0,
+    "date_format_issues": 0,
+    "layout_integrity_warnings": 0,
+    "flagged_only_inconsistencies": 0,
+    "typo_fixes_applied": 0,
+    "unresolved_conflicts": 0,
+    "pass": true
+  }
+}

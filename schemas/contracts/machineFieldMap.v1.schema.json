@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "machine_field_map.v1",
+  "title": "MachineFieldMapV1",
+  "type": "object",
+  "required": ["version", "templateFile", "generatedAt", "fields", "summary"],
+  "properties": {
+    "version": { "const": "machine_field_map.v1" },
+    "templateFile": { "type": "string" },
+    "generatedAt": { "type": "string" },
+    "activityCode": { "type": "string" },
+    "fields": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/AuditRequirement" }
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "detectedFieldCount",
+        "autoFillableFieldCount",
+        "lowConfidenceFieldCount",
+        "fallbackFieldCount"
+      ],
+      "properties": {
+        "detectedFieldCount": { "type": "integer" },
+        "autoFillableFieldCount": { "type": "integer" },
+        "lowConfidenceFieldCount": { "type": "integer" },
+        "fallbackFieldCount": { "type": "integer" }
+      }
+    }
+  },
+  "$defs": {
+    "AuditRequirement": {
+      "type": "object",
+      "required": [
+        "id",
+        "fieldLabel",
+        "fieldType",
+        "formLocation",
+        "contextualIntent",
+        "searchDirective",
+        "requiredEvidenceType",
+        "required",
+        "mappingConfidence",
+        "canAutoFill",
+        "fallbackBehavior"
+      ],
+      "properties": {
+        "id": { "type": "string" },
+        "fieldLabel": { "type": "string" },
+        "fieldType": {
+          "enum": ["narrative", "number", "date", "boolean", "table", "unknown"]
+        },
+        "expectedUnit": { "type": "string" },
+        "formLocation": { "$ref": "#/$defs/FormLocation" },
+        "contextualIntent": { "type": "string" },
+        "searchDirective": { "type": "string" },
+        "requiredEvidenceType": {
+          "enum": ["text", "number", "table", "calculation", "policy", "unknown"]
+        },
+        "required": { "type": "boolean" },
+        "docupipeSchemaId": { "type": "string" },
+        "mappedSchemaPath": { "type": "string" },
+        "mappingConfidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "canAutoFill": { "type": "boolean" },
+        "fallbackBehavior": {
+          "enum": ["fill_not_verified", "leave_blank", "use_default", "use_best_effort"]
+        }
+      }
+    },
+    "FormLocation": {
+      "type": "object",
+      "required": ["documentType"],
+      "properties": {
+        "documentType": { "enum": ["docx", "pdf", "image"] },
+        "page": { "type": "integer" },
+        "tableIndex": { "type": "integer" },
+        "rowIndex": { "type": "integer" },
+        "columnIndex": { "type": "integer" },
+        "paragraphIndex": { "type": "integer" },
+        "nearbyHeader": { "type": "string" },
+        "cellPath": { "type": "string" }
+      }
+    }
+  }
+}

@@ -367,7 +367,9 @@ def _collapse_adjacent_duplicates(cells: list[str]) -> list[str]:
 
 
 def _clean_cell(text: str) -> str:
-    return re.sub(r"\s+", " ", str(text or "").replace("\u00a0", " ")).strip(" |")
+    from b2_automation.audit_text_safety import normalize_cell_text
+
+    return normalize_cell_text(str(text or ""), preserve_line_breaks=True).text.strip(" |")
 
 
 def _emit_unique(out: list[str], seen: set[str], line: str) -> None:
@@ -1558,6 +1560,25 @@ def _write_local_filled_docx(
             final_docx.parent.mkdir(parents=True, exist_ok=True)
             shutil.move(str(candidate_docx), final_docx)
             result["filled_docx"] = str(final_docx)
+            try:
+                from b2_automation.audit_validation import validate_audit_docx, write_validation_summary
+
+                validation_dir = run_dir / "validation"
+                vreport = validate_audit_docx(
+                    final_docx,
+                    form_id=form,
+                    project_root=root,
+                    before_patch_path=bundle.template_path,
+                    safe_text_patch_only=True,
+                )
+                vjson = validation_dir / f"{form}_validation.json"
+                vmd = validation_dir / f"{form}_validation.md"
+                write_validation_summary(vreport, json_path=vjson, md_path=vmd)
+                result["audit_validation_json"] = str(vjson)
+                result["audit_validation_md"] = str(vmd)
+                result["audit_validation_pass"] = bool(vreport.summary_dict().get("pass"))
+            except OSError:
+                pass
         else:
             try:
                 candidate_docx.unlink()

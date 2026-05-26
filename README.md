@@ -66,6 +66,30 @@ outputs/local_rag_run/review/*_review.md
 
 The inbox command **fills the best extracted value** per approved cell and inserts **`REVIEW_REQUIRED:` text markers** into the DOCX for required map fields that still lack evidence. The run is **`review_required`** when those **manual markers** remain (see `manual_fields` in `run_manifest.json`) or when the **structure guard** fails; it is **`success`** only when there are no manual follow-ups and the guard passes. Filled outputs live under **`<out>/filled/`** (for example `outputs/local_rag_run/filled/`), not a repo-wide `outputs/filled/` folder.
 
+## Autonomous pipeline (SPEC-1)
+
+**Operational source of truth:** [docs/SPEC-1-LOCAL-MVP.md](docs/SPEC-1-LOCAL-MVP.md) · **Full personal spec:** [docs/SPEC-1-PERSONAL.md](docs/SPEC-1-PERSONAL.md)
+
+Fully autonomous form completion without human-review gates:
+
+```text
+analyzeDocxForm -> gatherEvidence -> synthesizeAnswer -> validateAnswer -> writeCompletedDocx
+```
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -e ".[autonomous]"
+$env:GEMINI_API_KEY = "your-key"   # optional; use --no-llm for deterministic Analyst only
+.\.venv\Scripts\b2.exe run-autonomous --inbox .\inbox --out .\outputs\autonomous_run
+```
+
+Outputs under `outputs/autonomous_run/`:
+
+- `completed/*_completed.docx`
+- `audit-trail/*_machine_field_map.v1.json`, `*_evidence.json`, `*_answers.json`, `*_write_report.json`
+- `run_manifest.json` (status: `completed`, `completed_with_warnings`, or `failed_with_fallback`)
+
+TypeScript reference implementation: `tools/autonomous-audit-pipeline/`.
+
 ## Other commands
 
 ```powershell

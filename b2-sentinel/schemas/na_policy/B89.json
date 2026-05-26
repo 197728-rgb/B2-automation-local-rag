@@ -1,0 +1,16 @@
+{
+  "form_id": "B89",
+  "description": "Approved N/A exception policy for B89 (Insulation Inspection on Test Plate)",
+  "fields": {
+    "test_fixture.weld.length": {
+      "reason": "No weld length applicable to this activity condition",
+      "policy_id": "NA-B89-WELD-LEN-001",
+      "approved_by": "approved_exception_policy"
+    },
+    "test_fixture.patch_plate.size": {
+      "reason": "No patch plate applicable to this activity condition",
+      "policy_id": "NA-B89-PATCH-SIZE-001",
+      "approved_by": "approved_exception_policy"
+    }
+  }
+}

@@ -1,0 +1,8 @@
+[
+  {
+    "schema_id": "B24_RL2_2026",
+    "form_id": "B24_RL2",
+    "activity_code": "B24",
+    "paths": ["demonstration.station", "demonstration.carNumber", "tco.instructions"]
+  }
+]

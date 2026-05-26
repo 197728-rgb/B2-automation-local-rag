@@ -16,3 +16,12 @@ alwaysApply: true
 - A valid handoff means `Status: success`, **5** filled DOCX this run, passing structure guards, and no required visible table-cell blanks in `B24_RL2`, `B81`, `B89`, `B90`, or `Cover_Page`.
 - Always emit **review JSON and Markdown** for missing, conflicting, and low-confidence evidence.
 - Keep **raw extraction, chunk, retrieval, and metadata** artifacts for traceability.
+
+## Autonomous mode (`b2 run-autonomous`)
+
+- SPEC-1 pipeline: `analyzeDocxForm` → `gatherEvidence` → `synthesizeAnswer` → `validateAnswer` → `writeCompletedDocx`.
+- **`machine_field_map.v1`** is the write authority (not hand-maintained approval maps).
+- **Do not** emit `review.json` / `review.md` or stop for human approval in autonomous runs.
+- Low confidence → metadata + fallback text; terminal status is `completed`, `completed_with_warnings`, or `failed_with_fallback`.
+- Still require **`structure_guard_report.json`** to pass before treating DOCX handoff as structurally safe.
+- Optional: `pip install -e ".[autonomous]"` and `GEMINI_API_KEY` for Analyst/Writer LLM enrichment; `--no-llm` uses deterministic structure mapping only.

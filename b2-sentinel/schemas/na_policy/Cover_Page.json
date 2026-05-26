@@ -1,0 +1,11 @@
+{
+  "form_id": "Cover_Page",
+  "description": "Approved N/A exception policy for Cover Page (B-2 Cover Sheet)",
+  "fields": {
+    "facility_workforce_size": {
+      "reason": "Workforce size not applicable or not disclosed",
+      "policy_id": "NA-COVER-WORKFORCE-001",
+      "approved_by": "approved_exception_policy"
+    }
+  }
+}

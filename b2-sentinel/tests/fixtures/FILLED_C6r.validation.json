@@ -1,0 +1,274 @@
+{
+  "docx_path": "C:\\Projects\\templates_extracted\\templates\\FILLED_C6r.docx",
+  "form_id": "C6r",
+  "validated_at": "2026-05-25T08:18:45+00:00",
+  "environment_notes": [
+    "Windows + Office 365 64-bit + Acrobat DC + VM mixed PDF/DOCX workflow assumed",
+    "Word merge-cell OOXML treated as fragile; no auto geometry repair"
+  ],
+  "safe_text_patch_only": true,
+  "structure_guard": null,
+  "layout_integrity_warnings": [],
+  "normalization_issues": [
+    {
+      "form_location": "C6r/T4R2C23",
+      "notes": [
+        {
+          "code": "whitespace",
+          "detail": "Collapsed duplicate whitespace safely",
+          "before_preview": "",
+          "after_preview": ""
+        }
+      ]
+    }
+  ],
+  "fingerprint_comparisons": [
+    {
+      "table_index": 0,
+      "status": "missing_expected",
+      "expected_digest": null,
+      "actual_digest": "fe0ee93cd9ca89ae",
+      "expected_headers": null,
+      "actual_headers": [
+        [
+          "EQUIPMENT OWNER’S PERMISSION"
+        ],
+        [
+          "Tank Car or Service Equipment Owner (TCO/SEO) Name",
+          "Date Permission Received",
+          "Written Instructions from TCO/SEO"
+        ],
+        [
+          "UTLX",
+          "3/24/2022",
+          "Facility received written instructions furnished by the OWNER."
+        ]
+      ],
+      "detail": "No fingerprint schema for form 'C6r'; table 0 not validated"
+    },
+    {
+      "table_index": 1,
+      "status": "missing_expected",
+      "expected_digest": null,
+      "actual_digest": "459474f7e3ae7275",
+      "expected_headers": null,
+      "actual_headers": [
+        [
+          "In lieu of physical Modification facility will demonstrate removing and replacing the service equipment and demonstrating the administration process of the modification"
+        ],
+        [
+          "REMOVE & REPLACE in Kind Only"
+        ],
+        [
+          "DESIGN CONTROL"
+        ]
+      ],
+      "detail": "No fingerprint schema for form 'C6r'; table 1 not validated"
+    },
+    {
+      "table_index": 2,
+      "status": "missing_expected",
+      "expected_digest": null,
+      "actual_digest": "4e0a4d5e092c2191",
+      "expected_headers": null,
+      "actual_headers": [
+        [
+          "PROCEDURES"
+        ],
+        [
+          "Procedures Traceable to the PITP",
+          "Procedure ID",
+          "Approved By",
+          "Date Approved",
+          "Revision"
+        ],
+        [
+          "Production, Inspection, and Test",
+          "RES205",
+          "J. Perez",
+          "3/19/2025",
+          "J"
+        ]
+      ],
+      "detail": "No fingerprint schema for form 'C6r'; table 2 not validated"
+    },
+    {
+      "table_index": 3,
+      "status": "missing_expected",
+      "expected_digest": null,
+      "actual_digest": "b1396a14866aed7f",
+      "expected_headers": null,
+      "actual_headers": [
+        [
+          "REMOVE & REPLACE in Kind Only"
+        ],
+        [
+          "Modification herein this requirement refers to an Alteration to the fitting’s arrangement, Not the Tank Car since this activity code only allows for the removal and replacement of tank car service equipment, including gaskets, leakage test."
+        ],
+        [
+          "QUALITY RECORDS AND TEST RECORDS"
+        ]
+      ],
+      "detail": "No fingerprint schema for form 'C6r'; table 3 not validated"
+    },
+    {
+      "table_index": 4,
+      "status": "missing_expected",
+      "expected_digest": null,
+      "actual_digest": "796fa9a373439e17",
+      "expected_headers": null,
+      "actual_headers": [
+        [
+          "Modification herein this requirement refers to an Alteration to the fitting’s arrangement, Not the Tank Car since this activity code only allows for the removal and replacement of tank car service equipment, including gaskets, leakage test."
+        ],
+        [
+          "DESIGN CONTROL"
+        ],
+        [
+          "Car Mark and Number",
+          "Tank Car Design Spec/Stencil Spec",
+          "Type of COC",
+          "AAR Form 4-2 (AAR No.)",
+          "Applicable Arrangement Drawing #"
+        ]
+      ],
+      "detail": "No fingerprint schema for form 'C6r'; table 4 not validated"
+    },
+    {
+      "table_index": 5,
+      "status": "missing_expected",
+      "expected_digest": null,
+      "actual_digest": "b8c96df9c87b1003",
+      "expected_headers": null,
+      "actual_headers": [
+        [
+          "TRACEABILITY, CID, AND MARKING"
+        ],
+        [
+          "MEANS OF TRACEABILITY"
+        ],
+        [
+          "Means for Traceability",
+          "Description of Accomplishing Traceability"
+        ]
+      ],
+      "detail": "No fingerprint schema for form 'C6r'; table 5 not validated"
+    },
+    {
+      "table_index": 6,
+      "status": "missing_expected",
+      "expected_digest": null,
+      "actual_digest": "e50c3c03234592ee",
+      "expected_headers": null,
+      "actual_headers": [
+        [
+          "SERVICE EQUIPMENT QUALIFICATION STENCIL ON TANK CAR (If Applicable)"
+        ],
+        [
+          "PERSONNEL"
+        ],
+        [
+          "Personnel ID",
+          "Function Performed",
+          "Date Received Function Specific Training"
+        ]
+      ],
+      "detail": "No fingerprint schema for form 'C6r'; table 6 not validated"
+    },
+    {
+      "table_index": 7,
+      "status": "missing_expected",
+      "expected_digest": null,
+      "actual_digest": "049f76c9d0291b5e",
+      "expected_headers": null,
+      "actual_headers": [
+        [
+          "FINAL INSPECTION AND LEAKAGE TEST"
+        ],
+        [
+          "PERSONNEL"
+        ],
+        [
+          "Personnel ID",
+          "Function Performed"
+        ]
+      ],
+      "detail": "No fingerprint schema for form 'C6r'; table 7 not validated"
+    },
+    {
+      "table_index": 8,
+      "status": "missing_expected",
+      "expected_digest": null,
+      "actual_digest": "f8a6ec0cfa5798b8",
+      "expected_headers": null,
+      "actual_headers": [
+        [
+          "QUALITY RECORDS AND TEST RECORDS"
+        ],
+        [
+          "Procedures Traceable to the PITP",
+          "Procedure ID",
+          "Approved By",
+          "Date Approved",
+          "Revision"
+        ],
+        [
+          "TCID Procedure",
+          "RES217",
+          "J. Perez",
+          "10/4/2016",
+          "D"
+        ]
+      ],
+      "detail": "No fingerprint schema for form 'C6r'; table 8 not validated"
+    }
+  ],
+  "cell_boundary_issues": [
+    {
+      "form_location": "C6r/T0R14C0",
+      "table_index": 0,
+      "row_index": 14,
+      "column_index": 0,
+      "code": "equipment_cell_overflow",
+      "detail": "Unusually long equipment/calibration cell; check adjacent column spill",
+      "cell_preview": "Modification herein this requirement refers to an Alteration to the fitting's arrangement, Not the Tank Car since this a"
+    }
+  ],
+  "date_format_issues": [],
+  "calibration_anomalies": [],
+  "flagged_only_inconsistencies": [],
+  "typo_fixes_applied": [],
+  "unresolved_conflicts": [],
+  "visual_export_checks": [
+    {
+      "check": "docx_opens",
+      "pass": true,
+      "detail": "python-docx loaded document"
+    },
+    {
+      "check": "has_tables",
+      "pass": true,
+      "detail": "table_count=9"
+    },
+    {
+      "check": "non_empty_paragraphs",
+      "pass": true,
+      "detail": "paragraph_count=19"
+    },
+    {
+      "check": "pdf_export_hint",
+      "pass": true,
+      "detail": "Manual: export PDF in Acrobat/Word and confirm cell alignment visually"
+    }
+  ],
+  "summary": {
+    "fingerprint_drift_tables": 0,
+    "cell_boundary_issues": 1,
+    "date_format_issues": 0,
+    "layout_integrity_warnings": 0,
+    "flagged_only_inconsistencies": 0,
+    "typo_fixes_applied": 0,
+    "unresolved_conflicts": 0,
+    "pass": false
+  }
+}

@@ -1,0 +1,40 @@
+# B2 SENTINEL Configuration
+# The LLM reasons. The deterministic system governs.
+
+cognitive:
+  # Master switch - set to true to enable cognitive reasoning layer
+  enabled: false
+
+  # LLM provider: "null", "openai", "azure", "anthropic"
+  adapter: "null"
+
+  # Model to use (provider-specific)
+  model: "claude-haiku-4-5"
+
+  # Environment variable containing the API key
+  api_key_env: "ANTHROPIC_API_KEY"
+
+  # For Azure OpenAI: set adapter to "azure" and provide:
+  # api_base_url: "https://your-resource.openai.azure.com/"
+  # model: "your-deployment-name"  (the deployment, not the model family)
+  # azure_api_version: "2024-08-01-preview"
+  #
+  # For vanilla OpenAI with a proxy:
+  # api_base_url: "https://your-proxy.example.com/v1/"
+
+  # Generation parameters
+  max_tokens: 4096
+  temperature: 0.1
+
+  # Component switches (each can be independently disabled)
+  evidence_hunter_enabled: false   # 176 chunks = 176 API calls; disable for fast iteration
+  ambiguity_judge_enabled: true
+  alias_resolver_enabled: true
+  synthesizer_enabled: false       # Depends on evidence_hunter output
+  self_critique_enabled: false     # Enable after core flow validated
+
+  # Thresholds
+  ambiguity_threshold: 0.75         # Below this, escalate to LLM judge (expanded from 0.6)
+  alias_promotion_auto_max: 2       # Max tier for auto-use (1=static, 2=inferred, 3=proposed)
+  synthesis_min_fragments: 2        # Minimum fragments before synthesis is attempted
+  critique_severity_fail_threshold: "error"  # Findings at this level block completion

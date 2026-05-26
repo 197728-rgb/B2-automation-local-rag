@@ -22,6 +22,10 @@ local OCR/text extraction
 
 DocuPipe is not part of the normal workflow. Keep `docupipe_client.py` only for optional scripted extraction tests or experiments.
 
+## Autonomous mode (`b2 run-autonomous`)
+
+SPEC-1 end-to-end pipeline uses `machine_field_map.v1` as write authority (not approval maps). No `review.json` / `review.md` in autonomous runs. **Canonical ops doc:** `docs/SPEC-1-LOCAL-MVP.md`. **Full personal spec:** `docs/SPEC-1-PERSONAL.md`. Code: `src/b2_automation/autonomous_pipeline.py`, `tools/autonomous-audit-pipeline/`.
+
 ## First-class form scope
 
 Treat these forms equally:

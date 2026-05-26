@@ -1,0 +1,349 @@
+{
+  "description": "Governed directional aliases for the B2 SENTINEL Alias Brain. Each alias has a direction so we never use a write_bridge alias as a read-only lookup.",
+  "rules": [
+    {
+      "from": "car_number",
+      "to": "car.mark",
+      "direction": "write_bridge",
+      "forms": ["B81", "B89", "B90", "B24_RL2"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "car_mark",
+      "to": "car.mark",
+      "direction": "write_bridge",
+      "forms": ["B81", "B89", "B90", "B24_RL2"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "tank_car_number",
+      "to": "car.mark",
+      "direction": "write_bridge",
+      "forms": ["B81", "B89", "B90", "B24_RL2"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "tank_design_spec",
+      "to": "car.design_spec",
+      "direction": "write_bridge",
+      "forms": ["B81", "B89", "B90", "B24_RL2"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "tankcardesignspec",
+      "to": "car.design_spec",
+      "direction": "write_bridge",
+      "forms": ["B81", "B89", "B90", "B24_RL2"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "tank car design spec",
+      "to": "car.design_spec",
+      "direction": "write_bridge",
+      "forms": ["B81", "B89", "B90", "B24_RL2"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "stencil_spec",
+      "to": "car.design_spec",
+      "direction": "write_bridge",
+      "forms": ["B81", "B89", "B90", "B24_RL2"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "aar_form_4_2_number",
+      "to": "aar.form_4_2.number",
+      "direction": "write_bridge",
+      "forms": ["B81", "B89", "B90", "B24_RL2"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "aar_no",
+      "to": "aar.form_4_2.number",
+      "direction": "write_bridge",
+      "forms": ["B81", "B89", "B90", "B24_RL2"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "tco_written_instructions",
+      "to": "tco.instructions",
+      "direction": "write_bridge",
+      "forms": ["B81", "B89", "B90", "B24_RL2"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "written_instructions_from_tco",
+      "to": "tco.instructions",
+      "direction": "write_bridge",
+      "forms": ["B81", "B89", "B90", "B24_RL2"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "tco_permission_date",
+      "to": "tco.permission_date",
+      "direction": "write_bridge",
+      "forms": ["B81", "B89", "B90", "B24_RL2"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "facility_name",
+      "to": "tco.name",
+      "direction": "read_only",
+      "forms": [],
+      "risk": "medium",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "station_stencil",
+      "to": "station_stencil_code",
+      "direction": "write_bridge",
+      "forms": ["Cover_Page"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "qa_code",
+      "to": "station_stencil_code",
+      "direction": "write_bridge",
+      "forms": ["Cover_Page"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "pitp_id",
+      "to": "pitp.id",
+      "direction": "write_bridge",
+      "forms": ["B89", "B81", "B90", "B24_RL2"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "inspection_test_plan",
+      "to": "pitp.id",
+      "direction": "write_bridge",
+      "forms": ["B89", "B81", "B90", "B24_RL2"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "procedure_id",
+      "to": "pitp.id",
+      "direction": "write_bridge",
+      "forms": ["B89", "B81", "B90", "B24_RL2"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "safety_system",
+      "to": "safety_system.type",
+      "direction": "write_bridge",
+      "forms": ["B89", "B81", "B90"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "tankcarownername",
+      "to": "tco.name",
+      "direction": "write_bridge",
+      "forms": ["B81", "B89", "B90", "B24_RL2"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "tank car owner name",
+      "to": "tco.name",
+      "direction": "write_bridge",
+      "forms": ["B81", "B89", "B90", "B24_RL2"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "tank car owner",
+      "to": "tco.name",
+      "direction": "write_bridge",
+      "forms": ["B81", "B89", "B90", "B24_RL2"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "owner name",
+      "to": "tco.name",
+      "direction": "write_bridge",
+      "forms": ["B81", "B89", "B90", "B24_RL2"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "equipment owner",
+      "to": "tco.name",
+      "direction": "write_bridge",
+      "forms": ["B81", "B89", "B90", "B24_RL2"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "datepermissionreceived",
+      "to": "tco.permission_date",
+      "direction": "write_bridge",
+      "forms": ["B81", "B89", "B90", "B24_RL2"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "date permission received",
+      "to": "tco.permission_date",
+      "direction": "write_bridge",
+      "forms": ["B81", "B89", "B90", "B24_RL2"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "writteninstructionsfromtco",
+      "to": "tco.instructions",
+      "direction": "write_bridge",
+      "forms": ["B81", "B89", "B90", "B24_RL2"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "written instructions from tco",
+      "to": "tco.instructions",
+      "direction": "write_bridge",
+      "forms": ["B81", "B89", "B90", "B24_RL2"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "written instructions",
+      "to": "tco.instructions",
+      "direction": "write_bridge",
+      "forms": ["B81", "B89", "B90", "B24_RL2"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "pitp document name",
+      "to": "pitp.name",
+      "direction": "write_bridge",
+      "forms": ["B89", "B81", "B90", "B24_RL2"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "pitpdocumentname",
+      "to": "pitp.name",
+      "direction": "write_bridge",
+      "forms": ["B89", "B81", "B90", "B24_RL2"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "pitp id",
+      "to": "pitp.id",
+      "direction": "write_bridge",
+      "forms": ["B89", "B81", "B90", "B24_RL2"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "pitpid",
+      "to": "pitp.id",
+      "direction": "write_bridge",
+      "forms": ["B89", "B81", "B90", "B24_RL2"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "procedure id",
+      "to": "pitp.id",
+      "direction": "write_bridge",
+      "forms": ["B89", "B81", "B90", "B24_RL2"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "procedure name",
+      "to": "pitp.name",
+      "direction": "write_bridge",
+      "forms": ["B89", "B81", "B90", "B24_RL2"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "aar form42 number",
+      "to": "aar.form_4_2.number",
+      "direction": "write_bridge",
+      "forms": ["B81", "B89", "B90", "B24_RL2"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "aar form number",
+      "to": "aar.form_4_2.number",
+      "direction": "write_bridge",
+      "forms": ["B81", "B89", "B90", "B24_RL2"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "aarformnumber",
+      "to": "aar.form_4_2.number",
+      "direction": "write_bridge",
+      "forms": ["B81", "B89", "B90", "B24_RL2"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "referenceaarformnumber",
+      "to": "aar.form_4_2.number",
+      "direction": "write_bridge",
+      "forms": ["B81", "B89", "B90", "B24_RL2"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "form 4-2 (aar no.)",
+      "to": "aar.form_4_2.number",
+      "direction": "write_bridge",
+      "forms": ["B81", "B89", "B90", "B24_RL2"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "car mark and number",
+      "to": "car.mark",
+      "direction": "write_bridge",
+      "forms": ["B81", "B89", "B90", "B24_RL2"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "patch plate size",
+      "to": "test_fixture.patch_plate.size",
+      "direction": "write_bridge",
+      "forms": ["B89"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    },
+    {
+      "from": "observed size of patch plate",
+      "to": "test_fixture.patch_plate.size",
+      "direction": "write_bridge",
+      "forms": ["B89"],
+      "risk": "low",
+      "authority": "approved_alias_rule"
+    }
+  ]
+}

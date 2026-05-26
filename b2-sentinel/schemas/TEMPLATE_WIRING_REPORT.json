@@ -1,0 +1,253 @@
+{
+  "generated": [
+    "A19",
+    "A19c",
+    "B24_RL1",
+    "B24_RLC",
+    "B78",
+    "B81_A19__B78__B82__B24",
+    "B81_B24_only",
+    "B82",
+    "B85",
+    "B89_Insulation_Inspection_on_Test_Plate",
+    "B89_On_Tank_Car",
+    "B90_RLS",
+    "C10_Repair_of_Interior_Coatings",
+    "C10_Repair_of_Interior_Linings",
+    "C4aC_Closures",
+    "C4aF_Fittings",
+    "C4aI_Instruments",
+    "C4aS_Safety_Relief_Devices",
+    "C4aV_Valves",
+    "C4mC_Closures",
+    "C4mF_Fittings",
+    "C4mH_Heater_Systems_Test_Fixture",
+    "C4mI_Instruments",
+    "C4mS_Safety_Relief_Devices",
+    "C4mV_Valves",
+    "C5C_Closures",
+    "C5F_Fittings",
+    "C5H_Heater_Systems_Test_Fixture",
+    "C5I_Instruments",
+    "C5S_Safety_Relief_Devices_512026",
+    "C5V_Valves_512026",
+    "C6i_Installation_of_Service_Equipment_512026",
+    "C6r_RR_Service_Equipment_with_Modification_512026",
+    "C7_C10_Combination_Coatings",
+    "C7_C10_Combination_Linings",
+    "C7_C8_Combination_Coatings",
+    "C7_C8_Combination_Linings",
+    "C7_C8__C10_Combination_Coatings",
+    "C7_C8__C10_Combination_Linings",
+    "C7_Removal_CoatingsLinings",
+    "C8_Application_of_Interior_Coatings",
+    "C8_Application_of_Interior_Linings",
+    "C9_Qualification_of_Interior_Coatings",
+    "C9_Qualification_of_Interior_Linings"
+  ],
+  "kept": [
+    "B24_RL2",
+    "B81",
+    "B89",
+    "B90",
+    "Cover_Page"
+  ],
+  "templates": {
+    "A19": {
+      "status": "generated_or_updated",
+      "field_count": 769
+    },
+    "A19c": {
+      "status": "generated_or_updated",
+      "field_count": 477
+    },
+    "B24_RL1": {
+      "status": "generated_or_updated",
+      "field_count": 239
+    },
+    "B24_RL2": {
+      "status": "kept_existing",
+      "field_count": 218
+    },
+    "B24_RLC": {
+      "status": "generated_or_updated",
+      "field_count": 256
+    },
+    "B78": {
+      "status": "generated_or_updated",
+      "field_count": 314
+    },
+    "B81": {
+      "status": "kept_existing",
+      "field_count": 110
+    },
+    "B81_A19__B78__B82__B24": {
+      "status": "generated_or_updated",
+      "field_count": 178
+    },
+    "B81_B24_only": {
+      "status": "generated_or_updated",
+      "field_count": 110
+    },
+    "B82": {
+      "status": "generated_or_updated",
+      "field_count": 667
+    },
+    "B85": {
+      "status": "generated_or_updated",
+      "field_count": 125
+    },
+    "B89": {
+      "status": "kept_existing",
+      "field_count": 140
+    },
+    "B89_Insulation_Inspection_on_Test_Plate": {
+      "status": "generated_or_updated",
+      "field_count": 166
+    },
+    "B89_On_Tank_Car": {
+      "status": "generated_or_updated",
+      "field_count": 164
+    },
+    "B90": {
+      "status": "kept_existing",
+      "field_count": 142
+    },
+    "B90_RLS": {
+      "status": "generated_or_updated",
+      "field_count": 157
+    },
+    "C10_Repair_of_Interior_Coatings": {
+      "status": "generated_or_updated",
+      "field_count": 223
+    },
+    "C10_Repair_of_Interior_Linings": {
+      "status": "generated_or_updated",
+      "field_count": 223
+    },
+    "C4aC_Closures": {
+      "status": "generated_or_updated",
+      "field_count": 142
+    },
+    "C4aF_Fittings": {
+      "status": "generated_or_updated",
+      "field_count": 142
+    },
+    "C4aI_Instruments": {
+      "status": "generated_or_updated",
+      "field_count": 159
+    },
+    "C4aS_Safety_Relief_Devices": {
+      "status": "generated_or_updated",
+      "field_count": 189
+    },
+    "C4aV_Valves": {
+      "status": "generated_or_updated",
+      "field_count": 178
+    },
+    "C4mC_Closures": {
+      "status": "generated_or_updated",
+      "field_count": 238
+    },
+    "C4mF_Fittings": {
+      "status": "generated_or_updated",
+      "field_count": 238
+    },
+    "C4mH_Heater_Systems_Test_Fixture": {
+      "status": "generated_or_updated",
+      "field_count": 205
+    },
+    "C4mI_Instruments": {
+      "status": "generated_or_updated",
+      "field_count": 249
+    },
+    "C4mS_Safety_Relief_Devices": {
+      "status": "generated_or_updated",
+      "field_count": 260
+    },
+    "C4mV_Valves": {
+      "status": "generated_or_updated",
+      "field_count": 252
+    },
+    "C5C_Closures": {
+      "status": "generated_or_updated",
+      "field_count": 239
+    },
+    "C5F_Fittings": {
+      "status": "generated_or_updated",
+      "field_count": 241
+    },
+    "C5H_Heater_Systems_Test_Fixture": {
+      "status": "generated_or_updated",
+      "field_count": 212
+    },
+    "C5I_Instruments": {
+      "status": "generated_or_updated",
+      "field_count": 242
+    },
+    "C5S_Safety_Relief_Devices_512026": {
+      "status": "generated_or_updated",
+      "field_count": 296
+    },
+    "C5V_Valves_512026": {
+      "status": "generated_or_updated",
+      "field_count": 245
+    },
+    "C6i_Installation_of_Service_Equipment_512026": {
+      "status": "generated_or_updated",
+      "field_count": 161
+    },
+    "C6r_RR_Service_Equipment_with_Modification_512026": {
+      "status": "generated_or_updated",
+      "field_count": 231
+    },
+    "C7_C10_Combination_Coatings": {
+      "status": "generated_or_updated",
+      "field_count": 253
+    },
+    "C7_C10_Combination_Linings": {
+      "status": "generated_or_updated",
+      "field_count": 269
+    },
+    "C7_C8_Combination_Coatings": {
+      "status": "generated_or_updated",
+      "field_count": 268
+    },
+    "C7_C8_Combination_Linings": {
+      "status": "generated_or_updated",
+      "field_count": 299
+    },
+    "C7_C8__C10_Combination_Coatings": {
+      "status": "generated_or_updated",
+      "field_count": 366
+    },
+    "C7_C8__C10_Combination_Linings": {
+      "status": "generated_or_updated",
+      "field_count": 393
+    },
+    "C7_Removal_CoatingsLinings": {
+      "status": "generated_or_updated",
+      "field_count": 123
+    },
+    "C8_Application_of_Interior_Coatings": {
+      "status": "generated_or_updated",
+      "field_count": 242
+    },
+    "C8_Application_of_Interior_Linings": {
+      "status": "generated_or_updated",
+      "field_count": 263
+    },
+    "C9_Qualification_of_Interior_Coatings": {
+      "status": "generated_or_updated",
+      "field_count": 135
+    },
+    "C9_Qualification_of_Interior_Linings": {
+      "status": "generated_or_updated",
+      "field_count": 160
+    },
+    "Cover_Page": {
+      "status": "kept_existing",
+      "field_count": 141
+    }
+  }
+}

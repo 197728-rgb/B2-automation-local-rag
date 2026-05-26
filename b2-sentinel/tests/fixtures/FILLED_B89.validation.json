@@ -1,0 +1,225 @@
+{
+  "docx_path": "C:\\Projects\\templates_extracted\\templates\\FILLED_B89 (Insulation Inspection on Test Plate).docx",
+  "form_id": "B89",
+  "validated_at": "2026-05-25T08:18:28+00:00",
+  "environment_notes": [
+    "Windows + Office 365 64-bit + Acrobat DC + VM mixed PDF/DOCX workflow assumed",
+    "Word merge-cell OOXML treated as fragile; no auto geometry repair"
+  ],
+  "safe_text_patch_only": true,
+  "structure_guard": null,
+  "layout_integrity_warnings": [],
+  "normalization_issues": [
+    {
+      "form_location": "B89/T5R1C4",
+      "notes": [
+        {
+          "code": "whitespace",
+          "detail": "Collapsed duplicate whitespace safely",
+          "before_preview": "",
+          "after_preview": ""
+        }
+      ]
+    }
+  ],
+  "fingerprint_comparisons": [
+    {
+      "table_index": 0,
+      "status": "missing_expected",
+      "expected_digest": null,
+      "actual_digest": "e32d1f1d7c3cb8b1",
+      "expected_headers": null,
+      "actual_headers": [
+        [
+          "Car Owner’s Permission"
+        ],
+        [
+          "Tank Car Owner (TCO) Name",
+          "Date Permission Received from TCO",
+          "Written Instructions from TCO"
+        ],
+        [
+          "UTLX",
+          "1/13/2021",
+          "Facility received written instructions furnished by the OWNER."
+        ]
+      ],
+      "detail": "No fingerprint schema for form 'B89'; table 0 not validated"
+    },
+    {
+      "table_index": 1,
+      "status": "missing_expected",
+      "expected_digest": null,
+      "actual_digest": "e3acbdf8b8801525",
+      "expected_headers": null,
+      "actual_headers": [
+        [
+          "PERSONNEL"
+        ],
+        [
+          "Personnel ID",
+          "Function Performed"
+        ],
+        [
+          "M. Marquez",
+          "Insulation Inspection"
+        ]
+      ],
+      "detail": "No fingerprint schema for form 'B89'; table 1 not validated"
+    },
+    {
+      "table_index": 2,
+      "status": "missing_expected",
+      "expected_digest": null,
+      "actual_digest": "b10a3bef2dc299ac",
+      "expected_headers": null,
+      "actual_headers": [
+        [
+          "AWS/D15.1 Inspection Cirteria"
+        ]
+      ],
+      "detail": "No fingerprint schema for form 'B89'; table 2 not validated"
+    },
+    {
+      "table_index": 3,
+      "status": "missing_expected",
+      "expected_digest": null,
+      "actual_digest": "347d5013dc54ce09",
+      "expected_headers": null,
+      "actual_headers": [
+        [
+          "PERSONNEL"
+        ],
+        [
+          "Personnel ID",
+          "Function Performed",
+          "Date Received Function Specific Training"
+        ],
+        [
+          "M. Marquez",
+          "AWS D15.1 Weld Inspection",
+          "6/10/2025"
+        ]
+      ],
+      "detail": "No fingerprint schema for form 'B89'; table 3 not validated"
+    },
+    {
+      "table_index": 4,
+      "status": "missing_expected",
+      "expected_digest": null,
+      "actual_digest": "ff4560d09f1d286b",
+      "expected_headers": null,
+      "actual_headers": [
+        [
+          "Performance Qualification Record (PQR)",
+          "Procedure ID",
+          "NDT Tech ID that Performed PQR",
+          "NDT Level III Approver",
+          "Date Approved",
+          "Rev."
+        ],
+        [
+          "",
+          "QPS 2.15.6.3",
+          "M. Marquez",
+          "J. Riggs",
+          "6/17/2024",
+          "D"
+        ]
+      ],
+      "detail": "No fingerprint schema for form 'B89'; table 4 not validated"
+    },
+    {
+      "table_index": 5,
+      "status": "missing_expected",
+      "expected_digest": null,
+      "actual_digest": "02af3ba72e71a7c4",
+      "expected_headers": null,
+      "actual_headers": [
+        [
+          "NDT EQUIPMENT"
+        ],
+        [
+          "NDT Equipment",
+          "ID",
+          "Function Performed",
+          "Calibration Date or In-Service Date",
+          "Calibration Due"
+        ],
+        [
+          "Fillet Weld Gauge",
+          "152FW3",
+          "Weld Gauge",
+          "11/27/2023",
+          "11/27/2026"
+        ]
+      ],
+      "detail": "No fingerprint schema for form 'B89'; table 5 not validated"
+    },
+    {
+      "table_index": 6,
+      "status": "missing_expected",
+      "expected_digest": null,
+      "actual_digest": "28b65310036b7699",
+      "expected_headers": null,
+      "actual_headers": [
+        [
+          "QUALITY RECORDS AND TEST RECORDS"
+        ],
+        [
+          "Procedures Traceable to the PITP",
+          "Procedure ID",
+          "Approved By",
+          "Date Approved",
+          "Rev."
+        ],
+        [
+          "TCID Procedure",
+          "RES217",
+          "J. Perez",
+          "10/4/2016",
+          "D"
+        ]
+      ],
+      "detail": "No fingerprint schema for form 'B89'; table 6 not validated"
+    }
+  ],
+  "cell_boundary_issues": [],
+  "date_format_issues": [],
+  "calibration_anomalies": [],
+  "flagged_only_inconsistencies": [],
+  "typo_fixes_applied": [],
+  "unresolved_conflicts": [],
+  "visual_export_checks": [
+    {
+      "check": "docx_opens",
+      "pass": true,
+      "detail": "python-docx loaded document"
+    },
+    {
+      "check": "has_tables",
+      "pass": true,
+      "detail": "table_count=7"
+    },
+    {
+      "check": "non_empty_paragraphs",
+      "pass": true,
+      "detail": "paragraph_count=15"
+    },
+    {
+      "check": "pdf_export_hint",
+      "pass": true,
+      "detail": "Manual: export PDF in Acrobat/Word and confirm cell alignment visually"
+    }
+  ],
+  "summary": {
+    "fingerprint_drift_tables": 0,
+    "cell_boundary_issues": 0,
+    "date_format_issues": 0,
+    "layout_integrity_warnings": 0,
+    "flagged_only_inconsistencies": 0,
+    "typo_fixes_applied": 0,
+    "unresolved_conflicts": 0,
+    "pass": true
+  }
+}
