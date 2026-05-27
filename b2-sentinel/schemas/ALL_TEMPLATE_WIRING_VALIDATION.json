@@ -199,22 +199,22 @@
       "errors": []
     },
     {
-      "form_id": "C7_C8_Combination_Coatings",
-      "status": "OK",
-      "errors": []
-    },
-    {
-      "form_id": "C7_C8_Combination_Linings",
-      "status": "OK",
-      "errors": []
-    },
-    {
       "form_id": "C7_C8__C10_Combination_Coatings",
       "status": "OK",
       "errors": []
     },
     {
       "form_id": "C7_C8__C10_Combination_Linings",
+      "status": "OK",
+      "errors": []
+    },
+    {
+      "form_id": "C7_C8_Combination_Coatings",
+      "status": "OK",
+      "errors": []
+    },
+    {
+      "form_id": "C7_C8_Combination_Linings",
       "status": "OK",
       "errors": []
     },

@@ -5,10 +5,16 @@ __pycache__/
 .venv/
 .env
 .env.*
-*API Key*.txt
 .pytest_cache/
+.pytest-tmp/
 .coverage
 htmlcov/
 outputs/
+logs/
+errors/
+outbox/
+inbox/
 *.zip
-!b2-sentinel-v1.zip
+*API Key*.txt
+extract_diagnostic.py
+verify_extraction.py

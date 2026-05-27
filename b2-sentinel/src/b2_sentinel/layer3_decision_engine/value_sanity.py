@@ -32,6 +32,11 @@ _SENTENCE_INDICATORS = re.compile(
     r"\b(paragraph|section|shall|must|required|pursuant|accordance|"
     r"demonstration|regarding|appendix)\b", re.I
 )
+_EMBEDDED_LABEL_RE = re.compile(r"\b\d+\.\s+[A-Za-z][A-Za-z0-9 /#&().\-]{2,60}:\s*")
+_DATE_VALUE_RE = re.compile(
+    r"^\s*(?:\d{1,2}/\d{1,2}/\d{2,4}|\d{4}-\d{2}-\d{2})(?:\s+\d{1,2}:\d{2}(?:\s*[AP]M)?)?\s*$",
+    re.I,
+)
 
 
 def is_value_plausible(field_id: str, value: str) -> bool:
@@ -44,12 +49,14 @@ def is_value_plausible(field_id: str, value: str) -> bool:
         return True
 
     vlen = len(value)
+    if _EMBEDDED_LABEL_RE.search(value):
+        return False
 
     if _DATE_FIELDS.search(field_id):
-        return vlen <= _MAX_SHORT_STRING
+        return vlen <= _MAX_SHORT_STRING and bool(_DATE_VALUE_RE.match(value))
 
     if _NUMERIC_FIELDS.search(field_id):
-        return vlen <= _MAX_SHORT_STRING
+        return vlen <= _MAX_SHORT_STRING and bool(re.search(r"\d", value))
 
     if _ID_FIELDS.search(field_id):
         return vlen <= _MAX_SHORT_STRING

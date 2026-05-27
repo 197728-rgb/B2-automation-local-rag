@@ -86,6 +86,19 @@ class TestDecisionMatrix:
         result = decide_field(node, evidence, n_a_approved=False)
         assert result.state == DecisionState.LOW_CONFIDENCE
 
+    def test_optional_weak_evidence_is_left_blank(self):
+        node = _node(required=False)
+        evidence = _evidence(decision="weak", confidence=0.35)
+        result = decide_field(node, evidence, n_a_approved=False)
+        assert result.state == DecisionState.OPTIONAL_BLANK
+
+    def test_optional_implausible_evidence_is_left_blank(self):
+        node = _node(required=False)
+        node.field_id = "if_electronic_means_were_observed_tank_car_owner_name_and_date_sent"
+        evidence = _evidence(decision="usable", confidence=0.9, candidate_value="CIT")
+        result = decide_field(node, evidence, n_a_approved=False)
+        assert result.state == DecisionState.OPTIONAL_BLANK
+
     def test_conflict_when_multiple_values(self):
         node = _node(required=True)
         evidence = _evidence(decision="conflict", confidence=0.8)

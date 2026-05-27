@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import fnmatch
 import json
+import re
 from functools import lru_cache
 from typing import Any
 
@@ -35,6 +36,8 @@ def promotes_required(form_id: str, field_id: str, label: str) -> bool:
         if not _matches_form(rule, form):
             continue
         if _matches_any(field, label_norm, rule.get("optional_field_id_patterns", [])):
+            continue
+        if _is_unqualified_generated_duplicate(field):
             continue
         if _matches_any(field, label_norm, rule.get("required_field_id_patterns", [])):
             return True
@@ -63,3 +66,12 @@ def _matches_any(field: str, label_norm: str, patterns: list[str]) -> bool:
 
 def _norm(value: str) -> str:
     return "_".join(value.strip().lower().replace("/", " ").replace("-", " ").split())
+
+
+def _is_unqualified_generated_duplicate(field_id: str) -> bool:
+    """Generated maps suffix repeated labels without adding section context.
+
+    Until a duplicate row has explicit semantic identity, the base field carries
+    the required obligation and suffixed clones remain optional.
+    """
+    return bool(re.search(r"_\d+$", field_id))

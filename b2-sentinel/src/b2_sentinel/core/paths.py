@@ -30,7 +30,11 @@ CONTRACTS_DIR: Path = SCHEMAS_DIR / "contracts"
 
 INBOX_DIR: Path = REPO_ROOT / "inbox"
 PRIOR_PACKET_DIR: Path = INBOX_DIR / "prior_b2_packet"
-OUTPUTS_DIR: Path = REPO_ROOT / "outputs"
+OUTBOX_DIR: Path = REPO_ROOT / "outbox"
+LOGS_DIR: Path = REPO_ROOT / "logs"
+ERRORS_DIR: Path = REPO_ROOT / "errors"
+# Backward-compatible alias: internal audit artifacts now live in logs/.
+OUTPUTS_DIR: Path = LOGS_DIR
 
 def discover_template_forms() -> tuple[str, ...]:
     """Return every DOCX template stem, sorted.

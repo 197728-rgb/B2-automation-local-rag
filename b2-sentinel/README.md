@@ -9,7 +9,7 @@ pip install -r requirements.txt
 python run.py
 ```
 
-That's it. The system processes all 5 active forms against `inbox/`, writes filled DOCX and audit artifacts to `outputs/<timestamp>/`.
+That's it. The system processes the wired forms against `inbox/`. Final handoff PDFs go to `outbox/`. Internal DOCX/JSON/MD audit artifacts go to `logs/<timestamp>/`. Runtime failures go to `errors/<timestamp>/`.
 
 ### Target a single form
 
@@ -99,6 +99,8 @@ python run.py judge outputs/<run_id>/B89
 
 ## Cognitive Layer Boundary
 
+The controlling governance baseline is documented in [GOVERNANCE.md](GOVERNANCE.md).
+
 LLMs may:
 
 - interpret evidence meaning
@@ -132,9 +134,27 @@ This is the core promise:
 
 ---
 
-## Output Artifacts
+## Output Contract
 
-Each run produces `outputs/<run_id>/<form_id>/` (15 artifacts per form) plus a top-level `run_manifest.json`:
+`outbox/` is the only handoff folder. It contains final filled B-2 PDFs only. No JSON, Markdown, DOCX, debug files, or logs are allowed in `outbox/`.
+
+```text
+outbox/
+    B89_filled.pdf
+    B90_filled.pdf
+    B2_COMPLETE_PACKET.pdf   # only when every selected package form succeeds and Cover_Page is included
+```
+
+Rules:
+
+- Successful forms are exported as `<form>_filled.pdf`.
+- Failed, blocked, low-confidence, conflict, or runtime-error forms are not published to `outbox/`.
+- If every selected form succeeds and `Cover_Page` is included, `B2_COMPLETE_PACKET.pdf` is merged with `Cover_Page` first, then the selected forms in run order.
+- `outbox/` is cleared at the start of every run to prevent stale handoff files.
+
+## Logs and Internal Artifacts
+
+Each run produces `logs/<run_id>/<form_id>/` (15 artifacts per form) plus a top-level `run_manifest.json`:
 
 | File | Description |
 |---|---|
@@ -153,7 +173,7 @@ Each run produces `outputs/<run_id>/<form_id>/` (15 artifacts per form) plus a t
 | `rollover_decisions.json` | Prior-value reuse classifications |
 | `run_delta.json` | Progress vs previous run |
 
-Top-level: `outputs/<run_id>/run_manifest.json` — all form statuses + artifact paths.
+Top-level: `logs/<run_id>/run_manifest.json` — all form statuses + artifact paths. Runtime failures are written to `errors/<run_id>/<form_id>/error.json`.
 
 ---
 
@@ -219,7 +239,9 @@ b2-sentinel/
 ├── templates/             # Blank DOCX forms
 ├── schemas/               # Approval maps, alias rules, N/A policy
 ├── inbox/                 # Evidence files (PDFs, JSONs)
-├── outputs/               # Generated at runtime
+├── outbox/                # Final handoff PDFs only
+├── logs/                  # Internal audit artifacts generated at runtime
+├── errors/                # Runtime failures only
 └── tests/                 # pytest suite
 ```
 
@@ -240,3 +262,4 @@ pytest -q
 - Dependencies: pydantic, lxml, pdfplumber, PyMuPDF, python-docx, scikit-learn, click, rich, jsonschema
 
 All specified in `requirements.txt` with pinned versions.
+

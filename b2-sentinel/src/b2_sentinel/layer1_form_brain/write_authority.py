@@ -16,6 +16,25 @@ class UnauthorizedMapError(Exception):
     pass
 
 
+class UnsupportedFormError(ValueError):
+    """Raised when a requested form id is not exactly wired."""
+
+    def __init__(self, unsupported: list[str], suggestions: dict[str, str]):
+        self.unsupported = unsupported
+        self.suggestions = suggestions
+        detail = ", ".join(unsupported)
+        lines = [
+            f"Unsupported form id(s): {detail}.",
+            "Use exact form ids from `b2-sentinel discover`; nearest/latest/similar fallbacks are disabled.",
+        ]
+        if suggestions:
+            rendered = ", ".join(
+                f"{source} -> {target}" for source, target in suggestions.items()
+            )
+            lines.append(f"Suggestions: {rendered}.")
+        super().__init__(" ".join(lines))
+
+
 _FORBIDDEN_SUFFIXES = ("_latest", "_similar", "_nearest", "_generic")
 
 
@@ -73,6 +92,36 @@ def _verify_no_duplicate_coordinates(am: ApprovalMap) -> None:
 
 def list_available_forms() -> list[str]:
     return sorted(p.stem for p in MAPS_DIR.glob("*.json") if not p.name.endswith(".approval_map.json"))
+
+
+def validate_supported_forms(form_ids: list[str] | tuple[str, ...]) -> list[str]:
+    """Validate selected forms before a run starts.
+
+    The writer only accepts exact form ids. This helper exists so the CLI can
+    fail before creating partial run outputs for unsupported short codes.
+    """
+    available = list_available_forms()
+    available_set = set(available)
+    unsupported = [form_id for form_id in form_ids if form_id not in available_set]
+    if unsupported:
+        suggestions = {
+            form_id: suggestion
+            for form_id in unsupported
+            if (suggestion := _suggest_form_id(form_id, available))
+        }
+        raise UnsupportedFormError(unsupported, suggestions)
+    return list(form_ids)
+
+
+def _suggest_form_id(form_id: str, available: list[str]) -> str | None:
+    requested = form_id.casefold()
+    for candidate in available:
+        if candidate.casefold() == requested:
+            return candidate
+    for candidate in available:
+        if candidate.casefold().startswith(f"{requested}_"):
+            return candidate
+    return None
 
 
 def write_authority_matrix(am: ApprovalMap) -> dict[str, dict[str, object]]:

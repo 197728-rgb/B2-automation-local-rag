@@ -24,14 +24,21 @@ from .core.paths import (
     ACTIVE_FORMS,
     INBOX_DIR,
     OUTPUTS_DIR,
+    OUTBOX_DIR,
+    ERRORS_DIR,
     PRIOR_PACKET_DIR,
     REPO_ROOT,
     form_map_path,
     form_template_path,
 )
 from .core.status import FinalStatus
-from .layer1_form_brain.write_authority import list_available_forms
+from .layer1_form_brain.write_authority import (
+    UnsupportedFormError,
+    list_available_forms,
+    validate_supported_forms,
+)
 from .layer8_audit_packet.run_manifest import make_manifest, write_manifest
+from .layer8_audit_packet.outbox import export_docx_to_pdf, merge_pdfs, reset_outbox, write_error_artifact
 from .pipeline import run_form
 
 console = Console()
@@ -67,7 +74,12 @@ def cli(ctx: click.Context, forms: tuple[str, ...], inbox: Path | None, output: 
 @click.option("--output", "output", type=click.Path(path_type=Path), default=None)
 @click.option("--cognitive/--no-cognitive", "cognitive_flag", default=None, help="Enable/disable cognitive layer (overrides config).")
 def run(forms: tuple[str, ...], inbox: Path | None, output: Path | None, cognitive_flag: bool | None) -> None:
-    """Run the SENTINEL pipeline against the inbox."""
+    """Run the SENTINEL pipeline against the inbox.
+
+    Final handoff files go to ./outbox as PDF only. Internal JSON/MD/DOCX
+    artifacts go to ./logs/<run_id> or the --output directory. Runtime
+    failures go to ./errors/<run_id>.
+    """
     if cognitive_flag is not None:
         config = get_cognitive_config()
         config.enabled = cognitive_flag
@@ -80,6 +92,12 @@ def run(forms: tuple[str, ...], inbox: Path | None, output: Path | None, cogniti
     inbox = inbox or INBOX_DIR
     output = output or OUTPUTS_DIR
     selected: list[str] = list(forms) if forms else list(ACTIVE_FORMS)
+    try:
+        selected = validate_supported_forms(selected)
+    except UnsupportedFormError as exc:
+        raise click.UsageError(str(exc)) from exc
+
+    reset_outbox(OUTBOX_DIR)
 
     run_id = datetime.now().strftime("%Y%m%d_%H%M%S")
     started = datetime.now()
@@ -98,6 +116,7 @@ def run(forms: tuple[str, ...], inbox: Path | None, output: Path | None, cogniti
         except Exception as exc:  # noqa: BLE001
             message = f"{type(exc).__name__}: {exc}"
             console.print(f"[red]ERROR[/red] running {form_id}: {message}")
+            write_error_artifact(ERRORS_DIR, run_id, form_id, message)
             artifacts_by_form[form_id] = []
             final_statuses[form_id] = FinalStatus.FAILED_RUNTIME_ERROR
             errors[form_id] = message
@@ -107,6 +126,12 @@ def run(forms: tuple[str, ...], inbox: Path | None, output: Path | None, cogniti
         final_statuses[form_id] = result.final_status
         emoji = "[green]OK[/green]" if result.overall_passed else "[red]X[/red]"
         console.print(f"  {emoji} {form_id} -> {result.final_status.value} ({result.out_dir})")
+
+    publish_errors = _publish_outbox_pdfs(selected, results, OUTBOX_DIR)
+    for form_id, message in publish_errors.items():
+        console.print(f"[red]PDF EXPORT ERROR[/red] {form_id}: {message}")
+        write_error_artifact(ERRORS_DIR, run_id, form_id, message)
+        errors[f"{form_id}:pdf_export"] = message
 
     finished = datetime.now()
     manifest = make_manifest(
@@ -118,23 +143,7 @@ def run(forms: tuple[str, ...], inbox: Path | None, output: Path | None, cogniti
         final_statuses=final_statuses,
         errors=errors,
     )
-    run_dir = output / run_id
-    write_manifest(manifest, run_dir / "run_manifest.json")
-
-    # Cross-form consistency check (packet-level intelligence)
-    if len(results) >= 2:
-        from .ontology.builder import load_ontology
-        from .ontology.consistency import check_packet_consistency, write_consistency_report
-        ontology = load_ontology()
-        consistency = check_packet_consistency(ontology, run_dir, selected)
-        write_consistency_report(consistency, run_dir / "cross_form_consistency.json")
-        if not consistency.passed:
-            console.print(
-                f"\n[bold yellow]CROSS-FORM CONSISTENCY:[/bold yellow] "
-                f"{len(consistency.violations)} violation(s) detected"
-            )
-            for v in consistency.violations[:5]:
-                console.print(f"  [red]{v.canonical_id}[/red]: {v.message}")
+    write_manifest(manifest, output / run_id / "run_manifest.json")
 
     _summary_table(results)
     if errors:
@@ -143,6 +152,46 @@ def run(forms: tuple[str, ...], inbox: Path | None, output: Path | None, cogniti
             console.print(f"  - {form_id}: {message}")
     if errors or len(results) != len(selected) or not all(r.overall_passed for r in results):
         sys.exit(2)
+
+
+def _publish_outbox_pdfs(selected: list[str], results, outbox_dir: Path) -> dict[str, str]:
+    """Publish final successful filled B-2s to outbox as PDFs only.
+
+    If every selected form succeeds and Cover_Page is included, also create a
+    combined packet PDF with Cover_Page first. JSON/MD/DOCX artifacts remain in
+    logs, never in outbox.
+    """
+    errors: dict[str, str] = {}
+    pdf_by_form: dict[str, Path] = {}
+    result_by_form = {r.form_id: r for r in results}
+
+    for result in results:
+        if not result.overall_passed:
+            continue
+        filled_docx = result.out_dir / f"{result.form_id}_filled.docx"
+        if not filled_docx.exists():
+            continue
+        pdf_path = outbox_dir / f"{result.form_id}_filled.pdf"
+        try:
+            export_docx_to_pdf(filled_docx, pdf_path)
+            pdf_by_form[result.form_id] = pdf_path
+        except Exception as exc:  # noqa: BLE001
+            errors[result.form_id] = f"{type(exc).__name__}: {exc}"
+
+    all_selected_succeeded = (
+        len(result_by_form) == len(selected)
+        and all(result_by_form[f].overall_passed for f in selected if f in result_by_form)
+    )
+    if all_selected_succeeded and "Cover_Page" in selected and "Cover_Page" in pdf_by_form:
+        ordered_forms = ["Cover_Page", *[f for f in selected if f != "Cover_Page"]]
+        ordered_pdfs = [pdf_by_form[f] for f in ordered_forms if f in pdf_by_form]
+        if len(ordered_pdfs) == len(selected):
+            try:
+                merge_pdfs(ordered_pdfs, outbox_dir / "B2_COMPLETE_PACKET.pdf")
+            except Exception as exc:  # noqa: BLE001
+                errors["B2_COMPLETE_PACKET"] = f"{type(exc).__name__}: {exc}"
+
+    return errors
 
 
 def _summary_table(results) -> None:
@@ -263,46 +312,6 @@ def rollover_cmd(form_id: str, inbox: Path | None) -> None:
     for e in entries:
         table.add_row(e.field_id, e.old_value or "-", e.new_candidate or "-", e.rollover_decision.value, e.reason)
     console.print(table)
-
-
-@cli.command("ontology")
-@click.option("--rebuild", is_flag=True, help="Force rebuild from approval maps.")
-@click.option("--stats", is_flag=True, help="Show ontology statistics.")
-def ontology_cmd(rebuild: bool, stats: bool) -> None:
-    """Build, inspect, or rebuild the global field ontology."""
-    from .ontology.builder import build_ontology, save_ontology, load_ontology, ONTOLOGY_PATH
-
-    if rebuild or not ONTOLOGY_PATH.exists():
-        ontology = build_ontology()
-        out = save_ontology(ontology)
-        console.print(f"[green]Ontology built:[/green] {out}")
-    else:
-        ontology = load_ontology()
-        console.print(f"[green]Ontology loaded:[/green] {ONTOLOGY_PATH}")
-
-    total = len(ontology.canonical_fields)
-    by_cat: dict[str, int] = {}
-    consistency_required = 0
-    for cf in ontology.canonical_fields.values():
-        by_cat[cf.category] = by_cat.get(cf.category, 0) + 1
-        if cf.cross_form_consistency_required:
-            consistency_required += 1
-
-    console.print(f"\n[bold]Canonical Fields:[/bold] {total}")
-    console.print(f"[bold]Cross-form consistency enforced:[/bold] {consistency_required}")
-    console.print(f"\n[bold]By Category:[/bold]")
-    for cat, count in sorted(by_cat.items(), key=lambda x: -x[1]):
-        console.print(f"  {cat:20s} {count:4d}")
-
-    if stats:
-        console.print(f"\n[bold]Top Identity Fields (consistency required):[/bold]")
-        identity = [
-            cf for cf in ontology.canonical_fields.values()
-            if cf.cross_form_consistency_required
-        ]
-        for cf in sorted(identity, key=lambda x: -len(x.bindings))[:15]:
-            forms = [b.form_id for b in cf.bindings]
-            console.print(f"  {cf.canonical_id:45s} ({len(forms):2d} forms)")
 
 
 def main(argv: Iterable[str] | None = None) -> int:

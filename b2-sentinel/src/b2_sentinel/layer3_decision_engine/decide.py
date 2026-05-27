@@ -68,6 +68,12 @@ def decide_field(
     #    Cognitive: ALWAYS escalate conflicts to the ambiguity judge when enabled.
     #    The judge determines which candidate is semantically correct.
     if is_conflict and map_authorizes:
+        if not node.required:
+            return _decision(
+                node, DecisionState.OPTIONAL_BLANK,
+                "Optional field; conflicting candidates found, so left blank.",
+                entry, n_a_approved, write_auth=write_auth,
+            )
         if should_escalate_conflict(entry):
             judgment = judge_ambiguity(node, entry, problem="conflicting_sources")
             if judgment and judgment.judgment == "supports_field" and judgment.confidence >= 0.8:
@@ -92,6 +98,12 @@ def decide_field(
     # 2. Found value + map authorizes -> FILL (or LOW_CONFIDENCE if weak)
     if has_value and map_authorizes and not is_weak:
         if not is_value_plausible(node.field_id, entry.candidate_value):
+            if not node.required:
+                return _decision(
+                    node, DecisionState.OPTIONAL_BLANK,
+                    "Optional field; implausible candidate found, so left blank.",
+                    entry, n_a_approved, write_auth=write_auth,
+                )
             return _decision(
                 node, DecisionState.LOW_CONFIDENCE,
                 f"Value failed sanity gate: '{entry.candidate_value[:40]}...' is not a plausible value for {node.field_id}.",
@@ -130,6 +142,13 @@ def decide_field(
     # 4. Weak / no value cases
     #    Cognitive: ask the Ambiguity Judge if the weak evidence actually supports the field.
     #    With expanded triggers, always escalate weak evidence when cognitive is enabled.
+    if is_weak and not node.required:
+        return _decision(
+            node, DecisionState.OPTIONAL_BLANK,
+            "Optional field; weak candidate found, so left blank.",
+            entry, n_a_approved, write_auth=write_auth,
+        )
+
     if is_weak and node.required:
         if should_escalate(entry.confidence if entry else 0.0) or should_escalate_multi_candidate(entry):
             judgment = judge_ambiguity(node, entry, problem="weak_evidence")

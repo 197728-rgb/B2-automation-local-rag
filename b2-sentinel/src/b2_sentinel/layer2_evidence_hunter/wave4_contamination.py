@@ -59,6 +59,8 @@ def wave4_contamination(
             continue
         scope = entry.scope
         if scope is None:
+            if entry.source_type == "json":
+                continue
             if entry.source_file in multi_scope_files:
                 entry.confidence = min(entry.confidence, 0.5)
                 if entry.decision == "usable":
