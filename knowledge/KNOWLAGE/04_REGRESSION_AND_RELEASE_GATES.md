@@ -4,7 +4,7 @@ The single authoritative home for recurrence-prevention tests and release criter
 
 ## Regression fixtures
 
-Nineteen controls, each asserting both halves: the known-bad case must fail, the
+Twenty-one controls, each asserting both halves: the known-bad case must fail, the
 known-good case must pass. A control that rejects everything is not a control.
 
 Fixtures are executable and live in `regression/fixtures.json`; they use neutral
@@ -35,6 +35,8 @@ python regression/run_regression.py
 | R-17 | E-030 | A signature blank reported on a draft document | The requirement applies only at released status |
 | R-18 | E-044 | A knowledge update carrying customer-shaped content; a filesystem-walk snapshot | The update is rejected and the snapshot source is refused |
 | R-19 | E-045 | Delivery containing an item outside the requested scope | Only requested items are delivered |
+| R-20 | E-014 | A reusable mapping keyed by table/row/cell; another carrying coordinates from a prior run | Identity resolves from form/version, section, label, meaning, entity and merge owner, with coordinates derived this run |
+| R-21 | E-019 | Rework restarted from a blank with no qualifying exception, losing a correct value | Rework continues from the working form and changes only identified defects |
 
 ## Release gates
 

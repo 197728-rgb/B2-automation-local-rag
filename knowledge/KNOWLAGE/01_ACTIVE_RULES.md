@@ -12,19 +12,39 @@ Current authoritative evidence establishes facts. Filenames, folder names, archi
 prior reports, examples, chat, shorthand, and memory may assist discovery but never
 independently establish a current fact.
 
-## 3. Job mode lock
-Declare MAINTENANCE, NEW FILL, or FINAL REVIEW — and the baseline document — before
-reading evidence. An accepted completed current form is the maintenance baseline; a blank
-is the baseline only where no accepted baseline exists or rebuild is required. FINAL
-REVIEW carries no write authority. Mode declarations are matched by meaning, not by exact
-spelling; an unrecognized mode is a defect, not a default.
+## 3. Job mode and baseline lock
+Declare the mode and name the baseline document before reading evidence. Mode is matched
+by meaning, not by exact spelling; an unrecognized mode is a defect, not a default.
 
-## 4. Deliverable identity order
+- **NEW WORK = CLEAN CURRENT BLANK.** Start from the current approved clean blank form and
+  populate it only from current audit evidence.
+- **REWORK = SAME WORKING FORM.** Continue from the same working form already filled,
+  generated, or reviewed. Preserve all correct existing values; change only identified
+  defects or evidence-supported exceptions; keep the same controlled form/version and
+  template structure; rerun every applicable semantic, machine-readable, visual,
+  regression, and release validation. Corrections being required is not a reason to
+  restart.
+- **REBUILD FROM BLANK = EXCEPTION ONLY.** Permitted during rework only when the working
+  document is corrupted, the wrong controlled form/version was used, template structure
+  was materially damaged, or clean regeneration is explicitly required. The exception is
+  named in the run record.
+- **FINAL REVIEW** carries no write authority.
+
+## 4. Identity order, and no position-based field authority
+Deliverable order:
+
 `FORM IDENTITY → CONTROLLED TEMPLATE → SCOPE → DESTINATION CONTRACT → EVIDENCE → WRITE`
 
-Field structure is discovered from the controlled form in hand. Table, row, and cell
-coordinates from a prior run are never authority; they are derived output that expires
-with the document instance.
+Field identity resolves in this order, and only this order:
+
+`CONTROLLED FORM/VERSION → SECTION → EXACT FIELD LABEL → SEMANTIC MEANING → ENTITY/RECORD IDENTITY → CURRENT CONTROL/MERGE OWNER`
+
+Never identify, map, compare, or populate a field using page, table, row, column, or cell
+index as its durable identity. Positions may be used only for run-local diagnostics and
+structural validation — never as reusable mapping or as evidence authority.
+
+Never reuse physical coordinates from another audit, a prior form version, or a previous
+run. Coordinates are derived output that expires with the document instance.
 
 ## 5. Destination-field contract first
 Before selecting evidence, inspect the controlled destination: label, control vocabulary,

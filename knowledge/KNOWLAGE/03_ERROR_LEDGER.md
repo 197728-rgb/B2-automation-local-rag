@@ -29,7 +29,7 @@ recurrence; that is stated rather than implied.
 | E-011 | A QAPE leaf identity collided | A printed section number was treated as uniquely identifying a physical leaf | 7 | R-07 | 4 |
 | E-012 | Substring matching produced a false identity decision | Naive containment replaced structured identity resolution | 13 | R-09 | 8 |
 | E-013 | Distinct records were merged into one logical row | A row was treated as a text bucket rather than a record | 8 | R-01, R-02 | 4 |
-| E-014 | Physical coordinates from a prior run were reused as authority | Geometry was stored as knowledge instead of derived per run | 4 | R-10 | 1 |
+| E-014 | Position was used as a field's durable identity, or coordinates were reused across runs | Geometry was stored as knowledge instead of derived per run | 4 | R-10, R-20 | 1 |
 | E-015 | Semantically different fields were compared | Physical proximity was mistaken for semantic identity | 4 | R-12 | 4 |
 
 ## Completeness
@@ -39,7 +39,7 @@ recurrence; that is stated rather than implied.
 | E-016 | A populated baseline value disappeared with no disposition | Completeness was checked in one direction only | 11 | R-03 | 6 |
 | E-017 | A disposition claimed preservation while the destination stayed blank | The claim was recorded without being verified against the target | 11 | R-03 | 6 |
 | E-018 | A conflict or low-confidence value collapsed into an ordinary blank or a silent fill | Binary populated/blank logic had no explicit conflict state | 12 | R-04 | 6 |
-| E-019 | An accepted completed current form was rebuilt from a blank | Availability of a blank was mistaken for a reason to use it | 3 | R-13, R-14 | 1 |
+| E-019 | Rework restarted from a clean blank, losing correct existing content | Needing corrections was mistaken for needing a rebuild | 3 | R-13, R-14, R-21 | 1 |
 | E-020 | A conditional section was populated, or marked not-applicable, without authority | Presence on the controlled form was mistaken for applicability | 11 | — | 5 |
 | E-021 | A non-assigned element was evaluated as required | The full element set was assumed rather than read from the assignment | 1 (scope, Rule 3) | — | 1 |
 | E-022 | Narrative, comments, or citations were silently truncated | A hidden length cap was treated as harmless formatting logic | 17 | — | 7 |
@@ -79,7 +79,7 @@ recurrence; that is stated rather than implied.
 
 ## Coverage
 
-45 failure classes · 19 with an executable regression test · 26 governed by rule only.
+45 failure classes · 21 with an executable regression test · 24 governed by rule only.
 
 The untested set is honest backlog, not an omission. Several classes turn on judgment —
 whether documented coverage establishes implementation, whether a section is applicable —

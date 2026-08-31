@@ -17,8 +17,19 @@ from typing import Any
 QUALIFICATION_LEVELS = {"I", "II", "III"}
 METHODS = {"UT", "UTT", "MT", "PT", "VT", "RT", "ET", "LT", "HLT"}
 DISPOSITIONS = {"POPULATED_VERIFIED", "BLANK_UNSUPPORTED", "WITHHELD_FLAGGED_DISCREPANCY"}
-KNOWN_MODES = {"MAINTENANCE", "ROLLOVER", "NEW_FILL", "FINAL_REVIEW"}
-REBUILD_MODES = {"NEW_FILL"}
+# Rule 3 vocabulary. Synonyms are accepted because mode is matched by meaning; an
+# unrecognized mode is a defect, not a default.
+MODE_ALIASES = {
+    "NEW_WORK": "NEW_WORK", "NEW_FILL": "NEW_WORK", "NEW_AUDIT_WORK": "NEW_WORK",
+    "REWORK": "REWORK", "CORRECTION": "REWORK", "MAINTENANCE": "REWORK",
+    "ROLLOVER": "REWORK",
+    "FINAL_REVIEW": "FINAL_REVIEW", "REVIEW": "FINAL_REVIEW",
+}
+# The mode that starts from a clean blank.
+BLANK_START_MODES = {"NEW_WORK"}
+# Reasons that permit rebuilding from blank during rework (Rule 3, exception clause).
+REBUILD_EXCEPTIONS = {"corrupted", "wrong_form_version", "structure_damaged",
+                      "regeneration_required"}
 RECORD_TYPES = {"PROCEDURE", "FORM", "QUALIFICATION"}
 
 # Values that must never enter reusable knowledge (Rule 1). Patterns, not literals.
@@ -60,7 +71,7 @@ def _split(value: str, vocabulary: set[str]) -> list[str]:
 
 
 def normalize_mode(value: Any) -> str:
-    """`NEW FILL`, `new-fill`, and `NEW_FILL` are the same declaration (Rule 3)."""
+    """`NEW WORK`, `new-work`, and `NEW_FILL` all resolve to the same mode (Rule 3)."""
     return re.sub(r"[\s\-/]+", "_", str(value).strip().upper())
 
 
@@ -145,6 +156,48 @@ def check_coordinate_provenance(record):
                     "physical coordinate sourced from a prior run")
             for c in record.get("coordinates", [])
             if str(c.get("source", "")).lower() == "prior_run"]
+
+
+def check_field_mapping_authority(record):
+    """E-014 - position is never a field's durable identity (Rule 4)."""
+    out = []
+    positional = {"page", "table", "row", "column", "cell", "index"}
+    required = {"form_version", "section", "label"}
+    for m in record.get("field_mappings", []):
+        key = str(m.get("field", "?"))
+        keyed_by = {str(k).strip().lower() for k in m.get("keyed_by", [])}
+        if keyed_by & positional:
+            out.append(Finding("E-014", "check_field_mapping_authority", key,
+                               "reusable mapping keyed by "
+                               f"{sorted(keyed_by & positional)}, which is position, not identity"))
+        elif not required <= keyed_by:
+            out.append(Finding("E-014", "check_field_mapping_authority", key,
+                               f"identity is missing {sorted(required - keyed_by)}"))
+        if str(m.get("coordinate_source", "current_run")).lower() != "current_run":
+            out.append(Finding("E-014", "check_field_mapping_authority", key,
+                               "coordinates carried in from "
+                               f"{m.get('coordinate_source')!r}"))
+    return out
+
+
+def check_rework_baseline(record):
+    """E-019 - rework continues from the working form, not a fresh blank (Rule 3)."""
+    mode = MODE_ALIASES.get(normalize_mode(record.get("mode", "")))
+    if mode != "REWORK":
+        return []
+    out = []
+    if str(record.get("started_from", "")).lower() == "blank":
+        reason = str(record.get("rebuild_reason", "")).strip().lower()
+        if reason not in REBUILD_EXCEPTIONS:
+            out.append(Finding("E-019", "check_rework_baseline", "started_from",
+                               "rework restarted from a clean blank with no qualifying "
+                               f"exception (reason: {record.get('rebuild_reason') or 'none given'})"))
+    lost = [str(v.get("key", "?")) for v in record.get("preserved_values", [])
+            if v.get("was_correct") and not str(v.get("target_value", "")).strip()]
+    if lost:
+        out.append(Finding("E-019", "check_rework_baseline", ", ".join(lost),
+                           "correct existing values were lost during rework"))
+    return out
 
 
 def check_comparison_identity(record):
@@ -284,12 +337,13 @@ def check_mode_and_baseline(record):
     mode = normalize_mode(raw)
     if not mode:
         return [Finding("E-019", "check_mode_and_baseline", "mode", "no job mode declared")]
-    if mode not in KNOWN_MODES:
+    resolved = MODE_ALIASES.get(mode)
+    if resolved is None:
         return [Finding("E-036", "check_mode_and_baseline", "mode",
                         f"mode {raw!r} is unrecognized and cannot be checked")]
-    if mode in REBUILD_MODES and record.get("accepted_baseline_exists"):
+    if resolved in BLANK_START_MODES and record.get("accepted_baseline_exists"):
         return [Finding("E-019", "check_mode_and_baseline", "mode",
-                        f"{raw!r} chosen while an accepted completed current form exists")]
+                        f"{raw!r} chosen while an accepted working form already exists")]
     return []
 
 
@@ -321,7 +375,8 @@ def check_scope_discipline(record):
 ALL_CHECKS = (
     check_mode_and_baseline, check_personnel_rows, check_equipment_rows,
     check_record_type_separation, check_qape_leaf_identity, check_exact_identity_matching,
-    check_coordinate_provenance, check_comparison_identity, check_two_way_completeness,
+    check_coordinate_provenance, check_field_mapping_authority, check_rework_baseline,
+    check_comparison_identity, check_two_way_completeness,
     check_conflict_preservation, check_candidate_admissibility, check_absence_claims,
     check_event_proof, check_machine_readability, check_protected_structure,
     check_document_status, check_customer_data_firewall, check_scope_discipline,

@@ -523,6 +523,77 @@
           "deliverable_b"
         ]
       }
+    },
+    {
+      "id": "R-20",
+      "prevents": "E-014",
+      "check": "check_field_mapping_authority",
+      "known_bad": {
+        "field_mappings": [
+          {
+            "field": "FIELD_M",
+            "keyed_by": [
+              "table",
+              "row",
+              "cell"
+            ],
+            "coordinate_source": "current_run"
+          },
+          {
+            "field": "FIELD_N",
+            "keyed_by": [
+              "form_version",
+              "section",
+              "label"
+            ],
+            "coordinate_source": "prior_run"
+          }
+        ]
+      },
+      "known_good": {
+        "field_mappings": [
+          {
+            "field": "FIELD_M",
+            "keyed_by": [
+              "form_version",
+              "section",
+              "label",
+              "meaning",
+              "entity",
+              "merge_owner"
+            ],
+            "coordinate_source": "current_run"
+          }
+        ]
+      }
+    },
+    {
+      "id": "R-21",
+      "prevents": "E-019",
+      "check": "check_rework_baseline",
+      "known_bad": {
+        "mode": "REWORK",
+        "started_from": "blank",
+        "rebuild_reason": "",
+        "preserved_values": [
+          {
+            "key": "FIELD_O",
+            "was_correct": true,
+            "target_value": ""
+          }
+        ]
+      },
+      "known_good": {
+        "mode": "REWORK",
+        "started_from": "working_form",
+        "preserved_values": [
+          {
+            "key": "FIELD_O",
+            "was_correct": true,
+            "target_value": "VALUE_O"
+          }
+        ]
+      }
     }
   ]
 }

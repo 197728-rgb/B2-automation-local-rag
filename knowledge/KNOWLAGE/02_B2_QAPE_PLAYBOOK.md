@@ -5,7 +5,8 @@ from `01_ACTIVE_RULES.md` and not restated.
 
 ## Phase 1 — Lock the job
 
-1. Declare the job mode and name the baseline document. *(Rule 3)*
+1. Declare the job mode and name the baseline document — new work starts from the
+   current clean blank, rework continues from the same working form. *(Rule 3)*
 2. Identify the exact deliverable family and controlled template, by controlled title and
    revision as printed on the document.
 3. Lock scope: in-scope forms, activity codes, and the QAPE elements actually assigned.
@@ -45,6 +46,10 @@ identifier. *(Rule 6)* Do not identify a QAPE leaf by printed section number alo
 *(Rule 7)*
 
 One source identity resolves to one target row; work one entity at a time. *(Rule 8)*
+
+Resolve field identity by form/version, section, exact label, meaning, entity, and current
+control or merge owner. Page, table, row, column, and cell positions are run-local
+diagnostics only, never a durable key and never carried in from another run. *(Rule 4)*
 
 ## Phase 5 — Evaluate predicates
 
