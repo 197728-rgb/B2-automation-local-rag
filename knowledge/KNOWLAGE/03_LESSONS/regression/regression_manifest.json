@@ -82,6 +82,14 @@
       "known_bad": "known_bad/AAR-R026_scope_expanded.json",
       "known_good": "known_good/AAR-R026_scope_held.json",
       "expected": "expected_results/AAR-R026.json"
+    },
+    {
+      "id": "TEST-007b",
+      "protects_against": "AAR-R007",
+      "check": "check_baseline_selection",
+      "known_bad": "known_bad/AAR-R007b_mode_unrecognized.json",
+      "known_good": "known_good/AAR-R007_baseline_maintained.json",
+      "expected": "expected_results/AAR-R007.json"
     }
   ]
 }

@@ -55,11 +55,11 @@ re-hashing before every mutation · `7adc4f2` as a fill reference.
 | `01_ACTIVE_RULES/RUN_RECORD_SCHEMA.md` | 3034 | `fdd41136d137249d…` |
 | `02_WORKING_METHOD/FIELD_MAPPING_AND_COMPLETENESS.md` | 4194 | `558841b6a62b4b4b…` |
 | `02_WORKING_METHOD/WORKFLOW.md` | 4617 | `7266fbaf2673666b…` |
-| `03_LESSONS/DO_NOT_REPEAT.md` | 2405 | `970b551a7ac0dd7a…` |
+| `03_LESSONS/DO_NOT_REPEAT.md` | 2595 | `4b8facb90e2f6534…` |
 | `03_LESSONS/DURABLE_FIXES.md` | 2708 | `e331a62f9700b8f0…` |
-| `03_LESSONS/ERROR_LEDGER.md` | 6747 | `c152f7ad0443ebbf…` |
+| `03_LESSONS/ERROR_LEDGER.md` | 7234 | `353d0da33d1295b3…` |
 | `03_LESSONS/FAILED_ASSUMPTIONS.md` | 2043 | `11f8b1d6f7724fce…` |
-| `03_LESSONS/HARD_LESSONS.md` | 2227 | `413d0fc53b272d76…` |
+| `03_LESSONS/HARD_LESSONS.md` | 2500 | `48aebd36a5930584…` |
 | `03_LESSONS/REGRESSION_TESTS_SUGGESTION.md` | 3614 | `5ee95bdca545ed9d…` |
 | `03_LESSONS/regression/expected_results/AAR-R001.json` | 76 | `d9a75b2d52de85d9…` |
 | `03_LESSONS/regression/expected_results/AAR-R002.json` | 76 | `55ff16111add4a58…` |
@@ -76,7 +76,8 @@ re-hashing before every mutation · `7adc4f2` as a fill reference.
 | `03_LESSONS/regression/known_bad/AAR-R003_tcid_dropped.json` | 283 | `158601dce4d08fd2…` |
 | `03_LESSONS/regression/known_bad/AAR-R005_control_machine_blank.json` | 158 | `aa980c384ff67f2e…` |
 | `03_LESSONS/regression/known_bad/AAR-R006_structure_altered.json` | 267 | `59e74592a02140be…` |
-| `03_LESSONS/regression/known_bad/AAR-R007_baseline_rebuilt.json` | 85 | `4d539f3b9336e5c3…` |
+| `03_LESSONS/regression/known_bad/AAR-R007_baseline_rebuilt.json` | 123 | `e7d270bb63070541…` |
+| `03_LESSONS/regression/known_bad/AAR-R007b_mode_unrecognized.json` | 125 | `886801b040d74cbb…` |
 | `03_LESSONS/regression/known_bad/AAR-R008_field_mismatch.json` | 193 | `651b5930e08f495b…` |
 | `03_LESSONS/regression/known_bad/AAR-R009_draft_signature_defect.json` | 180 | `d726a8df658652e8…` |
 | `03_LESSONS/regression/known_bad/AAR-R010_type_coc_unaccounted.json` | 391 | `3c8bc1ca7b46f3fd…` |
@@ -91,10 +92,10 @@ re-hashing before every mutation · `7adc4f2` as a fill reference.
 | `03_LESSONS/regression/known_good/AAR-R009_released_signature_defect.json` | 184 | `9a99124e4023f08a…` |
 | `03_LESSONS/regression/known_good/AAR-R010_type_coc_preserved.json` | 449 | `e2412759e43b22fb…` |
 | `03_LESSONS/regression/known_good/AAR-R026_scope_held.json` | 160 | `0161e35be6a0a836…` |
-| `03_LESSONS/regression/regression_manifest.json` | 3225 | `0193ebb2155284b7…` |
+| `03_LESSONS/regression/regression_manifest.json` | 3528 | `2af68ece57228c2b…` |
 | `03_LESSONS/regression/release_gate.py` | 4978 | `7ee7499eabd680d0…` |
 | `03_LESSONS/regression/run_regression.py` | 3132 | `057cc1776ff5afcc…` |
-| `03_LESSONS/regression/validators.py` | 11603 | `d23e3aa67e5ac435…` |
+| `03_LESSONS/regression/validators.py` | 12356 | `93fb543916bb7594…` |
 | `04_FORENSIC_ARCHIVE/README.md` | 673 | `dfc15f88cf80e1ab…` |
 | `04_FORENSIC_ARCHIVE/examples/MERGED_RECORD_EXAMPLES.md` | 1311 | `e193fa77db6dc7e2…` |
 | `04_FORENSIC_ARCHIVE/incidents/AAR-R025.md` | 3152 | `0e7c584ee323eabd…` |
@@ -104,4 +105,4 @@ re-hashing before every mutation · `7adc4f2` as a fill reference.
 | `README.md` | 2727 | `4b0eedece2203cc8…` |
 | `SESSION_SUMMARY.md` | 4030 | `7af101d08eaefc11…` |
 
-**53 files**, 83,993 bytes, excluding this manifest.
+**54 files**, 86,162 bytes, excluding this manifest.

@@ -19,6 +19,11 @@ from typing import Any, Iterable
 NDT_LEVELS = {"I", "II", "III"}
 NDT_METHODS = {"UT", "UTT", "MT", "PT", "VT", "RT", "ET", "LT", "HLT"}
 TCID_REQUIRED_COLUMNS = ("revision", "record_type", "entry_type")
+# Modes as operators are told to declare them (ACTIVE_RULES AR-01) and every spelling that
+# means the same thing. A mode outside this set is itself a finding: an unrecognized value
+# must not silently disable the baseline check.
+KNOWN_MODES = {"MAINTENANCE", "ROLLOVER", "NEW_FILL", "FINAL_REVIEW"}
+REBUILD_MODES = {"NEW_FILL"}
 TERMINAL_DISPOSITIONS = {
     "CONFIRMED_VALUE", "PRESERVE_BASELINE", "CONTROLLED_BLANK",
     "AUTHORIZED_NA", "WITHHOLD_CONFLICT", "UNVERIFIABLE",
@@ -193,19 +198,29 @@ def check_structure_preserved(record: dict[str, Any]) -> list[Finding]:
     return findings
 
 
+def normalize_mode(value: Any) -> str:
+    """`NEW FILL`, `new-fill`, and `NEW_FILL` are the same declaration."""
+    return re.sub(r"[\s\-/]+", "_", str(value).strip().upper())
+
+
 def check_baseline_selection(record: dict[str, Any]) -> list[Finding]:
     """AAR-R007 - an accepted completed current form is not rebuilt from a blank."""
-    findings = []
-    mode = str(record.get("mode", "")).strip().upper()
+    mode = normalize_mode(record.get("mode", ""))
     if not mode:
         return [Finding("AAR-R007", "check_baseline_selection", "mode",
                         "no job mode declared")]
-    if mode == "NEW_FILL" and record.get("accepted_baseline_exists"):
-        findings.append(Finding(
+    if mode not in KNOWN_MODES:
+        return [Finding(
             "AAR-R007", "check_baseline_selection", "mode",
-            "NEW_FILL chosen while an accepted completed current form exists",
-        ))
-    return findings
+            f"mode {record.get('mode')!r} is not one of {sorted(KNOWN_MODES)}; "
+            "an unrecognized mode cannot be checked",
+        )]
+    if mode in REBUILD_MODES and record.get("accepted_baseline_exists"):
+        return [Finding(
+            "AAR-R007", "check_baseline_selection", "mode",
+            f"{record.get('mode')!r} chosen while an accepted completed current form exists",
+        )]
+    return []
 
 
 def check_draft_status(record: dict[str, Any]) -> list[Finding]:

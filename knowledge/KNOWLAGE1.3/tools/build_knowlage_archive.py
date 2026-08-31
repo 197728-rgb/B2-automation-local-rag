@@ -56,7 +56,9 @@ EVIDENCE_SCAN_SUFFIXES = {".json", ".txt", ".md", ".csv", ".docx", ".xlsx", ".pd
 EVIDENCE_MARKERS = (
     # Completed-form naming. Case-sensitive: the fixtures use FILLED_, while prose about
     # a "filled_templates/" output folder is not a completed form.
-    re.compile(r"\bFILLED_"),
+    # Requires a filename character after the prefix, so a real fixture name (FILLED_B89)
+    # matches while prose documenting the exclusion (`FILLED_*`) does not.
+    re.compile(r"\bFILLED_[A-Za-z0-9]"),
     re.compile(r"\bMidwest Tank Rail\b", re.I),
     re.compile(r"\bFacility Name:", re.I),
     # A car mark is a reporting mark followed by a car number. Requiring digits keeps

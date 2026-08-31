@@ -22,3 +22,5 @@ elsewhere, the incident is in `ERROR_LEDGER.md`.
 | Duplicate references are latent contradictions. They agree until one is edited. | AAR-R023 |
 | A claim is worth the check that can falsify it. Prose asserting a property, with nothing failing when it is false, is intent presented as result. | AAR-R025 |
 | A correct improvement nobody asked for still spends the request's time and buries the deliverable. | AAR-R026 |
+| A control is only as good as the input it is tested with. Test the spelling the documentation tells people to use, not the one the code happens to expect. | AAR-R027 |
+| A reported fix is a claim like any other. Confirm the edit landed before saying it did. | AAR-R028 |

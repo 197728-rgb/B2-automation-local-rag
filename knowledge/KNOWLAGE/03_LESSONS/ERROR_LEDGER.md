@@ -66,10 +66,12 @@ fail. The distinction is the backlog, and it is stated rather than hidden.
 | AAR-R023 | Near-duplicate reference used with no canonical marker | No canonical copy declared | Duplicates are latent contradictions | AR-03 | — | — | RULE ONLY |
 | AAR-R025 | Completeness/absence claim published with nothing that can falsify it | Check written to confirm, not to find failure | A claim is worth the check that can falsify it | AR-12 | — | REGRESSION SUITE | RULE ONLY |
 | AAR-R026 | Scope expanded past the request; adjacent problems absorbed | Each step justified against the previous, not the request | Drift is a sequence of reasonable decisions | AR-01 | TEST-026 | — | PREVENTED |
+| AAR-R027 | A control passed its test while the documented interface bypassed it | Fixture written against the implementation, not the interface operators are told to use | Test the spelling the documentation tells people to use | AR-12 | TEST-007b | — | PREVENTED |
+| AAR-R028 | A correction was reported as applied without confirming it landed | Edit failed silently; the report was written from intent | Verify the edit, not the intention to edit | AR-12 | — | — | RULE ONLY |
 
 ## Coverage
 
-26 incidents · 10 with executable regression · 16 `RULE ONLY`.
+28 incidents · 11 with executable regression · 17 `RULE ONLY`.
 
 The `RULE ONLY` set is honest backlog. Several resist a mechanical test — whether a
 procedure proves implementation is a judgment, and a check asserting otherwise would fake

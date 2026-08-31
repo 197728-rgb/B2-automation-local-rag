@@ -34,3 +34,5 @@ lines can actually fail.
 | 26 | Absorb an adjacent problem instead of naming it and handing it back | AAR-R026 |
 | 27 | Authorize a value from a filename, folder, ZIP name, chat, or another facility's example | AAR-R003 |
 | 28 | Carry one audit's facility evidence into another session | AAR-R023 |
+| 29 | Write a test fixture against the implementation instead of the documented interface | AAR-R027 |
+| 30 | Report a correction as applied without confirming the edit landed | AAR-R028 |

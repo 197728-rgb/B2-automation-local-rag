@@ -4,7 +4,7 @@
   "built": "2026-08-31",
   "purpose": "repeatable AAR B-2 / QAPE audit method knowledge, with project source and memory snapshots",
   "file_count": 511,
-  "total_bytes": 21610566,
+  "total_bytes": 21616170,
   "files": [
     {
       "file": "AAR_AUDIT_REPORT_PLAYBOOK.md",
@@ -63,13 +63,13 @@
     },
     {
       "file": "KNOWLEDGE_SOURCES_INDEX.md",
-      "bytes": 6738,
-      "sha256": "6af2fa94904d84ce7b20df1c86c3a7620b6617d9135998b73649216ff9539e2d"
+      "bytes": 7875,
+      "sha256": "30a77a1eabc802783ab37b5efb260cd4e9668224c491dc53703d837ef5f14bc6"
     },
     {
       "file": "README.md",
-      "bytes": 5047,
-      "sha256": "307936b91571f3dbeb3a6920a8c22fbc8bcefeec89248b133658fa078eb055c2"
+      "bytes": 5136,
+      "sha256": "677359ebe67ead6bae4b56a0d86e193b5865454a145581187f3e1a7a78b3d6bb"
     },
     {
       "file": "SESSION_SUMMARY.md",
@@ -103,23 +103,23 @@
     },
     {
       "file": "source/git-history/branches.txt",
-      "bytes": 472,
-      "sha256": "5b8218a6326936b62eb5eff93c4bb04e24328868c9919afcf4eef0e1aa7b8217"
+      "bytes": 502,
+      "sha256": "b9456edc11a2df68fbb8baaa6a88eabe8ad7916bb7d8807498eae05102530b6f"
     },
     {
       "file": "source/git-history/commit-log.txt",
-      "bytes": 13617,
-      "sha256": "6dd3fc5c1bd7fc166ede7b3cd6473e0fad2efd7efc2cfd8821457d21bed81709"
+      "bytes": 13787,
+      "sha256": "19f72934df3fba52a2d70a9a295789ad4ea296c5d1f79c17b124b0fa78278f88"
     },
     {
       "file": "source/git-history/file-count.txt",
-      "bytes": 169555,
-      "sha256": "3ccf05e8cf1d20300bd93ef2b344710cf90d085d8145467f33880b3e2f078411"
+      "bytes": 173557,
+      "sha256": "e158539274007b7b8ad4991125301e4619ba74c1ee16e3568a3160db27a95b8b"
     },
     {
       "file": "source/git-history/head.txt",
       "bytes": 41,
-      "sha256": "02db397697a738ff93e357292de7bd7f397cedd98d4e42cc50fbcf2b9455ab0e"
+      "sha256": "73efd04f918a5889b138ea5afbdeff1f48258fd32fa53d532123a08e5d6efb85"
     },
     {
       "file": "source/repo/.coderabbit.yaml",
@@ -2558,8 +2558,8 @@
     },
     {
       "file": "tools/build_knowlage_archive.py",
-      "bytes": 14130,
-      "sha256": "22bfd9f2d8a9cbb63b89be33fcefa6c6dd82abd6c09d9f773d5134904ad6fa48"
+      "bytes": 14306,
+      "sha256": "6deef924fd2dc1e737b292dfba109827516b337ef60362a848798a2824e582c7"
     }
   ]
 }

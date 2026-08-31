@@ -1,1 +1,2 @@
-{"case": "AAR-R007 known-bad", "mode": "NEW_FILL", "accepted_baseline_exists": true}
+{"case": "AAR-R007 known-bad — documented spelling with a space",
+ "mode": "NEW FILL", "accepted_baseline_exists": true}

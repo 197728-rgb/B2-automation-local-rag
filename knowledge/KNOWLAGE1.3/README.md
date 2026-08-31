@@ -19,8 +19,9 @@ audit form, and what has to be proven before that form is handed off?*
 
 ## What this pack is not
 
-- It is not audit evidence. It contains no facility names, personnel, equipment IDs,
-  car marks, dates, findings, or completed forms.
+- It is not audit evidence. It contains no completed forms, facility evidence packets, or
+  personnel rosters. Synthetic fixture values remain in project source and are named
+  precisely in `KNOWLEDGE_SOURCES_INDEX.md` §2.
 - It is not a cell map. It contains no remembered table/row/cell coordinates.
 - It is not a runtime dependency. Nothing in an audit run may require this pack to be
   present, and nothing here may be treated as authority over a current controlled form.

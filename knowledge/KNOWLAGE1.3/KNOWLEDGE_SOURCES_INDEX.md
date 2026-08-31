@@ -44,8 +44,24 @@ dictionary of field names and label aliases, carrying no facility data.
   Build and dependency state, reproducible from source.
 - `inbox/` and `outputs/` — gitignored at source; they hold live evidence and run output.
 
-**Confirmed absent from this archive:** no facility name, personnel identifier, car mark,
-equipment ID, calibration date, finding, or completed form. The DOCX files under
+**Excluded as evidence-bearing** — 11 tracked files removed by the builder: three completed
+B-2 forms and their validation reports (`b2-sentinel/tests/fixtures/FILLED_*`), a fixture
+carrying a TCO name, approver and PITP identifier (`tests/fixtures/dlga_*`), and a facility
+profile with an NDT personnel roster (`tools/autonomous-audit-pipeline/test-data/sources/*`).
+
+**What remains, stated precisely.** No completed form, facility evidence packet, or
+personnel roster is present, and no facility record appears in any data file. Two things
+do remain in project source and are named here rather than glossed:
+
+- A **synthetic fixture facility name** used as a constant across three tracked test
+  modules: `tests/test_inbox_pipeline.py`, `tests/test_structure_guard_local.py`,
+  `tests/test_ooxml_writer_regression.py`. It is placeholder data, not facility evidence —
+  its paired fixture uses the reserved `.example` domain. The literal is deliberately not
+  reproduced here, so this document does not itself become a copy of it.
+- **Reporting marks** in `.py` source, as regex alternations and illustrative docstrings.
+
+The builder's scan covers data files and refuses to build on a hit. It does not scan `.py`,
+so neither item above is caught by it; they are documented instead. The DOCX files under
 `source/repo/templates/` are blank controlled forms, which the boundary permits.
 
 ## 3. Precedence between sources
