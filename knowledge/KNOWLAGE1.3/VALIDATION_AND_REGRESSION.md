@@ -93,6 +93,8 @@ code or one element only.
 | R-30 | A temp, debug, or render artifact is present in the delivery folder | The delivery listing matches the allowlist exactly | F-33 |
 | R-31 | A fix is verified on a helper path while the delivered artifact is unchanged | Reverting the fix changes the delivered artifact, proving the shipping path runs it | F-25 |
 | R-32 | Missing network, OCR binary, or unmaterialized input is reported as absent evidence | Preflight reports it as environment state and the run does not conclude absence | F-32 |
+| R-33 | A pack containing a completed form, facility profile, or personnel roster builds successfully | The build refuses, naming each offending file | F-36 |
+| R-34 | A snapshot taken in a checkout containing `.env` or `inputs/` includes them | Only tracked files are copied; ignored local state is never seen | F-37 |
 
 ---
 

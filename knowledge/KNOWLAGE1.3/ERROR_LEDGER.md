@@ -93,3 +93,5 @@ is in `KNOWLEDGE_SOURCES_INDEX.md`.
 | E-044 | Temporary, debug, or render artifacts shipped inside the delivery folder | PRIOR | F-33 |
 | E-045 | Completion was claimed because an output file existed, not because gates passed | PRIOR | F-34 |
 | E-046 | A controlled instruction set was patched incrementally until its knowledge fragmented | PRIOR | F-35 |
+| E-049 | A completeness or absence claim was published without a check that enforces it, and was false | SESSION (this pack's "no facility data" claim; 11 evidence-bearing files were present) | F-36 |
+| E-050 | A snapshot walked the filesystem instead of the tracked file list, so ignored local state was in scope | SESSION (builder would have copied `.env` and `inputs/` in a working checkout) | F-37 |

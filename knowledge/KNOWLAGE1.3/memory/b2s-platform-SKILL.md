@@ -269,7 +269,7 @@ To add support for a new activity code (e.g., `C11`):
 **1. Add default field set** in `platform_launcher.py` → `DEFAULT_FIELD_SETS` dict:
 ```python
 "C11": {
-    "car_mark_and_number": "UTLX 300008",
+    "car_mark_and_number": "<CAR MARK REDACTED>",
     "tank_car_design_spec": "DOT-111A100W1",
     "personnel_id": "TECH-C11-001",
     # ... add all fields for this code

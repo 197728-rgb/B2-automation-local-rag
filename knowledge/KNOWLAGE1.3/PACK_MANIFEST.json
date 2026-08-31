@@ -3,8 +3,8 @@
   "version": "1.3",
   "built": "2026-08-31",
   "purpose": "repeatable AAR B-2 / QAPE audit method knowledge, with project source and memory snapshots",
-  "file_count": 521,
-  "total_bytes": 21872133,
+  "file_count": 510,
+  "total_bytes": 21605990,
   "files": [
     {
       "file": "AAR_AUDIT_REPORT_PLAYBOOK.md",
@@ -23,8 +23,8 @@
     },
     {
       "file": "DURABLE_FIXES.md",
-      "bytes": 8229,
-      "sha256": "5a58a806b671c986761d752d01aec8f7b5304a313e1dccb31bb88c1eac3ae154"
+      "bytes": 8729,
+      "sha256": "ffceabaefe527feecd961c7309722f861df0d53a830218b0724ce32fc3f73b5e"
     },
     {
       "file": "ENGAGEMENT_LESSONS_SUGGESTION.md",
@@ -33,8 +33,8 @@
     },
     {
       "file": "ERROR_LEDGER.md",
-      "bytes": 7204,
-      "sha256": "59cad9ba05427fcb3fc5b4f696019722ce59dd10396bd01591c3795e54ae4ca2"
+      "bytes": 7609,
+      "sha256": "1d637cdceee8e3492fb68c8a3b465755e21375ab86ec4a638ca6052bebda43d3"
     },
     {
       "file": "FAILED_ASSUMPTIONS.md",
@@ -73,23 +73,23 @@
     },
     {
       "file": "SESSION_SUMMARY.md",
-      "bytes": 5538,
-      "sha256": "6f1fe2aca5a1a5dbc607fe4068427ce4feac9fa8dccabaa6d61aafd9266d70c2"
+      "bytes": 5645,
+      "sha256": "721edd37ef24fd8018739aaa26a07a43a78724864d11fa35e2f24908457735f0"
     },
     {
       "file": "VALIDATION_AND_REGRESSION.md",
-      "bytes": 6787,
-      "sha256": "3670f1cd81aab9daded85f6ba232dfa2eca9eacb40ee4d8a4be13eba8221b636"
+      "bytes": 7108,
+      "sha256": "bb4798d34e03e44ebeab147d7e783d87ca563d34511aa16f5ba5477b508873ae"
     },
     {
       "file": "memory/README.md",
-      "bytes": 1081,
-      "sha256": "545c7b72bd26f51a4eda4a23fb36244a161e103de354f26414b57dd6b9d8c21e"
+      "bytes": 1444,
+      "sha256": "551fbb547f860e4ab4102160798e28d38f949948557d135755d05a09d2c80254"
     },
     {
       "file": "memory/b2s-platform-SKILL.md",
-      "bytes": 21358,
-      "sha256": "76ac5ebb448d5ba25329a8ff140f2c548152437318a89b7d578a63a28e42e18b"
+      "bytes": 21366,
+      "sha256": "5b5af08efa43654a969f806f51a7bd6acaf5a882f2c99bd59970a98eda1f6c15"
     },
     {
       "file": "memory/drive/B-2_Master_Schema.json",
@@ -103,23 +103,23 @@
     },
     {
       "file": "source/git-history/branches.txt",
-      "bytes": 480,
-      "sha256": "79c83926e8833e5714acfc871b770862552c2fb507bd05721aaba9f9c6f3e727"
+      "bytes": 468,
+      "sha256": "f1e58d973f21be956a4e8925d0617d7541ef92bd716157d544fc179c43e0f0ed"
     },
     {
       "file": "source/git-history/commit-log.txt",
-      "bytes": 12906,
-      "sha256": "d435582e30fabdd1e2d72ff1a94f9439cba31bf134e185c3586d2582b8db496d"
+      "bytes": 12985,
+      "sha256": "f7766042d965696632b88b395b58859ce319cce86d3c4248b1e79a944bc8c1d7"
     },
     {
       "file": "source/git-history/file-count.txt",
-      "bytes": 165598,
-      "sha256": "e1db52f7cf7b72beaa38f210054b9903b4cad71ffec891fc387ceb49d9ebf8cf"
+      "bytes": 165991,
+      "sha256": "a8f4ea3307aba2adbbd1b05d3a19e98878ec7ccba7cbe4ad0341cb03bf42cf42"
     },
     {
       "file": "source/git-history/head.txt",
       "bytes": 41,
-      "sha256": "5d663af5c0b7548ddac48d9aad4c13fbeb4d877e44dec899d7fc00fc3d158dfc"
+      "sha256": "3410665ae74ab6320eb75889d7ed562be1c6a94a84dbd83802b7aa34281c3b92"
     },
     {
       "file": "source/repo/.cursor/rules/local-automation.mdc",
@@ -143,8 +143,8 @@
     },
     {
       "file": "source/repo/.gitignore",
-      "bytes": 732,
-      "sha256": "546d23fdea1bbd48e5d7720a183733c108e6099c85a23e0012c6319f6c9a44e6"
+      "bytes": 950,
+      "sha256": "09c74349d42ccdafa5011ea9e915ade81881452bd26d3021c709d2054e350083"
     },
     {
       "file": "source/repo/.vscode/tasks.json",
@@ -1617,36 +1617,6 @@
       "sha256": "8855e0a3168f1792e9942d5a8493d84848851f3eebb707243848bea9acd309b6"
     },
     {
-      "file": "source/repo/b2-sentinel/tests/fixtures/FILLED_B89 (Insulation Inspection on Test Plate).docx",
-      "bytes": 80582,
-      "sha256": "637351572242309ae01f22963ec0de564e4eb46ca3155a33b01f593a9f3ea658"
-    },
-    {
-      "file": "source/repo/b2-sentinel/tests/fixtures/FILLED_B89.validation.json",
-      "bytes": 5748,
-      "sha256": "25ecc1072b23b6d7305810ce80834d2b3dd31c02e79b69ae92968a5bfba1fc73"
-    },
-    {
-      "file": "source/repo/b2-sentinel/tests/fixtures/FILLED_C6r.docx",
-      "bytes": 91427,
-      "sha256": "08bb633baa7871a3a9678aa77accf7203d876117deed2f8a83e3cd956ba4c289"
-    },
-    {
-      "file": "source/repo/b2-sentinel/tests/fixtures/FILLED_C6r.validation.json",
-      "bytes": 7750,
-      "sha256": "37cd56f647041137ac7492d87320e08b0172936a26ce104b1b4c6f532cab7c23"
-    },
-    {
-      "file": "source/repo/b2-sentinel/tests/fixtures/FILLED_Cover Sheet.docx",
-      "bytes": 79061,
-      "sha256": "59f85c5ed2b3036dda752480a04b4e0f8f587499f0c90063eb506a1da8ab86d4"
-    },
-    {
-      "file": "source/repo/b2-sentinel/tests/fixtures/FILLED_Cover Sheet.validation.json",
-      "bytes": 7776,
-      "sha256": "96dae649d8aa02967ee8a483cd194c52917ff74825cbdc19429c2eb967b326f8"
-    },
-    {
       "file": "source/repo/b2-sentinel/tests/test_alias_brain.py",
       "bytes": 2736,
       "sha256": "0b2203bc3f2eb308f26a4699e42b174f9cca42121c16b3740864e93d6e68eba2"
@@ -2417,11 +2387,6 @@
       "sha256": "594b69c810a03fdeb8ad9de377536686fc3165d6f5ed709af2a3150c1435c7ad"
     },
     {
-      "file": "source/repo/tests/fixtures/dlga_b24_table_pairs_fixture.txt",
-      "bytes": 873,
-      "sha256": "234fae68ca9acc1a0af8b11780259ff35b971b749f2fd3d0c9f782b40ace2486"
-    },
-    {
       "file": "source/repo/tests/test_approval_maps_and_guard.py",
       "bytes": 16526,
       "sha256": "523e86c39db166371c619d1907d1f7fbf07685f325a24380a55c59fc2dca578e"
@@ -2582,34 +2547,14 @@
       "sha256": "bd1bc4383733b381730dce9ddfbed5d38df17933efb6e2e62e4deee91b1368f6"
     },
     {
-      "file": "source/repo/tools/autonomous-audit-pipeline/test-data/sources/company-profile.md",
-      "bytes": 285,
-      "sha256": "cbd116d63c63ce5d363a21f05f28c190169759c981bd9241346b70fc6dc0381e"
-    },
-    {
-      "file": "source/repo/tools/autonomous-audit-pipeline/test-data/sources/personnel.md",
-      "bytes": 370,
-      "sha256": "6d7eee5dfc22903b022a0fa436e46ef14601f53ed49ab5a319d8fe0e7692faf4"
-    },
-    {
-      "file": "source/repo/tools/autonomous-audit-pipeline/test-data/sources/procedures.md",
-      "bytes": 612,
-      "sha256": "96d598d6d8ebee1dab17693482a01b9c0b97e8569307dc2950d0ba569c398d24"
-    },
-    {
-      "file": "source/repo/tools/autonomous-audit-pipeline/test-data/sources/sample-evidence.txt",
-      "bytes": 98,
-      "sha256": "8c1ec3b17dbfc95f24efceb1c814002e09ece4eb6e814db8fa265424c6de75e5"
-    },
-    {
       "file": "source/repo/tools/autonomous-audit-pipeline/tsconfig.json",
       "bytes": 265,
       "sha256": "4459d2b3faae9a86ba4b4b110c9bd157bde60ee8a34faa6dfe2835d803f9afe8"
     },
     {
       "file": "tools/build_knowlage_archive.py",
-      "bytes": 8073,
-      "sha256": "d69e096814f0368272597e53d90966b5692c68b484f04a2c940961fdf428b84e"
+      "bytes": 14130,
+      "sha256": "22bfd9f2d8a9cbb63b89be33fcefa6c6dd82abd6c09d9f773d5134904ad6fa48"
     }
   ]
 }

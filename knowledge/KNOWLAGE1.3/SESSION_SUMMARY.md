@@ -77,8 +77,9 @@ delta is in `CHANGELOG_FROM_KNOWLAGE_1_2.md`.
 - Every control in `DURABLE_FIXES.md` maps to at least one mechanism and one test case.
 - No governing file restates content owned by another; overlaps were removed by moving the
   fact to its owning file and citing its ID.
-- The archive was scanned for facility identifiers before packing; none are present. The
-  DOCX files under `source/repo/templates/` are blank controlled forms.
+- The builder scans the staged pack for evidence-bearing content and refuses to build on
+  a hit; the packed archive was re-verified with an independent scanner. 11 tracked
+  files were excluded as evidence-bearing. Scope and limits: `KNOWLEDGE_SOURCES_INDEX.md` §2.
 - `MANIFEST.md` and `PACK_MANIFEST.json` were generated from the packed files, not written
   by hand.
 

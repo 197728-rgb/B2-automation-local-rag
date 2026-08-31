@@ -75,3 +75,5 @@ This file owns **the control and its proof artifact**. It does not restate the f
 | F-33 | **Exact delivery allowlist.** The delivery folder contains the intended finals and nothing else | Delivery listing compared to the allowlist | E-044 |
 | F-34 | **Completion gate.** Completion is claimed only after every gate in `DO_NOT_REPEAT.md` has passed on the delivered artifact | Gate results recorded against the delivered file | E-045 |
 | F-35 | **Full instruction replacement.** Controlled instruction sets are reissued whole, never patched in fragments | Instruction set carries a single version identifier | E-046 |
+| F-36 | **Claims are enforced by a check that can fail.** Any published completeness or absence claim ships with an automated check that blocks release when the claim is false | The check exists, runs in the build, and has been shown to fail on a violating input | E-049 |
+| F-37 | **Snapshots source from the tracked file list.** What the repository already ignores is out of scope by construction, not by a hand-maintained exclusion list | Snapshot file list derived from `git ls-files` | E-050 |

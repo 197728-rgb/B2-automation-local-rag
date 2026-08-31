@@ -10,3 +10,10 @@ build time and last in precedence — see `../README.md`.
 | `drive/B-2_Master_Schema.json` | AAR M-1002 Exhibit B-2 master field schema: canonical field names and their label aliases across activity codes | A **discovery aid only**. It never overrides the current controlled form, and it holds no coordinates |
 
 None of these files carries facility data.
+
+## Redactions
+
+`b2s-platform-SKILL.md` is reproduced verbatim except for one illustrative car mark in
+its "add a new activity code" example, replaced with `<CAR MARK REDACTED>`. The example
+teaches the shape of a field-set entry; the car number carried no method meaning and
+would have tripped the builder's evidence gate. No other snapshot content was altered.
