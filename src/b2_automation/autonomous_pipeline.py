@@ -11,7 +11,6 @@ from b2_automation.autonomous_contracts import (
     AutonomousRunResult,
     FieldPipelineResult,
     NOT_VERIFIED_TEXT,
-    AutomationStatus,
     SynthesizedAnswer,
 )
 from b2_automation.form_writer import write_completed_form
