@@ -60,3 +60,4 @@ logs/
 # knowledge/KNOWLAGE1.3/tools/build_knowlage_archive.py and shipped inside
 # KNOWLAGE1.3.zip. Not tracked, because it is a copy of this repository.
 knowledge/*/source/
+knowledge/**/__pycache__/

@@ -1,0 +1,6 @@
+{
+  "case": "AAR-R005 known-bad", "mode": "MAINTENANCE",
+  "fields": [
+    {"key": "B24/demonstration_type", "visible": "Tank Car Tank", "machine": ""}
+  ]
+}

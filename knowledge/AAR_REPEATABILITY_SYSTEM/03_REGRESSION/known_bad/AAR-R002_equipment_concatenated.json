@@ -1,0 +1,8 @@
+{
+  "case": "AAR-R002 known-bad", "mode": "MAINTENANCE",
+  "rows": [
+    {"kind": "equipment", "table": "B81_equipment", "row": 1,
+     "cells": {"equipment_name": "UTT MeterStep Block", "equipment_id": "UT113-3726",
+               "function": "Thickness ReadingsMeter Verification"}}
+  ]
+}

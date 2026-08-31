@@ -1,0 +1,6 @@
+{
+  "case": "AAR-R006 known-bad", "mode": "MAINTENANCE",
+  "structure": {"tables_before": 12, "tables_after": 12, "rows_before": 210,
+                "rows_after": 211, "merges_before": 34, "merges_after": 34,
+                "document_wide_formatting_pass": true}
+}

@@ -1,0 +1,5 @@
+{
+  "incident": "AAR-R008",
+  "known_bad": "FAIL",
+  "known_good": "PASS"
+}

@@ -1,0 +1,11 @@
+{
+  "case": "AAR-R002 known-good", "mode": "MAINTENANCE",
+  "rows": [
+    {"kind": "equipment", "table": "B81_equipment", "row": 1,
+     "cells": {"equipment_name": "UTT Meter", "equipment_id": "UT113",
+               "function": "Thickness Readings"}},
+    {"kind": "equipment", "table": "B81_equipment", "row": 2,
+     "cells": {"equipment_name": "Step Block", "equipment_id": "3726",
+               "function": "Meter Verification"}}
+  ]
+}
