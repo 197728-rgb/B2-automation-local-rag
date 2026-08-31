@@ -22,3 +22,4 @@ The rules themselves are in `../01_ACTIVE_RULES/`. This file does not restate th
 | A fix without a test is on loan. Branch churn reliably deletes undefended changes. | AAR-R022 |
 | Duplicate references are latent contradictions. They agree until one is edited, then the next reader picks by accident. | AAR-R023 |
 | A claim is worth the check that can falsify it. Prose asserting a property, with nothing that fails when it is false, is intent presented as result. | AAR-R025 |
+| A correct improvement nobody asked for still spends the request's time and buries the deliverable. Drift is rarely one bad decision; it is a sequence of individually reasonable ones. | AAR-R026 |

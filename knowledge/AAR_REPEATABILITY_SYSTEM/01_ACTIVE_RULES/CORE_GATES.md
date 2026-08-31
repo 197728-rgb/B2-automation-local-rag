@@ -54,3 +54,23 @@ from the controlled set: `CONFIRMED_VALUE`, `PRESERVE_BASELINE`, `CONTROLLED_BLA
 in the target.
 
 Blocks AAR-R003, AAR-R004, AAR-R010. Enforced by `check_two_way_completeness`.
+
+## G-6 — Scope, before starting and before each new thread of work
+
+State what was asked and what "done" looks like. Deliver that.
+
+**Refuse to continue if** you are about to work on something the request did not ask for.
+Adjacent problems — a failing check you did not cause, a defect a bot found in passing, a
+better structure you thought of — get **named and handed back**, not absorbed.
+
+Three questions, each time you are about to start something:
+
+1. Did they ask for this?
+2. If no: does the asked-for thing fail without it?
+3. If still no: say it exists, and stop.
+
+Rebuilding, restructuring, or "while I'm here" work is scope expansion regardless of how
+sound it is. A correct improvement nobody asked for still spends the request's time and
+still buries the deliverable.
+
+Blocks AAR-R026. Enforced by `check_scope_discipline`.

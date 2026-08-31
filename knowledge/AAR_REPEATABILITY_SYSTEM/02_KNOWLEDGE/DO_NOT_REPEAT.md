@@ -34,3 +34,4 @@ wish — the `State` column in `ERROR_LEDGER.md` says which.
 | 23 | Use one of several near-identical references without a canonical marker | AAR-R023 |
 | 24 | Report an environment failure as absent evidence | AAR-R024 |
 | 25 | Publish a completeness or absence claim with nothing that can falsify it | AAR-R025 |
+| 26 | Absorb an adjacent problem instead of naming it and handing it back | AAR-R026 |

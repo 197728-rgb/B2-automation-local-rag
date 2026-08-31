@@ -34,6 +34,7 @@ test can fail — those are the gaps worth closing next.
 | AAR-R023 | Near-duplicate reference used with no canonical marker | `RELEASE_RULES` §5 | — | — | RULE ONLY |
 | AAR-R024 | Environment failure reported as absent evidence | `CORE_GATES` G-3 | — | — | RULE ONLY |
 | AAR-R025 | A completeness or absence claim published without a check that enforces it | `RELEASE_RULES` §1 | — | — | RULE ONLY |
+| AAR-R026 | Agent expanded scope past the request: absorbed adjacent problems instead of naming them | `CORE_GATES` G-6 | TEST-CORE-026 | — | PREVENTED |
 
 ## AAR-R025 is this system's own founding incident
 

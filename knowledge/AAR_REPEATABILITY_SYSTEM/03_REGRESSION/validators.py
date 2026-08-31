@@ -235,7 +235,21 @@ def check_field_comparison_identity(record: dict[str, Any]) -> list[Finding]:
     return findings
 
 
+def check_scope_discipline(record: dict[str, Any]) -> list[Finding]:
+    """AAR-R026 - nothing is delivered that the request did not ask for."""
+    requested = {str(item).strip().lower() for item in record.get("requested_scope", [])}
+    if not requested:
+        return []
+    return [
+        Finding("AAR-R026", "check_scope_discipline", str(item),
+                f"delivered {item!r}, which was not in the requested scope")
+        for item in record.get("delivered", [])
+        if str(item).strip().lower() not in requested
+    ]
+
+
 ALL_CHECKS = (
+    check_scope_discipline,
     check_baseline_selection,
     check_personnel_row_identity,
     check_equipment_row_identity,
