@@ -1,7 +1,0 @@
-{
-  "case": "AAR-R001 known-bad", "mode": "MAINTENANCE",
-  "rows": [
-    {"kind": "personnel", "table": "B81_personnel", "row": 1,
-     "cells": {"name": "M. StuckeyM. Perry", "level": "IIII", "method": "UTTVT"}}
-  ]
-}

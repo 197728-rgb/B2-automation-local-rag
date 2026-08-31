@@ -1,7 +1,0 @@
-{
-  "case": "AAR-R008 known-bad", "mode": "FINAL_REVIEW",
-  "comparisons": [
-    {"id": "cmp-1", "source_field": "B24/date_permission_received",
-     "target_field": "B24/date_approved"}
-  ]
-}

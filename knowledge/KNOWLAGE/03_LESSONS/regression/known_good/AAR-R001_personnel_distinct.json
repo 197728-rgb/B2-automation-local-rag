@@ -1,9 +1,0 @@
-{
-  "case": "AAR-R001 known-good", "mode": "MAINTENANCE",
-  "rows": [
-    {"kind": "personnel", "table": "B81_personnel", "row": 1,
-     "cells": {"name": "M. Stuckey", "level": "II", "method": "UTT"}},
-    {"kind": "personnel", "table": "B81_personnel", "row": 2,
-     "cells": {"name": "M. Perry", "level": "II", "method": "VT"}}
-  ]
-}

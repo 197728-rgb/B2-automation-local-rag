@@ -1,0 +1,528 @@
+{
+  "note": "Neutral placeholders only. No customer or facility names, personnel names, identifiers, or values copied from B-2/QAPE records (Rules 1, 24).",
+  "tests": [
+    {
+      "id": "R-01",
+      "prevents": "E-013",
+      "check": "check_personnel_rows",
+      "known_bad": {
+        "rows": [
+          {
+            "kind": "personnel",
+            "table": "personnel",
+            "row": 1,
+            "cells": {
+              "name": "TECH_ATECH_B",
+              "level": "IIII",
+              "method": "UTTVT"
+            }
+          }
+        ]
+      },
+      "known_good": {
+        "rows": [
+          {
+            "kind": "personnel",
+            "table": "personnel",
+            "row": 1,
+            "cells": {
+              "name": "TECH_A",
+              "level": "II",
+              "method": "UTT"
+            }
+          },
+          {
+            "kind": "personnel",
+            "table": "personnel",
+            "row": 2,
+            "cells": {
+              "name": "TECH_B",
+              "level": "II",
+              "method": "VT"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "R-02",
+      "prevents": "E-013",
+      "check": "check_equipment_rows",
+      "known_bad": {
+        "rows": [
+          {
+            "kind": "equipment",
+            "table": "equipment",
+            "row": 1,
+            "cells": {
+              "equipment_name": "INSTRUMENT_AReference Block",
+              "equipment_id": "ID_A-ID_B",
+              "function": "Thickness ReadingsVerification"
+            }
+          }
+        ]
+      },
+      "known_good": {
+        "rows": [
+          {
+            "kind": "equipment",
+            "table": "equipment",
+            "row": 1,
+            "cells": {
+              "equipment_name": "INSTRUMENT_A",
+              "equipment_id": "ID_A",
+              "function": "Thickness Readings"
+            }
+          },
+          {
+            "kind": "equipment",
+            "table": "equipment",
+            "row": 2,
+            "cells": {
+              "equipment_name": "Reference Block",
+              "equipment_id": "ID_B",
+              "function": "Verification"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "R-03",
+      "prevents": "E-016",
+      "check": "check_two_way_completeness",
+      "known_bad": {
+        "dispositions": [
+          {
+            "key": "FIELD_A",
+            "source_value": "VALUE_A",
+            "target_value": "",
+            "disposition": "POPULATED_VERIFIED"
+          },
+          {
+            "key": "FIELD_B",
+            "source_value": "VALUE_B",
+            "target_value": "",
+            "disposition": "UNEVALUATED"
+          }
+        ]
+      },
+      "known_good": {
+        "dispositions": [
+          {
+            "key": "FIELD_A",
+            "source_value": "VALUE_A",
+            "target_value": "VALUE_A",
+            "disposition": "POPULATED_VERIFIED"
+          },
+          {
+            "key": "FIELD_B",
+            "source_value": "",
+            "target_value": "",
+            "disposition": "BLANK_UNSUPPORTED"
+          }
+        ]
+      }
+    },
+    {
+      "id": "R-04",
+      "prevents": "E-018",
+      "check": "check_conflict_preservation",
+      "known_bad": {
+        "dispositions": [
+          {
+            "key": "FIELD_C",
+            "sources_disagree": true,
+            "disposition": "BLANK_UNSUPPORTED"
+          },
+          {
+            "key": "FIELD_D",
+            "low_confidence": true,
+            "disposition": "POPULATED_VERIFIED",
+            "target_value": "VALUE_D"
+          }
+        ]
+      },
+      "known_good": {
+        "dispositions": [
+          {
+            "key": "FIELD_C",
+            "sources_disagree": true,
+            "disposition": "WITHHELD_FLAGGED_DISCREPANCY"
+          },
+          {
+            "key": "FIELD_D",
+            "low_confidence": true,
+            "disposition": "WITHHELD_FLAGGED_DISCREPANCY"
+          }
+        ]
+      }
+    },
+    {
+      "id": "R-05",
+      "prevents": "E-003",
+      "check": "check_candidate_admissibility",
+      "known_bad": {
+        "candidates": [
+          {
+            "key": "FIELD_E",
+            "type": "date",
+            "value": "l2//O3l2O24 ~",
+            "accepted": true
+          },
+          {
+            "key": "FIELD_F",
+            "type": "identifier",
+            "value": "  ",
+            "accepted": true,
+            "via_fallback": true
+          }
+        ]
+      },
+      "known_good": {
+        "candidates": [
+          {
+            "key": "FIELD_E",
+            "type": "date",
+            "value": "12/03/2024",
+            "accepted": true
+          },
+          {
+            "key": "FIELD_F",
+            "type": "identifier",
+            "value": "ID_C",
+            "accepted": true,
+            "via_fallback": true,
+            "fallback_recorded": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "R-06",
+      "prevents": "E-010",
+      "check": "check_record_type_separation",
+      "known_bad": {
+        "records": [
+          {
+            "identifier": "REF_1",
+            "type": "PROCEDURE"
+          }
+        ],
+        "expected_types": {
+          "REF_1": 3
+        }
+      },
+      "known_good": {
+        "records": [
+          {
+            "identifier": "REF_1",
+            "type": "PROCEDURE"
+          },
+          {
+            "identifier": "REF_1",
+            "type": "FORM"
+          },
+          {
+            "identifier": "REF_1",
+            "type": "QUALIFICATION"
+          }
+        ],
+        "expected_types": {
+          "REF_1": 3
+        }
+      }
+    },
+    {
+      "id": "R-07",
+      "prevents": "E-011",
+      "check": "check_qape_leaf_identity",
+      "known_bad": {
+        "qape_leaves": [
+          {
+            "printed_section": "SECTION_N",
+            "leaf_key": "SECTION_N",
+            "row": 4
+          },
+          {
+            "printed_section": "SECTION_N",
+            "leaf_key": "SECTION_N",
+            "row": 9
+          }
+        ]
+      },
+      "known_good": {
+        "qape_leaves": [
+          {
+            "printed_section": "SECTION_N",
+            "leaf_key": "SECTION_N|MANUAL|r4",
+            "row": 4
+          },
+          {
+            "printed_section": "SECTION_N",
+            "leaf_key": "SECTION_N|COMPLIANCE|r9",
+            "row": 9
+          }
+        ]
+      }
+    },
+    {
+      "id": "R-08",
+      "prevents": "E-008",
+      "check": "check_event_proof",
+      "known_bad": {
+        "event_claims": [
+          {
+            "key": "EVENT_A",
+            "asserted": true,
+            "support": "master_list"
+          }
+        ]
+      },
+      "known_good": {
+        "event_claims": [
+          {
+            "key": "EVENT_A",
+            "asserted": true,
+            "support": "event_record"
+          }
+        ]
+      }
+    },
+    {
+      "id": "R-09",
+      "prevents": "E-012",
+      "check": "check_exact_identity_matching",
+      "known_bad": {
+        "identity_matches": [
+          {
+            "query": "ID_A",
+            "matched": "ID_A1",
+            "method": "substring"
+          }
+        ]
+      },
+      "known_good": {
+        "identity_matches": [
+          {
+            "query": "ID_A",
+            "matched": "ID_A",
+            "method": "exact"
+          }
+        ]
+      }
+    },
+    {
+      "id": "R-10",
+      "prevents": "E-014",
+      "check": "check_coordinate_provenance",
+      "known_bad": {
+        "coordinates": [
+          {
+            "field": "FIELD_G",
+            "source": "prior_run"
+          }
+        ]
+      },
+      "known_good": {
+        "coordinates": [
+          {
+            "field": "FIELD_G",
+            "source": "current_run"
+          }
+        ]
+      }
+    },
+    {
+      "id": "R-11",
+      "prevents": "E-007",
+      "check": "check_absence_claims",
+      "known_bad": {
+        "absence_claims": [
+          {
+            "key": "FIELD_H",
+            "environment_ok": false,
+            "surfaces_searched": [
+              "a",
+              "b"
+            ]
+          }
+        ]
+      },
+      "known_good": {
+        "absence_claims": [
+          {
+            "key": "FIELD_H",
+            "environment_ok": true,
+            "surfaces_searched": [
+              "a",
+              "b",
+              "c"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "R-12",
+      "prevents": "E-015",
+      "check": "check_comparison_identity",
+      "known_bad": {
+        "comparisons": [
+          {
+            "id": "cmp",
+            "source_field": "FIELD_I",
+            "target_field": "FIELD_J"
+          }
+        ]
+      },
+      "known_good": {
+        "comparisons": [
+          {
+            "id": "cmp",
+            "source_field": "FIELD_I",
+            "target_field": "FIELD_I"
+          }
+        ]
+      }
+    },
+    {
+      "id": "R-13",
+      "prevents": "E-019",
+      "check": "check_mode_and_baseline",
+      "known_bad": {
+        "mode": "NEW FILL",
+        "accepted_baseline_exists": true
+      },
+      "known_good": {
+        "mode": "MAINTENANCE",
+        "accepted_baseline_exists": true
+      }
+    },
+    {
+      "id": "R-14",
+      "prevents": "E-036",
+      "check": "check_mode_and_baseline",
+      "known_bad": {
+        "mode": "NEWFILL",
+        "accepted_baseline_exists": true
+      },
+      "known_good": {
+        "mode": "new fill",
+        "accepted_baseline_exists": false
+      }
+    },
+    {
+      "id": "R-15",
+      "prevents": "E-025",
+      "check": "check_machine_readability",
+      "known_bad": {
+        "fields": [
+          {
+            "key": "FIELD_K",
+            "visible": "SELECTION_A",
+            "machine": ""
+          }
+        ]
+      },
+      "known_good": {
+        "fields": [
+          {
+            "key": "FIELD_K",
+            "visible": "SELECTION_A",
+            "machine": "SELECTION_A"
+          }
+        ]
+      }
+    },
+    {
+      "id": "R-16",
+      "prevents": "E-027",
+      "check": "check_protected_structure",
+      "known_bad": {
+        "structure": {
+          "sections_before": 3,
+          "sections_after": 3,
+          "rows_before": 100,
+          "rows_after": 101,
+          "headers_before": 3,
+          "headers_after": 2,
+          "document_wide_formatting_pass": true,
+          "tail_valid": false
+        }
+      },
+      "known_good": {
+        "structure": {
+          "sections_before": 3,
+          "sections_after": 3,
+          "rows_before": 100,
+          "rows_after": 100,
+          "headers_before": 3,
+          "headers_after": 3,
+          "document_wide_formatting_pass": false,
+          "tail_valid": true
+        }
+      }
+    },
+    {
+      "id": "R-17",
+      "prevents": "E-030",
+      "check": "check_document_status",
+      "known_bad": {
+        "document_status": "DRAFT",
+        "reported_findings": [
+          {
+            "type": "SIGNATURE_BLANK",
+            "location": "FIELD_L"
+          }
+        ]
+      },
+      "known_good": {
+        "document_status": "RELEASED",
+        "reported_findings": [
+          {
+            "type": "SIGNATURE_BLANK",
+            "location": "FIELD_L"
+          }
+        ]
+      }
+    },
+    {
+      "id": "R-18",
+      "prevents": "E-044",
+      "check": "check_customer_data_firewall",
+      "known_bad": {
+        "knowledge_update": "Facility Name: PLACEHOLDER_FACILITY; mark ABCX 123456",
+        "snapshot_source": "filesystem_walk"
+      },
+      "known_good": {
+        "knowledge_update": "Failure class: a register entry was treated as event proof.",
+        "snapshot_source": "tracked_file_list"
+      }
+    },
+    {
+      "id": "R-19",
+      "prevents": "E-045",
+      "check": "check_scope_discipline",
+      "known_bad": {
+        "requested_scope": [
+          "deliverable_a"
+        ],
+        "delivered": [
+          "deliverable_a",
+          "unrelated_refactor"
+        ]
+      },
+      "known_good": {
+        "requested_scope": [
+          "deliverable_a",
+          "deliverable_b"
+        ],
+        "delivered": [
+          "deliverable_a",
+          "deliverable_b"
+        ]
+      }
+    }
+  ]
+}

@@ -1,4 +1,0 @@
-{
-  "case": "AAR-R009 known-good", "mode": "FINAL_REVIEW", "document_status": "RELEASED",
-  "reported_findings": [{"type": "SIGNATURE_BLANK", "location": "Cover/auditor_signature"}]
-}

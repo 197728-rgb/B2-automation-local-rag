@@ -1,64 +1,59 @@
-# KNOWLAGE — Consolidated AAR Audit Repeatability Archive
+# KNOWLAGE — CONSOLIDATED ACTIVE KNOWLEDGE
 
-Purpose: prevent repeat mistakes and produce repeatable results for **any** B-2 activity
-code and **any** QAPE element.
+Documentation-only, customer-neutral knowledge package for repeatable AAR B-2 / QAPE work.
 
-This is a reconciliation of every accessible knowledge source, not a concatenation. Stale
-and conflicting guidance was removed; lessons were generalized so they do not depend on
-one code, element, facility, or year.
+## Governing principle
 
-## Layers
+The customer-data firewall, `01_ACTIVE_RULES.md` Rule 1, governs everything here. It is
+stated there and referenced, not restated.
 
-| Layer | Holds | Read |
-|---|---|---|
-| `01_ACTIVE_RULES/` | 12 rules that must always be followed, plus the release gates | Always |
-| `02_WORKING_METHOD/` | The repeatable workflow and field-mapping method | Doing the work |
-| `03_LESSONS/` | Incidents, lessons, fixes, assumptions, prohibitions, regression tests | When a gate blocks |
-| `04_FORENSIC_ARCHIVE/` | Historical failures and examples | Debugging only — never audit authority |
+## File ownership
 
-`01_ACTIVE_RULES/ACTIVE_RULES.md` is 25 lines. That is deliberate: rules only work if they
-are short enough to load every time.
+Each concept has one authoritative home, so retrieval returns one answer rather than
+several wordings of it.
 
-## One authoritative home per rule
+| File | Authoritative purpose |
+|---|---|
+| `01_ACTIVE_RULES.md` | Rules that always govern |
+| `02_B2_QAPE_PLAYBOOK.md` | Step-by-step operating method |
+| `03_ERROR_LEDGER.md` | Generalized failure classes, root causes, governing controls |
+| `04_REGRESSION_AND_RELEASE_GATES.md` | Recurrence-prevention tests and release criteria |
+| `05_FORENSIC_NOTES.md` | Historical reasoning only; never current authority |
+| `README.md` | Package scope, boundaries, file ownership |
+| `MANIFEST.md` | File inventory and integrity hashes |
+| `regression/` | The executable form of `04`: controls that fail |
 
-Each rule is stated once, in `ACTIVE_RULES.md`, under an `AR-##` identifier. Every other
-file references the ID rather than restating it. Incidents use `AAR-R###`, tests use
-`TEST-###`. Three identifier spaces, no crosswalk needed.
+## Data boundary
 
-If you find the same rule stated in two files, one of them is a defect.
+This package must not contain:
 
-## What actually prevents recurrence
+- customer or facility names;
+- personnel names;
+- customer identifiers;
+- prior-audit identities;
+- exact values copied from B-2 / QAPE records;
+- customer-specific procedures, drawings, reports, certificates, equipment, revisions,
+  dates, calibration data, or conclusions;
+- customer-specific file paths or filenames.
 
-Layers 1, 2 and 4 are documents, and a document can be reasoned around. The regression
-suite and the release gate cannot:
+Current audit facts belong only in the current engagement workspace.
 
-```
-$ python 03_LESSONS/regression/run_regression.py
-All 10 controls working: every known-bad case fails, every known-good case passes.
+Regression fixtures use neutral placeholders (`TECH_A`, `INSTRUMENT_A`, `ID_A`) precisely
+so that a test can exercise a failure class without importing an incident.
 
-$ python 03_LESSONS/regression/release_gate.py RUN.json
-MERGED IDENTITIES: 3
-DO NOT SHIP
-```
+One deliberate exception: the firewall test (`R-18`) must contain text *shaped* like a
+violation in order to detect one. Its fixture uses `PLACEHOLDER_FACILITY` and a synthetic
+mark that belongs to no real registry. These are pattern shapes, not customer facts, and
+this is the only place in the package where such a shape appears.
 
-Every recurring material mistake carries the full chain — **INCIDENT → ROOT CAUSE →
-GENERALIZED LESSON → DURABLE FIX → REGRESSION TEST → RELEASE GATE** — in
-`03_LESSONS/ERROR_LEDGER.md`. Where a link is missing, the ledger says `RULE ONLY` rather
-than implying coverage.
+## Scope of application
 
-## Boundary
+Nothing here is specific to one B-2 activity code, one QAPE element, one facility, one
+tool, or one year. If a rule cannot be applied without knowing the activity code in
+advance, the rule is written wrong.
 
-Permanent knowledge may hold: blank controlled B-2 and QAPE forms, requirements and
-guidance, revision notices, work aids, reviewer instructions, and this archive.
+## Retrieval rule
 
-It may never hold completed facility forms, or any facility name, person, equipment ID,
-car mark, date, procedure, record, or finding — except inside `04_FORENSIC_ARCHIVE/`,
-marked `HISTORICAL EXAMPLE — NOT CURRENT AUDIT AUTHORITY`.
-
-Every audit starts in a new session and receives only that audit's evidence (AR-03).
-
-## Start here
-
-`04_FORENSIC_ARCHIVE/` is not part of normal work. For a job, read
-`01_ACTIVE_RULES/ACTIVE_RULES.md`, then `02_WORKING_METHOD/WORKFLOW.md`, then run the gate.
-Startup detail is in `FUTURE_AGENT_NOTES.md`.
+Use `01_ACTIVE_RULES.md` and `02_B2_QAPE_PLAYBOOK.md` for day-to-day work. Consult
+`03_ERROR_LEDGER.md` and `05_FORENSIC_NOTES.md` only to understand failure classes. Use
+`04_REGRESSION_AND_RELEASE_GATES.md` and `regression/` for verification and release.

@@ -1,5 +1,0 @@
-{
-  "case": "AAR-R026 known-bad",
-  "requested_scope": ["knowledge archive"],
-  "delivered": ["knowledge archive", "builder rewrite", "CI lint fix", "four-layer system"]
-}

@@ -1,5 +1,0 @@
-{
-  "case": "AAR-R026 known-good",
-  "requested_scope": ["knowledge archive", "drive suggestions"],
-  "delivered": ["knowledge archive", "drive suggestions"]
-}
