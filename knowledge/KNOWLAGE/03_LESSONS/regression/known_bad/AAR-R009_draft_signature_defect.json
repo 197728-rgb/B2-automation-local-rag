@@ -1,0 +1,4 @@
+{
+  "case": "AAR-R009 known-bad", "mode": "FINAL_REVIEW", "document_status": "DRAFT",
+  "reported_findings": [{"type": "SIGNATURE_BLANK", "location": "Cover/auditor_signature"}]
+}

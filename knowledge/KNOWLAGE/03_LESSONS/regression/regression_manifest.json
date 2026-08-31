@@ -1,0 +1,87 @@
+{
+  "system": "KNOWLAGE",
+  "version": "2.0",
+  "rule": "Every test names the incident it protects against. An incident with no test is not prevented; a test with no incident does not belong here.",
+  "tests": [
+    {
+      "id": "TEST-001",
+      "protects_against": "AAR-R001",
+      "check": "check_personnel_row_identity",
+      "known_bad": "known_bad/AAR-R001_personnel_concatenated.json",
+      "known_good": "known_good/AAR-R001_personnel_distinct.json",
+      "expected": "expected_results/AAR-R001.json"
+    },
+    {
+      "id": "TEST-002",
+      "protects_against": "AAR-R002",
+      "check": "check_equipment_row_identity",
+      "known_bad": "known_bad/AAR-R002_equipment_concatenated.json",
+      "known_good": "known_good/AAR-R002_equipment_distinct.json",
+      "expected": "expected_results/AAR-R002.json"
+    },
+    {
+      "id": "TEST-003",
+      "protects_against": "AAR-R003",
+      "check": "check_tcid_completeness",
+      "known_bad": "known_bad/AAR-R003_tcid_dropped.json",
+      "known_good": "known_good/AAR-R003_tcid_preserved.json",
+      "expected": "expected_results/AAR-R003.json"
+    },
+    {
+      "id": "TEST-005",
+      "protects_against": "AAR-R005",
+      "check": "check_machine_readability",
+      "known_bad": "known_bad/AAR-R005_control_machine_blank.json",
+      "known_good": "known_good/AAR-R005_control_readable.json",
+      "expected": "expected_results/AAR-R005.json"
+    },
+    {
+      "id": "TEST-006",
+      "protects_against": "AAR-R006",
+      "check": "check_structure_preserved",
+      "known_bad": "known_bad/AAR-R006_structure_altered.json",
+      "known_good": "known_good/AAR-R006_structure_preserved.json",
+      "expected": "expected_results/AAR-R006.json"
+    },
+    {
+      "id": "TEST-007",
+      "protects_against": "AAR-R007",
+      "check": "check_baseline_selection",
+      "known_bad": "known_bad/AAR-R007_baseline_rebuilt.json",
+      "known_good": "known_good/AAR-R007_baseline_maintained.json",
+      "expected": "expected_results/AAR-R007.json"
+    },
+    {
+      "id": "TEST-008",
+      "protects_against": "AAR-R008",
+      "check": "check_field_comparison_identity",
+      "known_bad": "known_bad/AAR-R008_field_mismatch.json",
+      "known_good": "known_good/AAR-R008_field_match.json",
+      "expected": "expected_results/AAR-R008.json"
+    },
+    {
+      "id": "TEST-009",
+      "protects_against": "AAR-R009",
+      "check": "check_draft_status",
+      "known_bad": "known_bad/AAR-R009_draft_signature_defect.json",
+      "known_good": "known_good/AAR-R009_released_signature_defect.json",
+      "expected": "expected_results/AAR-R009.json"
+    },
+    {
+      "id": "TEST-010",
+      "protects_against": "AAR-R010",
+      "check": "check_two_way_completeness",
+      "known_bad": "known_bad/AAR-R010_type_coc_unaccounted.json",
+      "known_good": "known_good/AAR-R010_type_coc_preserved.json",
+      "expected": "expected_results/AAR-R010.json"
+    },
+    {
+      "id": "TEST-026",
+      "protects_against": "AAR-R026",
+      "check": "check_scope_discipline",
+      "known_bad": "known_bad/AAR-R026_scope_expanded.json",
+      "known_good": "known_good/AAR-R026_scope_held.json",
+      "expected": "expected_results/AAR-R026.json"
+    }
+  ]
+}

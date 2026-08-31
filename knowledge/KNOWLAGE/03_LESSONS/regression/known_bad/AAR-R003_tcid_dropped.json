@@ -1,0 +1,8 @@
+{
+  "case": "AAR-R003 known-bad", "mode": "MAINTENANCE",
+  "tcid_entries": [
+    {"id": "tcid-1",
+     "baseline": {"revision": "0", "record_type": "Inspection", "entry_type": "Qualification"},
+     "target":   {"revision": "",  "record_type": "Inspection", "entry_type": ""}}
+  ]
+}
