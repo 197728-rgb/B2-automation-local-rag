@@ -9,14 +9,12 @@ from typing import Any
 
 from b2_automation.autonomous_contracts import AuditRequirement, EvidenceBundle, EvidenceItem
 from b2_automation.local_extraction import (
-    LOCAL_EVIDENCE_EXTENSIONS,
     LocalEvidenceDocument,
     chunk_text,
     extract_local_document,
     supported_evidence_files,
 )
 from b2_automation.local_semantic_retrieval import retrieve_chunks_for_form
-from b2_automation.paths import resolve_project_root
 
 _CACHE: dict[str, tuple[list[LocalEvidenceDocument], dict[str, list[dict[str, Any]]]]] = {}
 
