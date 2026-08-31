@@ -25,7 +25,7 @@ For every writable field or QAPE leaf, determine before choosing evidence: *(Rul
 - static or prefilled text;
 - merged-cell ownership;
 - conditional applicability;
-- semantic leaf identity plus physical row location. *(Rule 7)*
+- semantic leaf identity; its current row is resolved afterwards, not used to identify it. *(Rule 7)*
 
 ## Phase 3 — Discover authoritative evidence
 
@@ -76,7 +76,9 @@ Nothing reaches handoff unevaluated.
 
 1. Confirm the candidate passes the admissibility check for its destination type.
    *(Rule 15)*
-2. Confirm the write location is authorized by an exact versioned map. *(Rule 16)*
+2. Confirm the write location is authorized by an approved exact-version map, or by a
+   run-specific semantic map derived from the current form and validated against it
+   before any write. *(Rule 16)*
 3. Resolve the unique cell or control, writing to the merge owner and never to a
    continuation cell.
 4. Write the authorized value and apply that field's formatting in the same operation.

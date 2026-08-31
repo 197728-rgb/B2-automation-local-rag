@@ -56,8 +56,10 @@ Procedure, Form/Report, and qualification records are separate identities. Resol
 attributes independently even when they share an identifier.
 
 ## 7. QAPE leaf identity lock
-A printed section number is not a unique leaf key. Use composite semantic identity plus
-physical row location.
+A printed section number is not a unique leaf key. QAPE leaf identity is composite and
+semantic: element, determination type, and the leaf's own semantic distinguishers. Physical
+row location is never part of durable identity; it is resolved fresh during the run, and
+only after semantic identity is established.
 
 ## 8. One record per logical row
 One person, instrument, qualification, or calibration is one logical record. Distinct
@@ -102,8 +104,13 @@ it is eligible to fill, and the check is calibrated to real extracted input rath
 the ideal case. Any fallback or degraded source is named in the artifact.
 
 ## 16. Write authority separation
-Retrieval, ranking, and model judgment propose candidates. Only an exact, versioned map
-authorizes a write location — never a generic, nearest, latest, or similar one.
+Retrieval, ranking, and model judgment propose candidates; they never authorize a
+destination.
+
+Where an approved exact-version map exists, it is the write authority. Where none exists, a
+run-specific semantic map may be derived from the current controlled form and used only
+after it is validated against that form. Never a generic, nearest, latest, or similar map,
+and never coordinates reused from another run or another form version.
 
 ## 17. No silent truncation
 Never silently cap narrative, comments, objective evidence, citations, or discovery

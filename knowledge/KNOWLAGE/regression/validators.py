@@ -42,6 +42,8 @@ CUSTOMER_DATA_PATTERNS = (
 
 _NAME_PARTICLES = re.compile(r"\b(Mc|Mac|O'|De|Di|Van|Von|La|Le)[A-Z]", re.I)
 _GLUED = re.compile(r"[a-z.][A-Z]")
+# A leaf key segment naming a position rather than a meaning (Rule 7).
+_POSITIONAL_SEGMENT = re.compile(r"^(?:r|row|p|pg|page|t|tbl|table|c|col|cell)[\s._-]*\d+$", re.I)
 
 
 @dataclass(frozen=True)
@@ -134,6 +136,12 @@ def check_qape_leaf_identity(record):
     """E-011 — a printed section number is not a unique leaf key."""
     out, by_printed = [], {}
     for leaf in record.get("qape_leaves", []):
+        key = str(leaf.get("leaf_key", ""))
+        positional = [seg for seg in re.split(r"[|/]", key)
+                      if _POSITIONAL_SEGMENT.match(seg.strip())]
+        if positional:
+            out.append(Finding("E-011", "check_qape_leaf_identity", key,
+                               f"leaf key carries position {positional} as identity"))
         by_printed.setdefault(leaf.get("printed_section"), []).append(leaf)
     for printed, leaves in by_printed.items():
         if len(leaves) > 1 and len({l.get("leaf_key") for l in leaves}) < len(leaves):
@@ -177,6 +185,13 @@ def check_field_mapping_authority(record):
             out.append(Finding("E-014", "check_field_mapping_authority", key,
                                "coordinates carried in from "
                                f"{m.get('coordinate_source')!r}"))
+        # Rule 16: an approved exact-version map carries its own authority; a map derived
+        # this run is permitted only once validated against the current controlled form.
+        if (str(m.get("map_source", "approved")).lower() == "run_derived"
+                and not m.get("validated_against_form")):
+            out.append(Finding("E-002", "check_field_mapping_authority", key,
+                               "run-derived map used without validation against the "
+                               "current controlled form"))
     return out
 
 

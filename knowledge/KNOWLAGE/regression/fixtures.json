@@ -241,12 +241,12 @@
         "qape_leaves": [
           {
             "printed_section": "SECTION_N",
-            "leaf_key": "SECTION_N",
+            "leaf_key": "SECTION_N|r4",
             "row": 4
           },
           {
             "printed_section": "SECTION_N",
-            "leaf_key": "SECTION_N",
+            "leaf_key": "SECTION_N|r9",
             "row": 9
           }
         ]
@@ -255,12 +255,12 @@
         "qape_leaves": [
           {
             "printed_section": "SECTION_N",
-            "leaf_key": "SECTION_N|MANUAL|r4",
+            "leaf_key": "SECTION_N|MANUAL|CRITERION_A",
             "row": 4
           },
           {
             "printed_section": "SECTION_N",
-            "leaf_key": "SECTION_N|COMPLIANCE|r9",
+            "leaf_key": "SECTION_N|COMPLIANCE|CRITERION_A",
             "row": 9
           }
         ]
@@ -547,6 +547,16 @@
               "label"
             ],
             "coordinate_source": "prior_run"
+          },
+          {
+            "field": "FIELD_P",
+            "keyed_by": [
+              "form_version",
+              "section",
+              "label"
+            ],
+            "coordinate_source": "current_run",
+            "map_source": "run_derived"
           }
         ]
       },
@@ -563,6 +573,20 @@
               "merge_owner"
             ],
             "coordinate_source": "current_run"
+          },
+          {
+            "field": "FIELD_P",
+            "keyed_by": [
+              "form_version",
+              "section",
+              "label",
+              "meaning",
+              "entity",
+              "merge_owner"
+            ],
+            "coordinate_source": "current_run",
+            "map_source": "run_derived",
+            "validated_against_form": true
           }
         ]
       }
