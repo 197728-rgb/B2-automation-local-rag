@@ -1,3 +1,8 @@
+> **Superseded.** The living system is `../AAR_REPEATABILITY_SYSTEM/`, which turns these
+> lessons into controls that fail rather than documents that can be written around.
+> This pack is retained as the delivered 1.3 archive and is no longer maintained. Do not
+> load both: one canonical copy per subject is the rule (AAR-R023).
+
 # KNOWLAGE 1.3 — Repeatable AAR B-2 / QAPE Audit Knowledge Pack
 
 Version: 1.3

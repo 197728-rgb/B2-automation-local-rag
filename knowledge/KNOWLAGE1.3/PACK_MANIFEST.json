@@ -4,7 +4,7 @@
   "built": "2026-08-31",
   "purpose": "repeatable AAR B-2 / QAPE audit method knowledge, with project source and memory snapshots",
   "file_count": 511,
-  "total_bytes": 21610286,
+  "total_bytes": 21610604,
   "files": [
     {
       "file": "AAR_AUDIT_REPORT_PLAYBOOK.md",
@@ -68,8 +68,8 @@
     },
     {
       "file": "README.md",
-      "bytes": 4716,
-      "sha256": "be3988d48f5603a48dfcaaed0c7498b091742182832f22de4411738a442cdc76"
+      "bytes": 5047,
+      "sha256": "307936b91571f3dbeb3a6920a8c22fbc8bcefeec89248b133658fa078eb055c2"
     },
     {
       "file": "SESSION_SUMMARY.md",
@@ -103,13 +103,13 @@
     },
     {
       "file": "source/git-history/branches.txt",
-      "bytes": 546,
-      "sha256": "0b2752c44ea28ab597b7dab8bcb1d0ccabbbf337a898b77915d99084cb8c3685"
+      "bytes": 460,
+      "sha256": "9d9a7c40cf23ff85f7ecb7a930c01bc8372a146a0c9691449b66fb74059fd9cf"
     },
     {
       "file": "source/git-history/commit-log.txt",
-      "bytes": 13465,
-      "sha256": "25d20527a87d9208b222827139a357b7b040fd27bbc62841ddf4c8e510cee59d"
+      "bytes": 13538,
+      "sha256": "9fc2cfd8edd1266db569bd3befdcf59c37ea27bbb8ead858c085233f9b6e57b4"
     },
     {
       "file": "source/git-history/file-count.txt",
@@ -119,7 +119,7 @@
     {
       "file": "source/git-history/head.txt",
       "bytes": 41,
-      "sha256": "fe356b8b9e11e48c922ebc232d3366ef3797bee93723aff0e75a19ed0bdb1798"
+      "sha256": "3b20689b731df59b24e7aa613151505f0ab34f2da137c7d635aac2c73fd21cd9"
     },
     {
       "file": "source/repo/.coderabbit.yaml",
