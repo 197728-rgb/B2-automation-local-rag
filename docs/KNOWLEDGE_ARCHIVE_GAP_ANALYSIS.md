@@ -1,11 +1,11 @@
 # Knowledge Archive Gap Analysis — KNOWLAGE1.6 vs `src/b2_automation`
 
 **Analysis date:** 2026-09-01
-**Reference method package:** `KNOWLAGE1.6` (27 files; archive integrity and 35/35 executable controls verified locally)
+**Reference method package:** `KNOWLAGE1.6`, revised edition (27 files; archive integrity and 41/41 executable controls independently verified — see §9)
 **Code under analysis:** `src/b2_automation` @ `ebd8ae8` (8,549 lines, 33 modules; 136 tests pass, 2 skipped)
 
 This document maps the canonical audit method — 17 active rules (`R-*`), 19 release gates (`G-*`),
-the seven-state disposition vocabulary, and the 35 executable controls (`T-43`–`T-77`) — against the
+the seven-state disposition vocabulary, and the 41 executable controls (`T-43`–`T-83`) — against the
 controls the code actually enforces today. It is a read-only assessment. No pipeline behavior was changed.
 
 Per `R-13` / `G-16` this document is customer-neutral: failure classes are cited by ID, never by
@@ -47,7 +47,7 @@ highest-value change in this document.
 
 | Suite | Controls | Represented in `tests/` |
 |---|---:|---:|
-| `T-43`–`T-77` (archive) | 35 | **0** |
+| `T-43`–`T-83` (archive) | 41 | **0** |
 | Repo pytest suite | 136 | n/a — tests current code behavior, not the defect catalog |
 
 The repo's 136 tests are healthy and CI-wired (`.github/workflows/ci.yml`, push + PR, Python 3.11/3.12).
@@ -175,7 +175,7 @@ current authority) — the two failure modes the reference comparison ranked as 
 | `G-12` Rendered pages | **Absent** | `visual_export_checks` emits `pdf_export_hint`: *"Manual: export PDF in Acrobat/Word and confirm cell alignment visually"* | No rendering, no page images, no per-page findings. `T-40` (clipped middle page) uncatchable |
 | `G-13` Cross-document consistency | **Absent** | Run-level required fields propagate across forms (`_run_level_required_suggestions`, `_merge_label_evidence`) | Propagation is not reconciliation. No cross-document conflict detection, no scope-leakage check |
 | `G-14` Cold-start repeatability | **Partial (de facto)** | Deterministic by design: local TF-IDF/keyword retrieval, `_deterministic_confidence`, no LLM required; CI runs cold on two Python versions | No explicit gate asserting that a cold start reproduces the same semantic decisions; no dependency-completeness check (`T-36`) |
-| `G-15` Regression suite | **Partial** | 136 tests, CI on push and PR, compileall + CLI smoke | None of `T-43`–`T-77` represented. `release_gate.py` is not invoked by any production entry point — the archive's own warning applies: *"Passing an isolated test is insufficient when the production entry point does not invoke the gate"* |
+| `G-15` Regression suite | **Partial** | 136 tests, CI on push and PR, compileall + CLI smoke | None of `T-43`–`T-83` represented. `release_gate.py` is not invoked by any production entry point — the archive's own warning applies: *"Passing an isolated test is insufficient when the production entry point does not invoke the gate"* |
 | `G-16` Knowledge firewall | **Partial** | `.gitignore` excludes `inputs/`, `outputs/`, `.env`, `.venv/` | Convention only. No automated scan for customer identifiers in committed artifacts (`T-38`, `T-60`) |
 | `G-17` Package identity | **Partial** | `run_manifest.json` lists outputs; `_clear_scoped_filled_docx` prevents stale filled duplicates | No integrity hash over the handoff package; no canonical-package selection; no duplicate-package reporting |
 | `G-18` Acceptance boundary | **Violated** | — | Inbox path terminates at `success` / `review_required` (`inbox_pipeline.py:1672`). Autonomous path terminates at `completed` / `completed_with_warnings` / `failed_with_fallback` (`autonomous_pipeline.py:154`). `validation_gate.py:39` states: *"Always returns a final answer — never blocks for human review."* `AGENTS.md` makes `Status: success` the handoff criterion. `READY_FOR_HUMAN_REVIEW` / `HUMAN_PENDING` appear nowhere |
@@ -292,14 +292,89 @@ write-authorization and structure-guard layers; item 1 removes a path that circu
 5. **Add value-level readback (`G-09`).** After patching, reopen the DOCX and assert each intended value
    is present at its authorized cell. Closes `T-33` and `CF-08`, and reuses the approval-map machinery
    already in place.
-6. **Import the executable defect catalog (`G-15`).** Port `T-43`–`T-77` fixtures into `tests/` so each
+6. **Import the executable defect catalog (`G-15`).** Port `T-43`–`T-83` fixtures into `tests/` so each
    known-bad case fails on the production path, not in a helper.
 7. **Decide the `R-05` question (§4.1)** before building semantic identity (`G-05`, `G-06`), page
    rendering (`G-12`), or QAPE scope (`G-19`) — those are project-sized and depend on the answer.
 
 ---
 
-## 8. Scope note
+## 8. Revised-edition delta
+
+The revised `KNOWLAGE1.6` folds a six-agent failure comparison into the normative layer. Every change
+tightens a control this codebase already fails; none relaxes one.
+
+| Rule / Gate | Added in the revision | Effect here |
+|---|---|---|
+| `R-03` / `G-03` | Reviewed role/applicability classification with rationale; the evidence universe may not be narrowed by an unreviewed classification or an unexplained exclusion | Widens D-3, and names §9's extension-based exclusion |
+| `R-08` / `G-05` | `destination predicate -> source record purpose -> exact identity -> current authority`; QAPE topic or citation similarity is not predicate satisfaction | Names precisely the binding the code does not perform |
+| `R-12` / `G-07` | Required report and destination identity accounting; **"Returning expected filenames or byte-identical inputs is not proof of work; a zero-change result requires a verified field-by-field justification"** | Makes **D-4 an explicit rule violation** rather than an inferred one |
+| `R-14` | "A date is not stale merely because it is old" | **Not violated here** — the code has no age-based date rejection |
+| `R-16` | "Record the execution order in the run log" | No execution-order record is emitted |
+
+`G-05` is renamed *Identity and semantic-purpose resolution*; `G-07` becomes *Two-way and scope
+completeness*. Two method sections are new (Semantic authority binding, Scope ledger), plus six
+executable controls `T-78`-`T-83` (`E-050`-`E-054` -> `I-030`-`I-034`).
+
+Verified independently rather than by trusting the archive's own verifier, since self-validation is the
+`CF-12` gate-circularity trap the archive itself warns about:
+
+- all 26 manifest SHA-256 digests and byte sizes recomputed: 26/26 match, no unlisted or absent files;
+- `ALL_CHECKS` parsed against `def check_*`: 30 defined, 30 wired, no orphan and no ghost. The prior
+  edition shipped `check_rollover_baseline` defined but omitted from `ALL_CHECKS` — silently dead on
+  the production path. That class of defect is not present in this edition;
+- `fixtures.json` parsed directly: 41/41 controls carry both a `known_bad` and a `known_good` half.
+
+---
+
+## 9. Live validation against a real workspace
+
+The pipeline was run end to end against a real audit workspace (14 files: target forms, a controlled QA
+Program Manual, facility worksheets, a scope letter, and a prior audit package). Recorded
+customer-neutrally per `R-13` / `G-16`.
+
+**Every defect in §2 reproduced on real data.** All four review lists were empty across all five forms
+(`missing=0, conflicts=0, review_required=0, low_confidence=0`) across 26 decisions, every one `FILL` —
+D-2 exactly as predicted. A genuine two-source conflict existed in the evidence and could not surface.
+
+Three findings were **not** predicted by the static analysis.
+
+### L-1 — The pipeline cannot serve an audit outside its five hard-coded forms
+
+`ALLOWED_REVIEW_FORMS = DEFAULT_REVIEW_FORMS = ("B24_RL2", "B81", "B89", "B90", "Cover_Page")`
+(`local_extraction.py:28-29`). The workspace's audit scope was two different activity codes. The run
+produced five filled DOCX for forms outside that scope and **zero** for the two inside it. Templates for
+the in-scope codes exist in `templates/`; no approval maps do, so there is no write authority for them.
+This is a `G-07` scope-completeness failure of the strongest kind: the required report identities cannot
+be produced at all.
+
+### L-2 — Silent exclusion by file extension, independent of D-3
+
+D-3 covers subdirectories. The live run exposed a second narrowing path: the workspace's scope-defining
+document was an image, and `LOCAL_EVIDENCE_EXTENSIONS` (`local_extraction.py:30`) contains no image
+type. It was dropped with no record — `skipped_review_required: []`, and `run_manifest.json` carries no
+key naming skipped, excluded, or unsupported inputs. 14 files in, 13 in the corpus, and nothing in the
+artifacts says which one is missing or why.
+
+Directory nesting compounds it. Pointed at the workspace as delivered, the pipeline found **zero of 14**
+files. That case errors out only because the corpus is *entirely* empty; a partially-matching layout
+yields a truncated corpus and a `success`-eligible run.
+
+### L-3 — A prior-year artifact authorized a current value
+
+A Cover-page field was written from a document in the prior audit package at confidence 0.87 — a prior
+audit package became current authority with no reconciliation step (`R-03`, `CF-04`). Separately, the
+customer's own working form was present in the inbox and so was ingested *as evidence*, letting
+administrative values be label-matched out of it into the output template. Some were independently
+corroborated by other evidence; at least one was not.
+
+`L-1` and `L-2` fall under gates already scored Absent in §3, but they raise the practical severity: a
+run against a real workspace can silently narrow its own evidence universe *and* deliver forms for the
+wrong audit scope, while reporting a status an operator reads as normal.
+
+---
+
+## 10. Scope note
 
 This analysis covers method-to-code control coverage. It does not assess the correctness of any audit
 output, and no gate result here substitutes for current-evidence reconciliation, document readback,
