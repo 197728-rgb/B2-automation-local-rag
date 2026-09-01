@@ -5,13 +5,11 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
 from docx import Document
 
 from b2_automation.analyst_agent import analyze_blank_form
-from b2_automation.autonomous_contracts import NOT_VERIFIED_TEXT
 from b2_automation.autonomous_pipeline import run_autonomous_template
-from b2_automation.investigator_agent import gather_evidence, preload_evidence_cache
+from b2_automation.investigator_agent import gather_evidence
 from b2_automation.schema_catalog import load_available_schemas
 from b2_automation.validation_gate import validate_answer
 from b2_automation.writer_agent import synthesize_human_response

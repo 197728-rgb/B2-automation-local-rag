@@ -3,11 +3,10 @@
 from __future__ import annotations
 
 import json
-import shutil
 from pathlib import Path
 from typing import Any
 
-from b2_automation.autonomous_contracts import FieldPipelineResult, MachineFieldMapV1, SynthesizedAnswer
+from b2_automation.autonomous_contracts import FieldPipelineResult, MachineFieldMapV1
 from b2_automation.ooxml_writer import patch_docx_cells
 
 

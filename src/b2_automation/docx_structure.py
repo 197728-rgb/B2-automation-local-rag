@@ -9,7 +9,6 @@ from typing import Any
 
 from docx import Document
 from docx.table import Table
-from docx.text.paragraph import Paragraph
 
 
 @dataclass(frozen=True)

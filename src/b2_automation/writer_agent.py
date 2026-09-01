@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import re
-from typing import Any
 
 from b2_automation.autonomous_contracts import (
     NOT_VERIFIED_TEXT,
