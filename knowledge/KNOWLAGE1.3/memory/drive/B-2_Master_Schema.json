@@ -1,0 +1,166 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AAR M-1002 Exhibit B-2 Master Schema",
+  "description": "Normalized data dictionary for B24, B81, C4a, C5, C7, C8, and C10 forms. Discovery aid only: field names and label aliases, no coordinates. Never overrides the current controlled form. Source: Google Drive 1fZeREz3-8G0QhoYcaADQhEeOBuBQdkiVAhlvM5AoiqE, retrieved 2026-08-31.",
+  "type": "object",
+  "properties": {
+    "1_permissions": {
+      "type": "object",
+      "properties": {
+        "tco_name": {
+          "type": "string",
+          "aliases": [
+            "Tank Car Owner (TCO) Name",
+            "Tank Car or Service Equipment Owner (TCO/SEO) Name",
+            "Tank Car or Lining/Coating Owner (TCO / L/CO) Name"
+          ],
+          "description": "The name of the tank car or equipment owner providing permission."
+        },
+        "date_permission_received": {
+          "type": "string",
+          "aliases": ["Date Permission Received", "Date Permission/Instruction Received from TCO"]
+        },
+        "written_instructions": {
+          "type": "string",
+          "aliases": ["Written Instructions from TCO", "Written Instructions from TCO / L/CO"]
+        }
+      }
+    },
+    "2_design_control": {
+      "type": "object",
+      "properties": {
+        "car_mark_number": { "type": "string", "aliases": ["Car Mark and Number", "Car Initial and Number"] },
+        "tank_design_specification": { "type": "string", "aliases": ["Tank Car Design Specification"] },
+        "stencil_specification": { "type": "string", "aliases": ["Stencil Specification"] },
+        "aar_42_number": { "type": "string", "aliases": ["AAR Form 4-2 (AAR No.)"] },
+        "drawing_type": { "type": "string", "aliases": ["4-2 Drawing Type", "Drawing Type"] },
+        "drawing_number": { "type": "string", "aliases": ["Drawing Number"] },
+        "drawing_revision": { "type": "string", "aliases": ["Revision", "Drawing Revision"] },
+        "service_equipment_description": { "type": "string", "aliases": ["Service Equipment Description", "Description of Service Equipment"] },
+        "aar_approval_number": { "type": "string", "aliases": ["AAR No.", "AAR Approval #"] }
+      }
+    },
+    "3_materials": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "material_name": { "type": "string", "aliases": ["Material Related to Activity Code", "Pipe/Fitting Material"] },
+          "material_specification": { "type": "string", "aliases": ["Material Specification", "Material Specification Listed in Appendix M"] },
+          "material_id": { "type": "string", "aliases": ["ID", "Heat #", "Batch or Lot #"] },
+          "material_status": { "type": "string", "aliases": ["Status Indicator", "Status Ind."] }
+        }
+      }
+    },
+    "4_personnel": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "personnel_id": { "type": "string", "aliases": ["Personnel ID"] },
+          "function_performed": { "type": "string", "aliases": ["Function Performed"] },
+          "training_date": { "type": "string", "aliases": ["Date Received Function Specific Training"] }
+        }
+      }
+    },
+    "5_procedures_pitp": {
+      "type": "object",
+      "properties": {
+        "pitp_doc_name": { "type": "string", "aliases": ["PITP Document Name"] },
+        "pitp_id": { "type": "string", "aliases": ["PITP ID"] },
+        "pitp_approved_by": { "type": "string", "aliases": ["Approved By"] },
+        "pitp_date_approved": { "type": "string", "aliases": ["Date Approved"] },
+        "pitp_revision": { "type": "string", "aliases": ["Rev", "Revision"] },
+        "procedures": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "procedure_name": { "type": "string", "aliases": ["Procedures Traceable to the PITP"] },
+              "procedure_id": { "type": "string", "aliases": ["Procedure ID"] },
+              "procedure_approved_by": { "type": "string", "aliases": ["Approved By", "NDT Level III Approver"] },
+              "procedure_revision": { "type": "string", "aliases": ["Rev", "Rev."] }
+            }
+          }
+        }
+      }
+    },
+    "6_equipment": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "equipment_name": { "type": "string", "aliases": ["Measure and Test Equipment", "Equipment Type"] },
+          "equipment_id": { "type": "string", "aliases": ["ID"] },
+          "function_performed": { "type": "string", "aliases": ["Function Performed"] },
+          "calibration_date": { "type": "string", "aliases": ["Calibration Date"] },
+          "calibration_due": { "type": "string", "aliases": ["Calibration Due"] }
+        }
+      }
+    },
+    "7_ndt_technicians": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "ndt_tech_id": { "type": "string", "aliases": ["NDT Technician ID", "NDT Tech ID Observed"] },
+          "level_qualified": { "type": "string", "aliases": ["Level Qualified (I, II, III)"] },
+          "ndt_method": { "type": "string", "aliases": ["NDT Method", "NDT Method(s)"] },
+          "date_qualified": { "type": "string" },
+          "qualification_expiration": { "type": "string" },
+          "acuity_exam_date": { "type": "string" },
+          "acuity_expiration": { "type": "string" }
+        }
+      }
+    },
+    "8_leak_testing": {
+      "type": "object",
+      "properties": {
+        "hold_time": { "type": "string", "aliases": ["LT Procedure Hold / Soak Time", "HLT Procedure Hold / Soak Time"] },
+        "dwell_time": { "type": "string", "aliases": ["LT Procedure Dwell Time", "HLT Procedure Dwell Time"] },
+        "test_pressure_psi": { "type": "string", "aliases": ["LT Procedure Gauge Pressure (psi)", "HLT Procedure Gauge Pressure (psi)"] },
+        "test_medium": { "type": "string", "aliases": ["Gas, Liquid, or Medium Type and Concentration"] }
+      }
+    },
+    "9_welding_special_process": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "welder_id": { "type": "string", "aliases": ["Welder ID or Welding Operator ID"] },
+          "welder_symbol": { "type": "string", "aliases": ["ID, Number, or Symbol Assigned"] },
+          "position_qualified": { "type": "string" },
+          "wpqr_date": { "type": "string" },
+          "last_weld_date": { "type": "string" }
+        }
+      }
+    },
+    "10_environment": {
+      "type": "object",
+      "properties": {
+        "observation_location": { "type": "string", "aliases": ["Location in facility where"] },
+        "ambient_temperature": { "type": "string", "aliases": ["Temperature at Time of Application", "Ambient Temperature"] }
+      }
+    },
+    "11_records_and_tcid": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "record_id": { "type": "string", "aliases": ["Record/Form ID"] },
+          "record_approved_by": { "type": "string" },
+          "record_revision": { "type": "string" },
+          "record_result": { "type": "string", "aliases": ["Accepted", "Rejected"] },
+          "tcid_entry_type": { "type": "string" },
+          "work_description": { "type": "string" }
+        }
+      }
+    },
+    "12_auditor_notes": {
+      "type": "object",
+      "properties": {
+        "notes": { "type": "string", "aliases": ["Additional Auditor Objective Evidence/Comments/Notes"] }
+      }
+    }
+  }
+}

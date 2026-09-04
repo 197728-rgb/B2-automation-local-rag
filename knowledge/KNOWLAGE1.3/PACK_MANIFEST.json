@@ -1,0 +1,2565 @@
+{
+  "package": "KNOWLAGE1.3",
+  "version": "1.3",
+  "built": "2026-08-31",
+  "purpose": "repeatable AAR B-2 / QAPE audit method knowledge, with project source and memory snapshots",
+  "file_count": 511,
+  "total_bytes": 21616109,
+  "files": [
+    {
+      "file": "AAR_AUDIT_REPORT_PLAYBOOK.md",
+      "bytes": 4827,
+      "sha256": "4daf2130b08f77a02e0fcd198f6b8c6637a5adb7b354e01041f22d189a552ff3"
+    },
+    {
+      "file": "CHANGELOG_FROM_KNOWLAGE_1_2.md",
+      "bytes": 4657,
+      "sha256": "7eff249663044f6528967ebffb9b8345c50930ccde5b8cc2f42359d512f3a4ff"
+    },
+    {
+      "file": "DO_NOT_REPEAT.md",
+      "bytes": 3951,
+      "sha256": "6209db85975fb7373980bd648d12abc2ef6e72d056e4c4f404dd692c6ae4d9eb"
+    },
+    {
+      "file": "DURABLE_FIXES.md",
+      "bytes": 8729,
+      "sha256": "ffceabaefe527feecd961c7309722f861df0d53a830218b0724ce32fc3f73b5e"
+    },
+    {
+      "file": "ENGAGEMENT_LESSONS_SUGGESTION.md",
+      "bytes": 5032,
+      "sha256": "32edeb7266df3c7a177fa84dfe60d7093582abe2136ead77eecf3997941c8825"
+    },
+    {
+      "file": "ERROR_LEDGER.md",
+      "bytes": 7609,
+      "sha256": "1d637cdceee8e3492fb68c8a3b465755e21375ab86ec4a638ca6052bebda43d3"
+    },
+    {
+      "file": "FAILED_ASSUMPTIONS.md",
+      "bytes": 3803,
+      "sha256": "666088d34daa02394c46191bd700d3011c271b03b12500da675263fdc9282296"
+    },
+    {
+      "file": "FIELD_AUTHORITY_AND_COMPLETENESS.md",
+      "bytes": 5230,
+      "sha256": "237ebc6ab903d0bbd943a4ca478c1d543eee93ac4f0d6b100db22243f33f3570"
+    },
+    {
+      "file": "FUTURE_AGENT_NOTES.md",
+      "bytes": 3214,
+      "sha256": "1349c959d28233250c294258fef910badab92b5f0faf89a7ded485953729ea66"
+    },
+    {
+      "file": "GOOGLE_DRIVE_UPDATE_SUGGESTIONS.md",
+      "bytes": 7897,
+      "sha256": "71afc5e12f18c60c0b68e4f58944b1f5d594ee7370ae1e68452f6b1570662258"
+    },
+    {
+      "file": "HARD_LESSONS.md",
+      "bytes": 4500,
+      "sha256": "a1bf7f8227d087ca770f162d0699ab8257d52de40b4a8f1bb38678edd545d39f"
+    },
+    {
+      "file": "KNOWLEDGE_SOURCES_INDEX.md",
+      "bytes": 7875,
+      "sha256": "30a77a1eabc802783ab37b5efb260cd4e9668224c491dc53703d837ef5f14bc6"
+    },
+    {
+      "file": "README.md",
+      "bytes": 5136,
+      "sha256": "677359ebe67ead6bae4b56a0d86e193b5865454a145581187f3e1a7a78b3d6bb"
+    },
+    {
+      "file": "SESSION_SUMMARY.md",
+      "bytes": 5645,
+      "sha256": "721edd37ef24fd8018739aaa26a07a43a78724864d11fa35e2f24908457735f0"
+    },
+    {
+      "file": "VALIDATION_AND_REGRESSION.md",
+      "bytes": 7108,
+      "sha256": "bb4798d34e03e44ebeab147d7e783d87ca563d34511aa16f5ba5477b508873ae"
+    },
+    {
+      "file": "memory/README.md",
+      "bytes": 1444,
+      "sha256": "551fbb547f860e4ab4102160798e28d38f949948557d135755d05a09d2c80254"
+    },
+    {
+      "file": "memory/b2s-platform-SKILL.md",
+      "bytes": 21366,
+      "sha256": "5b5af08efa43654a969f806f51a7bd6acaf5a882f2c99bd59970a98eda1f6c15"
+    },
+    {
+      "file": "memory/drive/B-2_Master_Schema.json",
+      "bytes": 7537,
+      "sha256": "77c143fdca2d4e789c03062c4cdcf600a3cc0bf70edf6d9a0238d2e84b85b48e"
+    },
+    {
+      "file": "memory/drive/DRIVE_KNOWLEDGE_INDEX.md",
+      "bytes": 4690,
+      "sha256": "5adb9500fe6402176f5bf5d3d81ca23907ed9c5946573a7c5b5db3913ab4b46a"
+    },
+    {
+      "file": "source/git-history/branches.txt",
+      "bytes": 476,
+      "sha256": "8b4e6de97886cf58618876b5ac11e43204e2e5d72b2a73c62b506671e0585442"
+    },
+    {
+      "file": "source/git-history/commit-log.txt",
+      "bytes": 13868,
+      "sha256": "aab449679331b22871a64b744df0e1a91cc6ae25bc6bb344a17d506e6da18140"
+    },
+    {
+      "file": "source/git-history/file-count.txt",
+      "bytes": 173733,
+      "sha256": "7272fe53859a8409c1af5a54d6f654562a5f0a2fdddcedbd101ff8b4fc3925ba"
+    },
+    {
+      "file": "source/git-history/head.txt",
+      "bytes": 41,
+      "sha256": "01ab6183ba7aacbfde4f8142d3b2f3f21267d8b2fb8cded369764f9875f18eb8"
+    },
+    {
+      "file": "source/repo/.coderabbit.yaml",
+      "bytes": 41,
+      "sha256": "9b1e9b32095dade76aa579c7e153e2850ba3d9a0fec2e77da2a61b1616247aac"
+    },
+    {
+      "file": "source/repo/.cursor/rules/local-automation.mdc",
+      "bytes": 2419,
+      "sha256": "bba353ebbd646c8472e67eec3ec0c663c20c8f110992431f94712788c13ab8e1"
+    },
+    {
+      "file": "source/repo/.github/workflows/ci.yml",
+      "bytes": 751,
+      "sha256": "3428319a397d2d6b9b4bad59520c8092349c7e59a56aaab039434df1c5b39afe"
+    },
+    {
+      "file": "source/repo/.github/workflows/python-app.yml",
+      "bytes": 1392,
+      "sha256": "513f37b03a799458a017f8c82395a7d2921c1a189d03fa1724a3e791c11e62af"
+    },
+    {
+      "file": "source/repo/.github/workflows/python-publish.yml",
+      "bytes": 2218,
+      "sha256": "878b8357d32655a3d8f08659ba50b0744b626edf10de638e755d1b5020d9948f"
+    },
+    {
+      "file": "source/repo/.gitignore",
+      "bytes": 976,
+      "sha256": "d0eef87ce48d2d62f1c6f21117f31d15f1e477c4cb6d5abe24f69d1b49a5c95f"
+    },
+    {
+      "file": "source/repo/.vscode/tasks.json",
+      "bytes": 859,
+      "sha256": "808802cc920a2ef3b3008c2e7bf5c52b9de36e8c693b647ebbcbaae5aade23c4"
+    },
+    {
+      "file": "source/repo/AGENTS.md",
+      "bytes": 4850,
+      "sha256": "326bed70332fc187f8b75be975e0f4281e824f0d162a2a3fb9bea8df4b65ed11"
+    },
+    {
+      "file": "source/repo/README.md",
+      "bytes": 4535,
+      "sha256": "58d3ffeb26c9ceb441f38aee40236034d3de14b87a65139d5be2751159f43c7e"
+    },
+    {
+      "file": "source/repo/VERIFICATION.md",
+      "bytes": 1497,
+      "sha256": "2e0cf46a422fabb6b8fd43fc2c5d6ef8d3463ae8c05c6cdacf8c039959745804"
+    },
+    {
+      "file": "source/repo/b2-sentinel/.gitignore",
+      "bytes": 208,
+      "sha256": "f40b930828626eb1af066b96c6c9fde451ab30e2a325edf8090cdf8457eb5706"
+    },
+    {
+      "file": "source/repo/b2-sentinel/.sync-source",
+      "bytes": 232,
+      "sha256": "c2b4bcac2ad181fc0e9e43d0f1213a97546ced03bb6c650eb8501d1a6f911b8a"
+    },
+    {
+      "file": "source/repo/b2-sentinel/GOVERNANCE.md",
+      "bytes": 1470,
+      "sha256": "fb1ec98515986f57a3d981327f1c159fdd0603df27e9d8b9053b547f7181b932"
+    },
+    {
+      "file": "source/repo/b2-sentinel/README.md",
+      "bytes": 11552,
+      "sha256": "94c1683190d8b77e4f84d9aaba9fb4cd67fa7e38344442452055dc5982585912"
+    },
+    {
+      "file": "source/repo/b2-sentinel/VERIFICATION.md",
+      "bytes": 3239,
+      "sha256": "647cf060075583a4d84930bfd87c33fdbfb056cb492b73cc73d31d6bc52d95b2"
+    },
+    {
+      "file": "source/repo/b2-sentinel/b2-sentinel.yaml",
+      "bytes": 1535,
+      "sha256": "df2b6450c897c136e6cf1c2f5ed10d63c22a180c7bae080f34b0dbcac934b4c6"
+    },
+    {
+      "file": "source/repo/b2-sentinel/pyproject.toml",
+      "bytes": 1005,
+      "sha256": "3823d439ea679ebb715c5869a8aee4b416c87c5220e114d81160d536428d405c"
+    },
+    {
+      "file": "source/repo/b2-sentinel/requirements.txt",
+      "bytes": 206,
+      "sha256": "3339b87c8962c444b6b2fa35ff33c385f13440323f64a102addb8dac3da47e1d"
+    },
+    {
+      "file": "source/repo/b2-sentinel/run.bat",
+      "bytes": 92,
+      "sha256": "144a52edf514ea6280ffb6b4b6cdf9b9630423b824d5a777bb19771be1c780d9"
+    },
+    {
+      "file": "source/repo/b2-sentinel/run.py",
+      "bytes": 550,
+      "sha256": "700199d8c5212c1364b326d1fb4f713267c83da496f2a86e7b5eea5925e02a58"
+    },
+    {
+      "file": "source/repo/b2-sentinel/run.sh",
+      "bytes": 153,
+      "sha256": "949ea9853d4550b2ae7b8fcddee1764becbe6b074c96d16e7210ec42b2b333a8"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/ALL_TEMPLATE_WIRING_VALIDATION.json",
+      "bytes": 4696,
+      "sha256": "ee34b51f9d0ce958442f4729b92ead6e1cc276befee4086ae1e76ba23114fcf1"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/TEMPLATE_WIRING_REPORT.json",
+      "bytes": 6330,
+      "sha256": "bd33b162a82d39154fc13ade037a6d2c5532600a1f8ff4af4f75a890edeca08c"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/activity_2026/B24_strict_corrected.json",
+      "bytes": 5181,
+      "sha256": "3664725e8021821f114521f883634e19bf3bf8cb5b511b6b9dd891989a30edc6"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/activity_2026/B89_strict_corrected.json",
+      "bytes": 3136,
+      "sha256": "ee1afec4edbe1e6b1ab40dfa7e5e6f3516ccb09b9708f9c894cfff8b133443db"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/activity_2026/B90_strict_corrected.json",
+      "bytes": 3515,
+      "sha256": "0a38cb5d04713687d03f88b17c8b8955a88661313239e08de6e031b4b9e0117f"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/activity_2026/SCHEMA_REVIEW_REPORT.json",
+      "bytes": 1599,
+      "sha256": "070bf33d33a9bfed7b23bc1632371a91fd596eaa8ed0131bcc018fcdc6a2912d"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/alias_rules/global_aliases.json",
+      "bytes": 9654,
+      "sha256": "ffa104ec9eabc3802f927c2f9d576c9fbbefc0e1ce9405713abf56f455c8b197"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/field_ontology.json",
+      "bytes": 1976548,
+      "sha256": "b7651cb30cd62a57356641d26d410b0622e66d5154903b20f0da1c14ea2db4f8"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/A19.json",
+      "bytes": 277845,
+      "sha256": "1279d0c4324065ed01c3d513db25858cd96c48f009c3a4739325297f85e9b8f1"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/A19c.json",
+      "bytes": 172774,
+      "sha256": "c34a33db4e2fb943d642b0f30304e016b25ece08a59571b1ed6680752f5053a7"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/B24_RL1.json",
+      "bytes": 86014,
+      "sha256": "a92851d09c8b07b27cf7811df48bc7db280ca867f270e1e0780cf1599fbeb950"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/B24_RL2.json",
+      "bytes": 3124,
+      "sha256": "4a8ab1aedee28a5c775f2dac19da34939c72641048ccf175ef1c3a49d33e2b7a"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/B24_RLC.json",
+      "bytes": 91579,
+      "sha256": "ea40c2773621dcaef3294e179c5e85034c78fbc82f6d982fcc72de6ce5108cc7"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/B78.json",
+      "bytes": 113573,
+      "sha256": "7cbbb0589fe0b5cd359c4a79567e4bf06dc49081b468136bbbd49de5288961f6"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/B81.json",
+      "bytes": 1999,
+      "sha256": "a783ae1c5f08d73a07bc687acb4190767300432a4a31b8ed802bf5af8d31747d"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/B81_A19__B78__B82__B24.json",
+      "bytes": 63695,
+      "sha256": "cfe311300ae84883b020dc281928eb21373d2f1f45a8cd17c3c4cb897fad3047"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/B81_B24_only.json",
+      "bytes": 39387,
+      "sha256": "d9d1a0a5c03b47594cc079210b707137ae997ef6c7281b6a7c0e3f992a31751f"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/B82.json",
+      "bytes": 240321,
+      "sha256": "ee37750337f43ac6e82e530572979449b3a6452c7a0e75d5f5145366043030f4"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/B85.json",
+      "bytes": 44705,
+      "sha256": "8a594b81eae9e965d484aeb9713919da71b85941d6feb344532aa591a78e9ebe"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/B89.json",
+      "bytes": 3071,
+      "sha256": "470daf5d167558ab92dae400ee2b879a0bc5c63ba4a0e5d98624ccdcc42f8285"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/B89_Insulation_Inspection_on_Test_Plate.json",
+      "bytes": 59323,
+      "sha256": "1a444b53be7deca40ad652f5c8dc8bb853f877e5be46245756493e9485eaf70d"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/B89_On_Tank_Car.json",
+      "bytes": 58616,
+      "sha256": "c370ac2355d9921f1fce46d7565fdb2c0d4352faa3cb4daa7206a910fdf61a93"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/B90.json",
+      "bytes": 2757,
+      "sha256": "b85d086c47032a15b081403ce4d21286002db56160c5ebb19d2360df94736daf"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/B90_RLS.json",
+      "bytes": 56662,
+      "sha256": "4f2d8833b394aa2213359693679a34072d0d9e5b0111980d444e66088e222566"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/C10_Repair_of_Interior_Coatings.json",
+      "bytes": 80884,
+      "sha256": "f20b971ed11c112b5eda6c55fd97c64708507de0f914a759b4b3d0afa2cb738d"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/C10_Repair_of_Interior_Linings.json",
+      "bytes": 80499,
+      "sha256": "82e87e527832ca64c16f6533105d2f9299e28da26eab3a9c28785b887ca8c005"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/C4aC_Closures.json",
+      "bytes": 51327,
+      "sha256": "ff7ab6d54838f420e0b9d93b402f5cd96338d5f99c586d1583431b3b119bfd42"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/C4aF_Fittings.json",
+      "bytes": 51358,
+      "sha256": "d82bf591917c6ef40764ef6d42dd6de1c9fbeeac7ea9a5404d37b21e88eafc4c"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/C4aI_Instruments.json",
+      "bytes": 58071,
+      "sha256": "6f826625c2c7b29aaee3ee2d2e672f8a9dc4e0e7959ff9471ab5c8902103e274"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/C4aS_Safety_Relief_Devices.json",
+      "bytes": 69564,
+      "sha256": "93de2e6f24a71ee3c36d99891c6ef3a4392ae5c42d14d0cf8d2b18b4bab39f17"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/C4aV_Valves.json",
+      "bytes": 64704,
+      "sha256": "d5f1ce4386c29ed8807217d58bef3bddaa6672e790dc229b5217eaa11c20a1d1"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/C4mC_Closures.json",
+      "bytes": 85824,
+      "sha256": "e5b8a5cbf5efdb08676cd8826eb0627ec060d974d3fe4aff622a3d07e7a657f6"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/C4mF_Fittings.json",
+      "bytes": 85824,
+      "sha256": "8c13a54be4a3979054b8350bccc7efdc84304af711c8bc09938ed8556258e806"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/C4mH_Heater_Systems_Test_Fixture.json",
+      "bytes": 73440,
+      "sha256": "d998ac5996d07fdbae7b449c8642461a54a324c592c9e0fbbbedd420316b39d2"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/C4mI_Instruments.json",
+      "bytes": 90382,
+      "sha256": "8c6c60d2be666287c4965ac080b52c0e00dd867e875bd8d43202467c7fad3ddd"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/C4mS_Safety_Relief_Devices.json",
+      "bytes": 94934,
+      "sha256": "080beb97dbf8476eb024ed1bb9c2e9005225d357103280713841daea59263ca6"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/C4mV_Valves.json",
+      "bytes": 91382,
+      "sha256": "4ab18d54bb6098edc2f61a57b0f21e8154f5f57c4cc5ab821303160632789dbf"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/C5C_Closures.json",
+      "bytes": 86562,
+      "sha256": "c3b960af72e8ffe3218fd57960ce4c603811e554101030c3dffdbbbd10f84715"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/C5F_Fittings.json",
+      "bytes": 87284,
+      "sha256": "364eb81d2e2589a7b86d94a25ffddf7ca386b5d48aed96c25b699696945a4eb8"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/C5H_Heater_Systems_Test_Fixture.json",
+      "bytes": 76456,
+      "sha256": "28720447e7ec7c8e293b30313559763fa46b587d005f0d6a90f7d2a2218a099c"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/C5I_Instruments.json",
+      "bytes": 88369,
+      "sha256": "f9b0b50106aa143cf53301b2ca611837d97a07389fe66980fc3617c938502e5d"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/C5S_Safety_Relief_Devices_512026.json",
+      "bytes": 108631,
+      "sha256": "481165d493e108ac6b0cf18459c3b82ddcf28a3b3b8695ff1e1123c83ed4a697"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/C5V_Valves_512026.json",
+      "bytes": 89301,
+      "sha256": "da29bce9d1301007a45ec99b99fd359b526b6aef5e84d0a67b2164b8e6f7bab3"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/C6i_Installation_of_Service_Equipment_512026.json",
+      "bytes": 58162,
+      "sha256": "9b833f482f5052f375c4e9ce27f99988e5007f16a09ec0382c3393354296b15c"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/C6r_RR_Service_Equipment_with_Modification_512026.json",
+      "bytes": 83577,
+      "sha256": "d40600a09a1ff904b527eafdc6a63b7d2fb2dcb55e5d064377aa631f8ffcc786"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/C7_C10_Combination_Coatings.json",
+      "bytes": 92036,
+      "sha256": "4ee65e74ae9ab7149af0a24f96365c51480026395b36a9d0b4db57a5a69787da"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/C7_C10_Combination_Linings.json",
+      "bytes": 97052,
+      "sha256": "7210993bbe8d2477a54b640bed9b42588478f078517bfb540c23046a901abff6"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/C7_C8_Combination_Coatings.json",
+      "bytes": 97241,
+      "sha256": "526d48d74db8007d1b1de9f34983ded4285475b5fb1e17aff3ece057e8605b54"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/C7_C8_Combination_Linings.json",
+      "bytes": 107495,
+      "sha256": "b8b2cc39dcbb1f4a19405103db0ff45bd45a320da691e435a6ead7b155bce554"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/C7_C8__C10_Combination_Coatings.json",
+      "bytes": 132788,
+      "sha256": "d8a756106d7b939eb097c31f4ff0b695c2596718ac929f5b90579292f9573e12"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/C7_C8__C10_Combination_Linings.json",
+      "bytes": 141898,
+      "sha256": "2dc79f79fe76daf2c3431b2708b3ead4801f657d0e9a787812e6877ab8fcc503"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/C7_Removal_CoatingsLinings.json",
+      "bytes": 44850,
+      "sha256": "0f83ba90a14a553bbb6a36de93729521652a1a2569152e1cbf983067f7b50de4"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/C8_Application_of_Interior_Coatings.json",
+      "bytes": 87535,
+      "sha256": "99442ccfd676ad36495447a087dffb3bafeef8a54bef320abc07621167313bba"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/C8_Application_of_Interior_Linings.json",
+      "bytes": 94258,
+      "sha256": "966c7ec9a4e333bb13358b885ba0d71f3283c2770007d8ebc56935f77b8510b3"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/C9_Qualification_of_Interior_Coatings.json",
+      "bytes": 48741,
+      "sha256": "dc85541aaa783a004f7b9f60e9292d954d85f21b0746276e6351c0d4bbb74c53"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/C9_Qualification_of_Interior_Linings.json",
+      "bytes": 57444,
+      "sha256": "150ecadf58e5435e39fbf83660759839debd8532ea3bf63cb141a7ea9e33010d"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/maps/Cover_Page.json",
+      "bytes": 3103,
+      "sha256": "88547eaf1f3540fd7714c39584366b09d6cf2e2475d3a47006b32778d3f7edfb"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/A19.json",
+      "bytes": 163,
+      "sha256": "62627dacdd9aa0060d0b3a677e8a729156608d78f111be6c5f423e413f0ba408"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/A19c.json",
+      "bytes": 165,
+      "sha256": "e0ba4f76d69433377b7fb8848c66acaa8bbf4d50ac096e46938cff8b405bb33a"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/B24_RL1.json",
+      "bytes": 171,
+      "sha256": "adc93d76a1d995b9eea414abe97c0ec62d93c901ff38f06065f6fe7e151c03cc"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/B24_RL2.json",
+      "bytes": 136,
+      "sha256": "26572597011958deced60dab06ca231e5977ddff0ea946e40019e15964360e58"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/B24_RLC.json",
+      "bytes": 171,
+      "sha256": "47706b85e1b87e527186337cebeda0094fe25288eddc88f691c807611b632cdc"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/B78.json",
+      "bytes": 163,
+      "sha256": "7af137882dd33118f712268ac3d837c81a9f4221ea5607ce8ea2533772886073"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/B81.json",
+      "bytes": 131,
+      "sha256": "d645fd7968cc0dff6f7824d8d95bb3e2aab8dadccf331ffd8a3f4f8a8057af77"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/B81_A19__B78__B82__B24.json",
+      "bytes": 201,
+      "sha256": "55d7eab29748716f2b8338251e72e64c75c1c3b524b5c22eee485b225b18e579"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/B81_B24_only.json",
+      "bytes": 181,
+      "sha256": "e566664d30726983849ee1356fd05a75cfd6afbd529075f234cb19f05568115d"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/B82.json",
+      "bytes": 163,
+      "sha256": "0da63c28346d7b7894d85c2dc804a141bf324bee022e4a8488450110abfb1c57"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/B85.json",
+      "bytes": 163,
+      "sha256": "bf0cdfdb494befecb0384168d35c79183af83fbf46667075bfad7ee3137d8dbe"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/B89.json",
+      "bytes": 552,
+      "sha256": "a4db07d03a9eef98de35acf6bffa7cc297a2ec2303eafa57bf918411c947f020"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/B89_Insulation_Inspection_on_Test_Plate.json",
+      "bytes": 235,
+      "sha256": "4751a7166ff123c1eff2a02d3bc9c92a38b9e3ddd956ae60abbf6e2305dd1071"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/B89_On_Tank_Car.json",
+      "bytes": 187,
+      "sha256": "013733b984dbf855f1797c3de237ef797efd7b385a5ea004bf40e95357450e9a"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/B90.json",
+      "bytes": 143,
+      "sha256": "ab5885ce77e0a7658e86761830c7c9637020b77bb0a6c4068c33001d0c628980"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/B90_RLS.json",
+      "bytes": 171,
+      "sha256": "e9a3ae62805c7ac2b5753316288b2d3f0c30a773fcf0471dff18166cee9374dc"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/C10_Repair_of_Interior_Coatings.json",
+      "bytes": 219,
+      "sha256": "314062af24d3b1003cbf4469164300870f8301d8cf92d4bdc8ea8ef587d8e26b"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/C10_Repair_of_Interior_Linings.json",
+      "bytes": 217,
+      "sha256": "07626525b1db1841c2c474f98ed043247e07632b87543dbfa80d0708f0f17ab7"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/C4aC_Closures.json",
+      "bytes": 183,
+      "sha256": "badf052117822d2fb46fcb5ae6518f6e0754e51c420fc086e71d2ec22a3bd3bd"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/C4aF_Fittings.json",
+      "bytes": 183,
+      "sha256": "aa1049097453a91408c36bf2f6e997e33539fbca983403733c765aebce34ff88"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/C4aI_Instruments.json",
+      "bytes": 189,
+      "sha256": "fed8fa142bc778e9411055144afa8d87ede91e086b6b19ed892b2b281d219fb2"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/C4aS_Safety_Relief_Devices.json",
+      "bytes": 209,
+      "sha256": "8fae0f16f88a2c82b138a1a69cda2f2f1c173ae7ed92e4db2b87e2ed783c6b91"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/C4aV_Valves.json",
+      "bytes": 179,
+      "sha256": "e641c1e140f5f00d8b8b6916b31580061a7f8def9782a3071d075c5a33e32059"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/C4mC_Closures.json",
+      "bytes": 183,
+      "sha256": "4c8ef4e72ce71b113a583e4f9071ae087cd64e30ca69c452a0930d987ab1f585"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/C4mF_Fittings.json",
+      "bytes": 183,
+      "sha256": "93ad097fc1f42848a65ce11f466799996c7de5b978a92726cb8c61520188a0e0"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/C4mH_Heater_Systems_Test_Fixture.json",
+      "bytes": 221,
+      "sha256": "ba2de57e4b88fc2dbb81a2ae104a4cb8a40bcbd7b2e538dc14b043ba47a3a6ce"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/C4mI_Instruments.json",
+      "bytes": 189,
+      "sha256": "0d37222e0b8a57c4d9cadb38f7fe0e7d5f279983c2ff2160e09f7b9338844506"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/C4mS_Safety_Relief_Devices.json",
+      "bytes": 209,
+      "sha256": "cb8183aa981e0c3818c13c2390febafb32d88e6a74f0c7506241d786fe4a45b3"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/C4mV_Valves.json",
+      "bytes": 179,
+      "sha256": "9db1c4bc2a998a460781243176a742260a48796d920b3b4c1dcab84ea8775264"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/C5C_Closures.json",
+      "bytes": 181,
+      "sha256": "e7576bfb906018f62c82eb9ea61b82d8e282419521b17db2739c7eaa47ab9d66"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/C5F_Fittings.json",
+      "bytes": 181,
+      "sha256": "f26d5d01ff7d6a48e87067619e849d3b43bfcec90433f6c207e88be5c716e735"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/C5H_Heater_Systems_Test_Fixture.json",
+      "bytes": 219,
+      "sha256": "80eecc24905a2ab8e3330d8a3126764a54ec71ccbc62b95840b26dfaf78c0f7e"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/C5I_Instruments.json",
+      "bytes": 187,
+      "sha256": "bf69dc6fe5892c29dfa55919228a99da8c1143e55f223418d73481bc5e57975a"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/C5S_Safety_Relief_Devices_512026.json",
+      "bytes": 221,
+      "sha256": "b91bc183c80b8bae27fcd95962398fe2a432551b1c2b0e451585c9541044abd1"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/C5V_Valves_512026.json",
+      "bytes": 191,
+      "sha256": "a70059c3a8e51cf88d00e281cc67ea14b787086ad24ef56d2f4a16225fb56579"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/C6i_Installation_of_Service_Equipment_512026.json",
+      "bytes": 245,
+      "sha256": "3e46bffeb00b125966c986dceb5c7defdc05f837067f304d133f72ca3aa15a5a"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/C6r_RR_Service_Equipment_with_Modification_512026.json",
+      "bytes": 255,
+      "sha256": "e360753ddb5024e41222a52104fb7046af31c5e651c007923e37a587de98c036"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/C7_C10_Combination_Coatings.json",
+      "bytes": 211,
+      "sha256": "6fe61a3a8823b596c4dd9a60261be8e18b9d184e24a84468bad744f47be79f7d"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/C7_C10_Combination_Linings.json",
+      "bytes": 209,
+      "sha256": "03086842311f55f4fa0a0646ecdc90b902564c8b07cf202df3bf09b6d7a2ffaf"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/C7_C8_Combination_Coatings.json",
+      "bytes": 209,
+      "sha256": "6045e191ebe0c2d8cf536df4b74b670d28face731ca42ec81f81c3c1dcaed93d"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/C7_C8_Combination_Linings.json",
+      "bytes": 207,
+      "sha256": "e65a523e917037309611770d679644ae80056d2ffb84ba0ed236efb514b1146d"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/C7_C8__C10_Combination_Coatings.json",
+      "bytes": 219,
+      "sha256": "7508b2906cb7f59b469a626b6f341b9e45b9ebd742f59b7a1c945d5282f0faa6"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/C7_C8__C10_Combination_Linings.json",
+      "bytes": 217,
+      "sha256": "0d7c637f91a951e88bd0523f69da23fef345136f70ebed0ed8449e63a6cf8db4"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/C7_Removal_CoatingsLinings.json",
+      "bytes": 209,
+      "sha256": "6014f2f29e64bbeec50fe124ddc5cdad425e57bb74d26dd9b558eeb424f1b3d1"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/C8_Application_of_Interior_Coatings.json",
+      "bytes": 227,
+      "sha256": "c0f23e23189fc78be05610848d926bc52755a5166fbcbf446557603aeac22e96"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/C8_Application_of_Interior_Linings.json",
+      "bytes": 225,
+      "sha256": "2ad9239315a2409f92238be46e06d084fbdb4a59090fceaaa58347f92a32842e"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/C9_Qualification_of_Interior_Coatings.json",
+      "bytes": 231,
+      "sha256": "10821bf3040051112bb7d6de85df588e4db73da79d6af6aae95bff993d538a40"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/C9_Qualification_of_Interior_Linings.json",
+      "bytes": 229,
+      "sha256": "01837feedf3d1df0898e0f037ab2b72f737904844e83ebecb28270eee3cab678"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/na_policy/Cover_Page.json",
+      "bytes": 331,
+      "sha256": "28350af443ac7eaf6cdc7b9d11b8afd3138bc20de4921cf326c65eeefc4ab922"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/required_policy/activity_required_policy.v1.json",
+      "bytes": 9730,
+      "sha256": "854e6886c0977b4bdeb0ee4c517a2e56a4d91f95703243e1dc558788cd3ff79a"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/A19.json",
+      "bytes": 256682,
+      "sha256": "418751551dfe88df31468eecd1306c76ce775e25502113a1e967242fa2e89031"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/A19c.json",
+      "bytes": 159570,
+      "sha256": "f1480645ceaf3a62ee625e2a743e3031771474900a41a2ebe9979d72e965926b"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/B24_RL1.json",
+      "bytes": 79628,
+      "sha256": "38a9a2a0633fb55d86c891b519da2d3f38ef381ff6b39abb4fb38bc81a516dfc"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/B24_RL2.json",
+      "bytes": 2257,
+      "sha256": "a15f72d0a69c69a8c717da30a201a57d31062f4332b3eb837c15ef3b112e018a"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/B24_RLC.json",
+      "bytes": 84933,
+      "sha256": "4e1ae59c3cb1e5cc3e3280dc470995f3eed3dccd8ae224dc2f6ca85fec37704a"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/B78.json",
+      "bytes": 104952,
+      "sha256": "eb07792b6eab3cfb363d60643db350d124f22532c2752e94a33df397e776229c"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/B81.json",
+      "bytes": 1449,
+      "sha256": "6c87ba4dc7d8908458ef68df2ec5597650e93961c458e711947f1daf04870736"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/B81_A19__B78__B82__B24.json",
+      "bytes": 59005,
+      "sha256": "b69c1598a115159c014663e1a49b89a8d1259d7c6b206641b6785164b6a3f2ca"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/B81_B24_only.json",
+      "bytes": 36530,
+      "sha256": "62463f5cf219ea292b1f4aec2f036f66bf94dc456598bc99f5e29d23d17a666a"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/B82.json",
+      "bytes": 222184,
+      "sha256": "f90ce6651b2f66b6d98298c90899e126bdb9b446ff9b6597694f36d90fbc3efb"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/B85.json",
+      "bytes": 41519,
+      "sha256": "5b0af4d01d3e9de986b9b34262938dbcacd6c5c298a243dae91eac463c2b2a37"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/B89.json",
+      "bytes": 2335,
+      "sha256": "1ae1f70561c75bbd4709f4094c8ff3f747ecc957d336e253851c4f144248c7f0"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/B89_Insulation_Inspection_on_Test_Plate.json",
+      "bytes": 55060,
+      "sha256": "61d404460ae985efd7036b2034a0a701ef4a0c63585ff84006d96b4b7a048ff6"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/B89_On_Tank_Car.json",
+      "bytes": 54390,
+      "sha256": "b32128181feefe836fa836b0d466a13a5c3e1ba065d2cd9b67381e7f05675fba"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/B90.json",
+      "bytes": 2077,
+      "sha256": "9993700a661bc6b203f3a350c96be0808fdb769c97f1c1a35d1716137d38a9e3"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/B90_RLS.json",
+      "bytes": 52457,
+      "sha256": "4698e3abea67d9508c4c2e35cd4f886409e3b139feda6d369bfc4d1c3cdedd31"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/C10_Repair_of_Interior_Coatings.json",
+      "bytes": 74666,
+      "sha256": "9a950eb5f8d7915a44d5bf8628c180c911c5264666542e03bf6047e163e08aa4"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/C10_Repair_of_Interior_Linings.json",
+      "bytes": 74386,
+      "sha256": "769e1b552307e4c14b4a03e1ac35bf9fafff59a4df1220333adc2701b11e5ac2"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/C4aC_Closures.json",
+      "bytes": 47496,
+      "sha256": "d18cb1b612697ac39ae2f76fdae81bbfcee0cd8f96dd5e02e979f7d3b4ad2dbc"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/C4aF_Fittings.json",
+      "bytes": 47520,
+      "sha256": "ff86be92fbdbd533835743e16ac0013ca5f54b5d0da8c75e85b7ef419398f374"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/C4aI_Instruments.json",
+      "bytes": 53549,
+      "sha256": "e64263b2a86d0b55ed39d2d3984fed567af12838099e1b935d74f6e1264835cc"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/C4aS_Safety_Relief_Devices.json",
+      "bytes": 64012,
+      "sha256": "5f9ac0360fd4ee9d76f54da0653864b0fe86ba6eec47d4bc53fe2d9f6acee4ba"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/C4aV_Valves.json",
+      "bytes": 59741,
+      "sha256": "dc8e6ed01f66118e4d78fcc13d095ae776fb688d4320e69e6ad1d01aa567dc9b"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/C4mC_Closures.json",
+      "bytes": 79413,
+      "sha256": "7dcd72924dde87645616034d8f16fabc88fac6239094fd4d69a9a5959a0122fa"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/C4mF_Fittings.json",
+      "bytes": 79413,
+      "sha256": "62f854bb38d971452146cbdcfeb803cf84ea6d7e5cc391f8147c07b229f1cf3a"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/C4mH_Heater_Systems_Test_Fixture.json",
+      "bytes": 68111,
+      "sha256": "fedabb20c212d46c7bd583abd5d2ded43a5549c04f41a220fa157a41b50b78d9"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/C4mI_Instruments.json",
+      "bytes": 83458,
+      "sha256": "25bf7e5f3090f5deaab6138f85dbf2ec79ba18df0a11cdfbaea00feacc066f89"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/C4mS_Safety_Relief_Devices.json",
+      "bytes": 87522,
+      "sha256": "dd9fcb939ac862e05daf5d7b7ff04c0701d3614b16adec04a2205effdf4a70ce"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/C4mV_Valves.json",
+      "bytes": 84404,
+      "sha256": "2be30a4953f5e9d06c2faa79f607b0227757c10a9a9b8e130592a02d13723907"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/C5C_Closures.json",
+      "bytes": 80006,
+      "sha256": "4cad7ee0d75b13687fdee270035e7e7ae5332b23eea64515820b4863ce6f7f3e"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/C5F_Fittings.json",
+      "bytes": 80666,
+      "sha256": "60cbfb7776c7ff576ac661d81178e8873bedc3df20cd9d1156f298aae0b1dc84"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/C5H_Heater_Systems_Test_Fixture.json",
+      "bytes": 70760,
+      "sha256": "601d692e4d01558565f652cf1eea441995191a39887cc4478a800acccaafc1e0"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/C5I_Instruments.json",
+      "bytes": 81460,
+      "sha256": "ae3047ca0f9a27b0a3c8bb3141538d0c544ea2977fa3cd605792cec2966e45f4"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/C5S_Safety_Relief_Devices_512026.json",
+      "bytes": 99983,
+      "sha256": "6808dbb34f0ebf12ba2131e23b333d083003603a20cfb6607e8f4b3caea54452"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/C5V_Valves_512026.json",
+      "bytes": 82369,
+      "sha256": "b813c7a8fde2db7872304e03964d322b312622c87ee6e50244d47b2253b43509"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/C6i_Installation_of_Service_Equipment_512026.json",
+      "bytes": 53834,
+      "sha256": "d7785146a66ce8a9692953c1c30ac6b05830e298017ee22eaabb97888a047f7a"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/C6r_RR_Service_Equipment_with_Modification_512026.json",
+      "bytes": 77265,
+      "sha256": "44a1a725e5ee38217f1139d88fc1083d96f57acbe261cceba2fea0ad735081e8"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/C7_C10_Combination_Coatings.json",
+      "bytes": 84873,
+      "sha256": "ef482360d5fb94461e73abc49af1ccba8501be0e4d305430df2e88d48c6d96c0"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/C7_C10_Combination_Linings.json",
+      "bytes": 89657,
+      "sha256": "6947237efcfc7df9ee4f2eddadc3f698742f4a2514ddc134c0d1d90d262061de"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/C7_C8_Combination_Coatings.json",
+      "bytes": 89718,
+      "sha256": "61acbab0b837d0f24c039858750a60d23a3a3021dc1eddfab7ab33fb3f3d477d"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/C7_C8_Combination_Linings.json",
+      "bytes": 99392,
+      "sha256": "d58ebc6c40c857f18222b05b448da9cb049ae1d3e206520fd1e92a222e610728"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/C7_C8__C10_Combination_Coatings.json",
+      "bytes": 122495,
+      "sha256": "4680c4268c9074e9eb380cb18e59a0dbfe5f0678731215b61803d2873b0a7d09"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/C7_C8__C10_Combination_Linings.json",
+      "bytes": 131035,
+      "sha256": "b0a679970557bfe76a0cabae5dfb109be86cb7bfa0093c7af3c24062d5fd9a36"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/C7_Removal_CoatingsLinings.json",
+      "bytes": 41427,
+      "sha256": "099ecefeb8cb5282a6fa1fa6deffabd31bac1172c41a04e41d7b2ec4e8f1fb1b"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/C8_Application_of_Interior_Coatings.json",
+      "bytes": 80848,
+      "sha256": "de46228f9a6aa3c324d893a0bac474ae7a49837c0119ddf51da452a094d67aef"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/C8_Application_of_Interior_Linings.json",
+      "bytes": 87229,
+      "sha256": "fac341209b434a3941733416c9c0285b49ac3ec98c001c9ed48cec706daaf046"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/C9_Qualification_of_Interior_Coatings.json",
+      "bytes": 45116,
+      "sha256": "9a46512459e59acb73434095f825f462b41bfb3f7c2425a6393d6ca616461ea6"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/C9_Qualification_of_Interior_Linings.json",
+      "bytes": 53190,
+      "sha256": "93d8859a9df1ee59513913f4be4cb46a8f1130fd45ae9b287d7d449d8eb4daa5"
+    },
+    {
+      "file": "source/repo/b2-sentinel/schemas/templates/Cover_Page.json",
+      "bytes": 1895,
+      "sha256": "a9fb54bca9bc3eaed882831548b1cbf2e8c16f1d3695236bff201a47b888bf64"
+    },
+    {
+      "file": "source/repo/b2-sentinel/scripts/generate_template_wiring.py",
+      "bytes": 8739,
+      "sha256": "03e53f60572e46f15b316d2cc30ab12d4a8b6ae6652e8ecc83411cfb9aa1d4ac"
+    },
+    {
+      "file": "source/repo/b2-sentinel/scripts/validate_template_wiring.py",
+      "bytes": 3762,
+      "sha256": "30162a239a93c5689975a76f121236321725a3a3fe0e836e7f5b4e8f873378a0"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/__init__.py",
+      "bytes": 328,
+      "sha256": "48b96bf64dbe23e4a436c8392604ff43c998617caa8abd6378d4ac31a74b1c9c"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/agents/__init__.py",
+      "bytes": 270,
+      "sha256": "ab41d9aa8281d1f88ebc4da9f57aafbf10b73b993e494643d193716d8e344c2a"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/agents/agent1_regulatory_analyst.py",
+      "bytes": 2356,
+      "sha256": "804977f544a0deed6552e125241491bcd7146118181a03b483709acb21fa7696"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/agents/agent2_forensic_investigator.py",
+      "bytes": 2300,
+      "sha256": "8268a69da9ff1c909890a672f6ef7da1febfee560c8de5b459d6e4f331627994"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/agents/agent3_writer_judge.py",
+      "bytes": 4475,
+      "sha256": "1cc67e88224e8a210759625f23a53e8310317ca842e390effeca073f2e2e3020"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/cli.py",
+      "bytes": 13882,
+      "sha256": "e379b6cc12abffd8955363848c7d2d7d0f5855afdb79bf0adcee32f7ceebe186"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/cognitive/__init__.py",
+      "bytes": 288,
+      "sha256": "1894d52a4c8c0e00ed500ca4e6a874b880c72e4b958c8c6744f27acafca8fc2b"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/cognitive/adapter.py",
+      "bytes": 11669,
+      "sha256": "9c1f77273b1cfb1114ca4bd79c4eb99f92d0a981c86e8c8ec51f7103787cde2a"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/cognitive/alias_resolver.py",
+      "bytes": 2434,
+      "sha256": "a2b66d91455a115915ce2ee374b3a77d61315bf43b267afb43d9d0562bf2494f"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/cognitive/ambiguity_judge.py",
+      "bytes": 3753,
+      "sha256": "2ae9cd3a85d4de970f4c83ef9e3afa68a716374f88b287c5e79407ea20570f90"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/cognitive/config.py",
+      "bytes": 2247,
+      "sha256": "da533a15291c7becb6871553338d3d5096ddd07adacaf70f6b0b8e9ea105f31e"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/cognitive/evidence_hunter.py",
+      "bytes": 4208,
+      "sha256": "9b7568ad1eab6c7ecc49b872947440669fbe5e1ca4cf3f6f3fd2b1589b6dbc22"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/cognitive/models.py",
+      "bytes": 4487,
+      "sha256": "e7a8c2dfc817485ba86088d5dd7c4b2c026cc3ac8b48e981f1ff5db95371a962"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/cognitive/prompts.py",
+      "bytes": 7500,
+      "sha256": "c8198ed7fdb7a16a058ae7cabec7c5d05197fde64cd4ad423c5d7620f925d8d7"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/cognitive/self_critique.py",
+      "bytes": 3676,
+      "sha256": "879594839d6138abd8135bc2e6e219d9655b1361017ce733d9a92a1133b160c1"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/cognitive/synthesizer.py",
+      "bytes": 2835,
+      "sha256": "3955bb6968354b56f68bd248282cdc1fa1575af873f2ec20a666ffee54a7ac1b"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/core/__init__.py",
+      "bytes": 48,
+      "sha256": "c09de31ecccad8b70056a49e0a077e81f0f69827ae41c9578703bc6dc06c8ae9"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/core/models.py",
+      "bytes": 9850,
+      "sha256": "789ff2d4e3c8f2ce938c0f2d2304b1a4972427e9bffc360533da34e8c3ebed46"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/core/paths.py",
+      "bytes": 2192,
+      "sha256": "6fadd2c3878f2811efaa0f16ab72f4c88effa8ef5cfacaf2a3ac64cc1905ec74"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/core/status.py",
+      "bytes": 2233,
+      "sha256": "071542066052e910669921e84bef8c17549c3ab16f425e6dae852f44202afbf9"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/innovations/__init__.py",
+      "bytes": 104,
+      "sha256": "70c32cfb1ae115095653a6f3004ed52b2d0ec39fcdf4918aa123f49e2f9e5fec"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/innovations/alias_brain.py",
+      "bytes": 2059,
+      "sha256": "e54150109fb47ea5f60f06c296d0ba035f5da0a98a78051db53831c43e54edf7"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/innovations/evidence_debt.py",
+      "bytes": 3082,
+      "sha256": "25cd8ae406ae38b04de57574e7528250de4636c283f2aa16f4365642716afba2"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/innovations/rollover_memory.py",
+      "bytes": 4785,
+      "sha256": "ac3b276c74ef864eedfc436f4472d83d0a294c83ae860b1a7938727f6d3e80a2"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/innovations/run_delta.py",
+      "bytes": 2594,
+      "sha256": "55d51d2710f4ec387a74a2398bf394fc8e06ef3aeaf6bf6f03f6345bd5214428"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/layer1_form_brain/__init__.py",
+      "bytes": 236,
+      "sha256": "9da776830ad816ebe779cc5d29e382fe8ea957d6bc634573a9ce046be7d3b68a"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/layer1_form_brain/completion_policy.py",
+      "bytes": 1358,
+      "sha256": "36ab2ce9988518cbec1892d3dadcebc902222608035a0f2ef998f326be87fccc"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/layer1_form_brain/obligation_graph.py",
+      "bytes": 6864,
+      "sha256": "927bc49cfbf0f97779e296fa32d555914005f4e79264db39a2e12e18342d9e69"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/layer1_form_brain/required_inventory.py",
+      "bytes": 701,
+      "sha256": "bd0ec2b25b772d600a42f74418b013a4740e78c3b2d5a894a60df6931ac351bf"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/layer1_form_brain/required_policy.py",
+      "bytes": 2599,
+      "sha256": "7654b30641fd7116bc14ab8c65d1b9594c28b0f0730d66c5de38327aa9340936"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/layer1_form_brain/write_authority.py",
+      "bytes": 5052,
+      "sha256": "a5833b305c168aa45d9cc73d77b8ae1ab0207b96deeb2dc7724f988a6e4d4372"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/layer2_evidence_hunter/__init__.py",
+      "bytes": 247,
+      "sha256": "3357fb3ebf796f8b4d1d253fcb2d745b1ed274160bd8ba0bf391561a5a3ddaaf"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/layer2_evidence_hunter/evidence_ledger.py",
+      "bytes": 453,
+      "sha256": "88003cf666ef8c1f4491fe32192fa791fb8165990f2472104cd51e25c61845d2"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/layer2_evidence_hunter/extractors.py",
+      "bytes": 17711,
+      "sha256": "4e883789a4ab919d2be88135de933d89f438a521779d0ac657a7b05f5fe102bf"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/layer2_evidence_hunter/retrieval.py",
+      "bytes": 2497,
+      "sha256": "42fe5aa2a4ee8f128f928334dc8f742393e8b7de63a5268ddef25ef70aa99927"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/layer2_evidence_hunter/wave1_collect.py",
+      "bytes": 1503,
+      "sha256": "34ade2df0b0c7b679023d028ec53561116cd1aaf428f8707832b2b64dc29371c"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/layer2_evidence_hunter/wave2_normalize.py",
+      "bytes": 15696,
+      "sha256": "96f74505e2427e8162964a275c29a4d27817fe4e05efadba317eed3ba0e58629"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/layer2_evidence_hunter/wave3_targeted.py",
+      "bytes": 5966,
+      "sha256": "3adbed00cb20414a61053f61385e71ae9d614aa927289432f1cfaf4d1f71da30"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/layer2_evidence_hunter/wave4_contamination.py",
+      "bytes": 2879,
+      "sha256": "b1c31c3b90fa1ea21a128b275fd28652be162aedc520eee0b78e4a02ec387f72"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/layer3_decision_engine/__init__.py",
+      "bytes": 172,
+      "sha256": "654c3338f643f2129520961402f62362bb833ec37c8d9d2ca0fad9327fad2411"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/layer3_decision_engine/confidence.py",
+      "bytes": 1588,
+      "sha256": "10099526514cea0ebf05e49c4c1768937892d666ace8b3050020359d0e7d6008"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/layer3_decision_engine/decide.py",
+      "bytes": 11295,
+      "sha256": "369337d5865af8476fef11e84b1490fc4ae2b119330c103c6b5ba43dffebd20d"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/layer3_decision_engine/states.py",
+      "bytes": 219,
+      "sha256": "68761bbefc7249e8ced21853a47984d31d35930207d7f93b33bebbcf4ed4ca56"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/layer3_decision_engine/value_sanity.py",
+      "bytes": 2407,
+      "sha256": "9b08fb9faf397fe97918e488f2f4083e84eef8718c953b58c8f768c9bdeb1cfb"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/layer4_controlled_writer/__init__.py",
+      "bytes": 209,
+      "sha256": "6d57750bc49effebb68df809c5e8941ea8fe2d73878ef49dad137b185b1f0315"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/layer4_controlled_writer/manual_correction.py",
+      "bytes": 2474,
+      "sha256": "311b8e1f742afdacd2ad24e1361f578a68e08b8fe985ac1275557af9ae25bf9f"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/layer4_controlled_writer/na_inserter.py",
+      "bytes": 832,
+      "sha256": "c08932eab2cf13f3af9f8f9d248cc48e76bd9b733d30f800540757b2de6a938b"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/layer4_controlled_writer/ooxml_writer.py",
+      "bytes": 6553,
+      "sha256": "1249291e9c67bfd7a8d2b5602555923f7e1b1b68a01e26830d76491e9fbda0ba"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/layer4_controlled_writer/patch_planner.py",
+      "bytes": 2645,
+      "sha256": "9fc8d8db2f37f5a3beb4ae4fbf1953b97cce020593cc8d4ee3f2647169280773"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/layer5_structure_guard/__init__.py",
+      "bytes": 120,
+      "sha256": "9fbd54cbe94e39ec636b38461ab3bd650d73d595a8923d43efa604b15a3c6fb9"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/layer5_structure_guard/fingerprint.py",
+      "bytes": 1932,
+      "sha256": "ca79abb000a7125e020964a7405cf4da12a5418237b750149cea4dc8d62cadfc"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/layer5_structure_guard/guard.py",
+      "bytes": 2754,
+      "sha256": "c269d1432825bf997f929d5602d815dd5e06e628ba9f64e4fe3ef1a7aa2e23ed"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/layer6_completion_judge/__init__.py",
+      "bytes": 182,
+      "sha256": "ed061d578c9e3a42541baf25d019cc239bb0f7028f142b47666d957813d7c5a7"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/layer6_completion_judge/judge.py",
+      "bytes": 5556,
+      "sha256": "945cc61abfec3356fcfe86ecec796958fca1d487e8c97b0be53fe77d465d65ce"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/layer6_completion_judge/self_critique.py",
+      "bytes": 4079,
+      "sha256": "fe965f62179cb643f515132d6035b3f6fbba749caee923090ad6803461352617"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/layer6_completion_judge/visible_text.py",
+      "bytes": 1887,
+      "sha256": "e12f3a70f35c81c97f862dd8999bd8ee143f764fd1e7ff0ccc39f47b4147d967"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/layer7_exception_engine/__init__.py",
+      "bytes": 135,
+      "sha256": "51aa4ac89714ee4259b89026ee6db387ce4241bd3805d921ae536c76a9ac3a6f"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/layer7_exception_engine/exception_ledger.py",
+      "bytes": 559,
+      "sha256": "48135ea60d1548dcab27a10b5e3281af1f138578315cc88a1cb5781100b88150"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/layer7_exception_engine/na_workflow.py",
+      "bytes": 1867,
+      "sha256": "ec67a69c403ed10cddee1fbee0ec68bb4f5b83cfee9e9114b1e625bdab163433"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/layer7_exception_engine/policy_loader.py",
+      "bytes": 827,
+      "sha256": "f5958e735aff11e37e5d6217021e436e28dc887e0e5266deb93e6a10cc7a0740"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/layer8_audit_packet/__init__.py",
+      "bytes": 133,
+      "sha256": "4338762911320aa9bd5e424587af5cae46bff65bcc3a4849240de5a4d9240129"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/layer8_audit_packet/explainability.py",
+      "bytes": 3231,
+      "sha256": "516018fb1b45bf0034ee87c9d1f0b7a8979e57c4d7ba6c86244b3339f802a6d9"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/layer8_audit_packet/generator.py",
+      "bytes": 7778,
+      "sha256": "8795ed4d4ade6145f1ce75cee4709d571cfac30f9be338c830ac128060ca7d97"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/layer8_audit_packet/outbox.py",
+      "bytes": 5713,
+      "sha256": "6c48d328ad03c74c1070a261310f1566ce0bda315935d969ff8a2bf7dc9d244d"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/layer8_audit_packet/run_manifest.py",
+      "bytes": 1129,
+      "sha256": "3a3a79e35d70590a82fea4caca301f38e01709a923fef26d4720c6d795e72bc6"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/ontology/__init__.py",
+      "bytes": 334,
+      "sha256": "858f7c6282e159830fe9007305a1b31c5c3f22785681033f408b477ae13d0d5d"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/ontology/builder.py",
+      "bytes": 6337,
+      "sha256": "97d747fa740d9e848d9f642389e42566eaa1237ad394b2a837d2d03201027b50"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/ontology/consistency.py",
+      "bytes": 5492,
+      "sha256": "d78b3563519dada1fa20ce44898c5f7ac5a82af7dba88f044bb93c8a9435357c"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/ontology/schema.py",
+      "bytes": 2976,
+      "sha256": "a69aa27d6fc3e64e45cca8572e9c417f325d52dfa74a043b302ef596adcaa305"
+    },
+    {
+      "file": "source/repo/b2-sentinel/src/b2_sentinel/pipeline.py",
+      "bytes": 3566,
+      "sha256": "1e68b5ed8247f7ce365462105efe8bce8a73fd5d9a9606421c3c035d94be21bd"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/A19.docx",
+      "bytes": 147014,
+      "sha256": "214f761c789ed59790ece3b0cacd28ee755127f1741419119377baaafec2f69d"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/A19c.docx",
+      "bytes": 121547,
+      "sha256": "bf3f6504fc8eeeb6dfeec6dd0197aebc3b449d96f5dbc54c436267774304e49c"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/B24_RL1.docx",
+      "bytes": 95987,
+      "sha256": "9b64cf729b18b177cf89afdb56a33c14771c09b488bb0db03ba6b538f3809f5b"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/B24_RL2.docx",
+      "bytes": 92652,
+      "sha256": "4ae7e69acd66f051f52c356074bd58b384478ee09f823f4e3ee09becb972614e"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/B24_RLC.docx",
+      "bytes": 99647,
+      "sha256": "d2a83e2a4c6fc89964c084ec3a86f6a832824adb72f2bba526dbaba183d8937b"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/B78.docx",
+      "bytes": 102621,
+      "sha256": "dcf0f8b88654fc7c7e0a3df379c1eb6da2457b90dd9d7b7e3d78d4f8ce796976"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/B81.docx",
+      "bytes": 82559,
+      "sha256": "91388d674c91b8b61413fca3c35b13e724ae9288421a2697bc49d5147aec6160"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/B81_A19__B78__B82__B24.docx",
+      "bytes": 90434,
+      "sha256": "05d2ed8fab95c2970b9172acca9f04817724c18c6438aa79b0723018269d0fee"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/B81_B24_only.docx",
+      "bytes": 82559,
+      "sha256": "91388d674c91b8b61413fca3c35b13e724ae9288421a2697bc49d5147aec6160"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/B82.docx",
+      "bytes": 132641,
+      "sha256": "08c56276947725b9d29deda7c8feb797ea4f7e101fd744f2a94fba9a347fcb34"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/B85.docx",
+      "bytes": 72693,
+      "sha256": "aaf8c1dbf96c5e93ed89a5ef41c1772210228928c57f4ff39b06100c7fff537f"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/B89.docx",
+      "bytes": 87075,
+      "sha256": "1ceae9852390dc3e4df1f2dc45d5b8d290acaa352d25d08cd3d55cf1cb22085c"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/B89_Insulation_Inspection_on_Test_Plate.docx",
+      "bytes": 89401,
+      "sha256": "0370b04196904e3066a09eb07807b966a2e40a40627c36c110c0532d7b247112"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/B89_On_Tank_Car.docx",
+      "bytes": 85784,
+      "sha256": "a8986c253c73f27d318fb46bf34f4e12ccdd91e149586201ffd3beca8490b172"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/B90.docx",
+      "bytes": 83851,
+      "sha256": "ca477c55a0653e83e55bab412b4b10b8e5f626245d25d51cddb31c4ff069e331"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/B90_RLS.docx",
+      "bytes": 86383,
+      "sha256": "8ff328ef726834f252789fabd011cecfe67e18551cd3b5ceaef3fc968698843d"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/C10_Repair_of_Interior_Coatings.docx",
+      "bytes": 95031,
+      "sha256": "9f3fff11272b8596c447a959b1735f833b4d7d8e5966c08db189d46f54c59abe"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/C10_Repair_of_Interior_Linings.docx",
+      "bytes": 95515,
+      "sha256": "504400af6aea5b7447ea31c3bd1a557ddac02567e808486b993c5dd324b460a3"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/C4aC_Closures.docx",
+      "bytes": 84621,
+      "sha256": "22c2176b8be4f600dbfaad625ab5e18597eaa9339db0e33480be79388293a8de"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/C4aF_Fittings.docx",
+      "bytes": 84208,
+      "sha256": "54bdf58db70278816a36b007680599f5122ececeb8ba7116f5a440a451cdbc9d"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/C4aI_Instruments.docx",
+      "bytes": 89385,
+      "sha256": "1eee34fde2d4730fbdb534c0d57d33293792dadc5adf076004c4d16da724bcbd"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/C4aS_Safety_Relief_Devices.docx",
+      "bytes": 90456,
+      "sha256": "7861f9b18cb4e24aba7dd798c6f577ed27458c98d3e1fb10f16fbebc592704e1"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/C4aV_Valves.docx",
+      "bytes": 88079,
+      "sha256": "64d2b720d6babe4d9ec3c6ade69cb7ac399c9edaf444539a5db08c064a3b3858"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/C4mC_Closures.docx",
+      "bytes": 94223,
+      "sha256": "677ec981ac000c6acaa45d6eb2ea04f9fa160d09d3019ac1d870b55b3917b5b5"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/C4mF_Fittings.docx",
+      "bytes": 94120,
+      "sha256": "bbac29be0f5e1121f9d98fc77b6d3247500f2511152927d6661255506aa1e7b9"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/C4mH_Heater_Systems_Test_Fixture.docx",
+      "bytes": 91745,
+      "sha256": "14e6afd67388ab6a1be9c5bf3fd597109dadeef66c54dabb4d84807fb4a705d1"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/C4mI_Instruments.docx",
+      "bytes": 95992,
+      "sha256": "cc65562e50764ae450b1b47b91af060fe89acecc2620bb9356aef7b1f0bbdd18"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/C4mS_Safety_Relief_Devices.docx",
+      "bytes": 98191,
+      "sha256": "9035bd24166f187ffa686bd0bfe82b7bfd1822acc0d5db84a6c0d242b788bf26"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/C4mV_Valves.docx",
+      "bytes": 95120,
+      "sha256": "6517ba260882165d475a2bdc620800ce5631d2438da7f5f50be6cd65aa5f6c1c"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/C5C_Closures.docx",
+      "bytes": 95147,
+      "sha256": "5552a5d15a5220533b7739b5ac0abf7f314908e214244c03e6468470cb047778"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/C5F_Fittings.docx",
+      "bytes": 95036,
+      "sha256": "ad61a280fd0c8d579602f68dbc32af8aed8fd47e038ef5b3fded24a5b98d57ec"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/C5H_Heater_Systems_Test_Fixture.docx",
+      "bytes": 96449,
+      "sha256": "ca3dd4d4b921033ef56654817fd23bee3e3cbb54343727c34f97b24158a47a30"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/C5I_Instruments.docx",
+      "bytes": 94677,
+      "sha256": "a48e526b07ef05d08edf882f15e3e69739794e2926bb80b592f20768b3244986"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/C5S_Safety_Relief_Devices_512026.docx",
+      "bytes": 100604,
+      "sha256": "6341a9aa6612ef3265221e3f870a324056a21317ba9211f7ad4a138e3e7d282a"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/C5V_Valves_512026.docx",
+      "bytes": 95363,
+      "sha256": "e0429f0368af4381f1cf4ef8a279ed13578b1eac91f34a411a431f7328973a25"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/C6i_Installation_of_Service_Equipment_512026.docx",
+      "bytes": 87023,
+      "sha256": "cd0fe9f5806a8cc20a741dcfbf91ea3d21137d9dea2ac7bb5c010b22ae332dfe"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/C6r_RR_Service_Equipment_with_Modification_512026.docx",
+      "bytes": 97733,
+      "sha256": "e403a4cf3e5ccc9d01b3c46aab2a9850901a05a197467c8b1cf456b8d20be260"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/C7_C10_Combination_Coatings.docx",
+      "bytes": 97591,
+      "sha256": "b1db3bb66b7b5a2f5d12394433febdb9c1624c35b7c086a5f9ec46ca3efef666"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/C7_C10_Combination_Linings.docx",
+      "bytes": 101315,
+      "sha256": "b52f266a308259ea9e54524f252c8945a0345256e4c06d70a38dbf5c2ae2938f"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/C7_C8_Combination_Coatings.docx",
+      "bytes": 99194,
+      "sha256": "3ac371b3d221dd799148cb9f17ea4274c9125cbe96a2c3df7cea439d4d172e16"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/C7_C8_Combination_Linings.docx",
+      "bytes": 101481,
+      "sha256": "ab7e071cce21382d2b1d70adf7ad8af3ccb50310da70991c76f65156aadece22"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/C7_C8__C10_Combination_Coatings.docx",
+      "bytes": 110182,
+      "sha256": "351ebfaf7571bbb3f12e49919ae3b53c0b7b7277e5d005a3a34b61499bd022ff"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/C7_C8__C10_Combination_Linings.docx",
+      "bytes": 112360,
+      "sha256": "11867963decd4fd35b35289834f389f2a1be96fec22fd2cc6068b5d3e789834a"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/C7_Removal_CoatingsLinings.docx",
+      "bytes": 84692,
+      "sha256": "86bfb44687a1419ca0dc32ed7ace9a224fa934da8bcb7dbf0db432cee0dce586"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/C8_Application_of_Interior_Coatings.docx",
+      "bytes": 99905,
+      "sha256": "b223b8a05fc9fd66ae8da1bd4817acbebebcc4a12373478a5e4c1df2a8f23294"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/C8_Application_of_Interior_Linings.docx",
+      "bytes": 102001,
+      "sha256": "3d1cdc56874aa5a3a7acf0442157525c11cdf8306c35003ee96660b82d5626a0"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/C9_Qualification_of_Interior_Coatings.docx",
+      "bytes": 86183,
+      "sha256": "5b4d0ad47dde20c1cd8bd6c79304266f68e4c437a4abb0a7082ef022c558ed3b"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/C9_Qualification_of_Interior_Linings.docx",
+      "bytes": 90420,
+      "sha256": "76a9d20a6c5a64e22a767108e11a0bbd821b61c56a0a6a7b351e71d92b133bdc"
+    },
+    {
+      "file": "source/repo/b2-sentinel/templates/Cover_Page.docx",
+      "bytes": 86077,
+      "sha256": "5bef95030965b636f230cacb82ae5c7fe49acb68b0e0f4ef41b9d0164917fd2d"
+    },
+    {
+      "file": "source/repo/b2-sentinel/tests/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "source/repo/b2-sentinel/tests/conftest.py",
+      "bytes": 3462,
+      "sha256": "8855e0a3168f1792e9942d5a8493d84848851f3eebb707243848bea9acd309b6"
+    },
+    {
+      "file": "source/repo/b2-sentinel/tests/test_alias_brain.py",
+      "bytes": 2736,
+      "sha256": "0b2203bc3f2eb308f26a4699e42b174f9cca42121c16b3740864e93d6e68eba2"
+    },
+    {
+      "file": "source/repo/b2-sentinel/tests/test_cli_form_validation.py",
+      "bytes": 2514,
+      "sha256": "12db09f629758316dac44240723c0e50f139d201fb3486447f5b66d71bbfea35"
+    },
+    {
+      "file": "source/repo/b2-sentinel/tests/test_cognitive.py",
+      "bytes": 9968,
+      "sha256": "63c345e69fff2c1c9aa7581ed7b2a24a3f919c5a2ca864a4e8e828edc3e86084"
+    },
+    {
+      "file": "source/repo/b2-sentinel/tests/test_completion_judge.py",
+      "bytes": 6275,
+      "sha256": "cfcb401a04a7e75fb30e04edf1353d54707be7d06d3c4048db13cf201b89f4b4"
+    },
+    {
+      "file": "source/repo/b2-sentinel/tests/test_cover_page_json_extraction.py",
+      "bytes": 10005,
+      "sha256": "3893fef692f17a22f32279bb7c76bc3e0ff1b202e8479889b7bd0759e45b9cc2"
+    },
+    {
+      "file": "source/repo/b2-sentinel/tests/test_decision_matrix.py",
+      "bytes": 5129,
+      "sha256": "456a31ff29d408e178ce3fd37c42321b70e57c002affdf3e16c051785ff9ced1"
+    },
+    {
+      "file": "source/repo/b2-sentinel/tests/test_end_to_end.py",
+      "bytes": 3651,
+      "sha256": "1c66e3ba3e66fe1d58998c59e78f6b752e4389f6649f84e32b5dad82952b1e21"
+    },
+    {
+      "file": "source/repo/b2-sentinel/tests/test_na_workflow.py",
+      "bytes": 4174,
+      "sha256": "7209cd9451e83a4dc4799c998d47d3947a4a34d228626c4441c9709ad46be452"
+    },
+    {
+      "file": "source/repo/b2-sentinel/tests/test_obligation_graph.py",
+      "bytes": 1731,
+      "sha256": "c27e6f29792e2e07e61ee8cdc69b27183abca1c2b0b98fb287c29867899bc56c"
+    },
+    {
+      "file": "source/repo/b2-sentinel/tests/test_outbox_packet.py",
+      "bytes": 2835,
+      "sha256": "9c98a6bbdf6a3fefd39ef49d7d9c9d430038c0d946a3e49498dfee926c511a0b"
+    },
+    {
+      "file": "source/repo/b2-sentinel/tests/test_required_policy.py",
+      "bytes": 3848,
+      "sha256": "8b970cdd390c6f8f9982488ad172ea2f4493d1dd93f34a2fb2aa4a8c2804734e"
+    },
+    {
+      "file": "source/repo/b2-sentinel/tests/test_run_delta.py",
+      "bytes": 3524,
+      "sha256": "e570a5e21d227fb1da739b33cfe4e996deb1fae0ce1b51d34fc057e7ff7fc830"
+    },
+    {
+      "file": "source/repo/b2-sentinel/tests/test_structure_guard.py",
+      "bytes": 3769,
+      "sha256": "1c73066ae156d5ef4c4e2a53f9591a2b01415b8150db99a08bc4af8d6cafb433"
+    },
+    {
+      "file": "source/repo/docs/ALL_ACTIVITIES_SCOPE.md",
+      "bytes": 950,
+      "sha256": "e84ed238c07bb03006140888ad452e7ece5dd45c312afb60778ba55e0efcbb01"
+    },
+    {
+      "file": "source/repo/docs/ARCHITECTURE_ANALYSIS_RESPONSE.md",
+      "bytes": 11699,
+      "sha256": "e4ac41973a2a1e9c99c7b17856676db81a2870c730b3d93c892c60ae4da428f9"
+    },
+    {
+      "file": "source/repo/docs/REPO_HYGIENE_INVENTORY.md",
+      "bytes": 2643,
+      "sha256": "45e6bb2c1b015b99a6272eb89a96420162452edeab09b73ae35ceb5e4d01da3f"
+    },
+    {
+      "file": "source/repo/docs/SPEC-1-LOCAL-MVP.md",
+      "bytes": 7359,
+      "sha256": "7474d1414996549ae386de189c2dbc06ae6cf24d23464f8a51aba7efa01c9433"
+    },
+    {
+      "file": "source/repo/docs/SPEC-1-PERSONAL.md",
+      "bytes": 9414,
+      "sha256": "6762e0a3391c1f16a9196fbceb1ca3a310a961fc2ade383045c655b02c96918e"
+    },
+    {
+      "file": "source/repo/docs/TEST_RUN_REPORT.md",
+      "bytes": 1088,
+      "sha256": "526c548c8272c4f7afbcdc2cad9a6572939af41b10cb461a7868d98e21a0bd95"
+    },
+    {
+      "file": "source/repo/docs/codebase_issue_tasks.md",
+      "bytes": 1911,
+      "sha256": "2493ce957d32fd1125000e8043880231306205291fed58a5400cdfeb7222f602"
+    },
+    {
+      "file": "source/repo/mapping/cell_inventory.csv",
+      "bytes": 16104,
+      "sha256": "82bb3b471e13b1f644129d55cd60c93e4bafbe14d103901f742b87ddfb5ef43f"
+    },
+    {
+      "file": "source/repo/pyproject.toml",
+      "bytes": 850,
+      "sha256": "839b5afb96cde3eef7295e4dee0e26916c6c7f4c5ebf5d9ec16d8a48bbfa5072"
+    },
+    {
+      "file": "source/repo/requirements.txt",
+      "bytes": 42,
+      "sha256": "9a8ad7127fd3c5996bdc588ef84bcb9c7b0ba29ab8b944a6a475133ff5e77478"
+    },
+    {
+      "file": "source/repo/run-tests.ps1",
+      "bytes": 244,
+      "sha256": "d535e9fa63a11b51022b3fbf1801773279aa8dcdf885a22c82d63156ace68787"
+    },
+    {
+      "file": "source/repo/samples/docupipe/minimal_docupipe_response.json",
+      "bytes": 363,
+      "sha256": "e9f673fed2916eb237de7a46f7cb3e4dac4ecf2ed5fc0c05bfe0852c80c48305"
+    },
+    {
+      "file": "source/repo/schemas/ACTIVITYS_SCHEMAS_2026_CLEANED/B24 (RL2).docx",
+      "bytes": 88767,
+      "sha256": "8847e9f05af7ac8297793b46f05870f15fd81640aadada827dec34381562be4d"
+    },
+    {
+      "file": "source/repo/schemas/ACTIVITYS_SCHEMAS_2026_CLEANED/B24_strict_corrected.json",
+      "bytes": 5181,
+      "sha256": "3664725e8021821f114521f883634e19bf3bf8cb5b511b6b9dd891989a30edc6"
+    },
+    {
+      "file": "source/repo/schemas/ACTIVITYS_SCHEMAS_2026_CLEANED/B81.docx",
+      "bytes": 82559,
+      "sha256": "91388d674c91b8b61413fca3c35b13e724ae9288421a2697bc49d5147aec6160"
+    },
+    {
+      "file": "source/repo/schemas/ACTIVITYS_SCHEMAS_2026_CLEANED/B89 (Insulation Inspection on Test Plate).docx",
+      "bytes": 87075,
+      "sha256": "1ceae9852390dc3e4df1f2dc45d5b8d290acaa352d25d08cd3d55cf1cb22085c"
+    },
+    {
+      "file": "source/repo/schemas/ACTIVITYS_SCHEMAS_2026_CLEANED/B89.docx",
+      "bytes": 87075,
+      "sha256": "1ceae9852390dc3e4df1f2dc45d5b8d290acaa352d25d08cd3d55cf1cb22085c"
+    },
+    {
+      "file": "source/repo/schemas/ACTIVITYS_SCHEMAS_2026_CLEANED/B89_strict_corrected.json",
+      "bytes": 3136,
+      "sha256": "ee1afec4edbe1e6b1ab40dfa7e5e6f3516ccb09b9708f9c894cfff8b133443db"
+    },
+    {
+      "file": "source/repo/schemas/ACTIVITYS_SCHEMAS_2026_CLEANED/B90 (RLS)..docx",
+      "bytes": 83851,
+      "sha256": "ca477c55a0653e83e55bab412b4b10b8e5f626245d25d51cddb31c4ff069e331"
+    },
+    {
+      "file": "source/repo/schemas/ACTIVITYS_SCHEMAS_2026_CLEANED/B90.docx",
+      "bytes": 83851,
+      "sha256": "ca477c55a0653e83e55bab412b4b10b8e5f626245d25d51cddb31c4ff069e331"
+    },
+    {
+      "file": "source/repo/schemas/ACTIVITYS_SCHEMAS_2026_CLEANED/B90_strict_corrected.json",
+      "bytes": 3515,
+      "sha256": "0a38cb5d04713687d03f88b17c8b8955a88661313239e08de6e031b4b9e0117f"
+    },
+    {
+      "file": "source/repo/schemas/ACTIVITYS_SCHEMAS_2026_CLEANED/Cover Sheet..docx",
+      "bytes": 86077,
+      "sha256": "5bef95030965b636f230cacb82ae5c7fe49acb68b0e0f4ef41b9d0164917fd2d"
+    },
+    {
+      "file": "source/repo/schemas/ACTIVITYS_SCHEMAS_2026_CLEANED/SCHEMA_REVIEW_REPORT.json",
+      "bytes": 1599,
+      "sha256": "070bf33d33a9bfed7b23bc1632371a91fd596eaa8ed0131bcc018fcdc6a2912d"
+    },
+    {
+      "file": "source/repo/schemas/activity_2026_cleaned/B24_strict_corrected.json",
+      "bytes": 5181,
+      "sha256": "3664725e8021821f114521f883634e19bf3bf8cb5b511b6b9dd891989a30edc6"
+    },
+    {
+      "file": "source/repo/schemas/activity_2026_cleaned/B89_strict_corrected.json",
+      "bytes": 3136,
+      "sha256": "ee1afec4edbe1e6b1ab40dfa7e5e6f3516ccb09b9708f9c894cfff8b133443db"
+    },
+    {
+      "file": "source/repo/schemas/activity_2026_cleaned/B90_strict_corrected.json",
+      "bytes": 3515,
+      "sha256": "0a38cb5d04713687d03f88b17c8b8955a88661313239e08de6e031b4b9e0117f"
+    },
+    {
+      "file": "source/repo/schemas/activity_2026_cleaned/SCHEMA_REVIEW_REPORT.json",
+      "bytes": 1599,
+      "sha256": "070bf33d33a9bfed7b23bc1632371a91fd596eaa8ed0131bcc018fcdc6a2912d"
+    },
+    {
+      "file": "source/repo/schemas/contracts/machineFieldMap.v1.schema.json",
+      "bytes": 2796,
+      "sha256": "fac1f562876cf9e02b87604f5c05932e730f83d630971a658fe4d8487c812e49"
+    },
+    {
+      "file": "source/repo/schemas/maps/B24_RL2.approval_map.json",
+      "bytes": 2852,
+      "sha256": "046cdc3fa5a1310a3a6014e469d0c59c5a3e36f9b59db137d5aed183affca9e2"
+    },
+    {
+      "file": "source/repo/schemas/maps/B24_RL2.json",
+      "bytes": 3124,
+      "sha256": "4a8ab1aedee28a5c775f2dac19da34939c72641048ccf175ef1c3a49d33e2b7a"
+    },
+    {
+      "file": "source/repo/schemas/maps/B81.approval_map.json",
+      "bytes": 1995,
+      "sha256": "5320b3b6c618d78459b07e47a08c4036ac32f33e5144c25f8de2fabfe27b7719"
+    },
+    {
+      "file": "source/repo/schemas/maps/B81.json",
+      "bytes": 2008,
+      "sha256": "e23ec315266c739be98e999575a202f8a991942b6ef8285cbd93e592b1665a05"
+    },
+    {
+      "file": "source/repo/schemas/maps/B89.approval_map.json",
+      "bytes": 2467,
+      "sha256": "f326dc959c03780a51a1f26e047a38b40f99c66b47532dda768509a991ade66f"
+    },
+    {
+      "file": "source/repo/schemas/maps/B89.json",
+      "bytes": 3093,
+      "sha256": "b93d9ce53ca36cbeddcb8ae49fcc66ec3e8c6884e3a2bd5e01cf75a6c1103d70"
+    },
+    {
+      "file": "source/repo/schemas/maps/B90.approval_map.json",
+      "bytes": 2167,
+      "sha256": "d6ce68febd4c47798cbdebd06df312735a894cca0da18dfb153641731d71116f"
+    },
+    {
+      "file": "source/repo/schemas/maps/B90.json",
+      "bytes": 2761,
+      "sha256": "ae29c60c59ca7972e4fd77876d6f0e8fc78d685d7b5987cc71528b896b4be70a"
+    },
+    {
+      "file": "source/repo/schemas/maps/Cover_Page.json",
+      "bytes": 3103,
+      "sha256": "88547eaf1f3540fd7714c39584366b09d6cf2e2475d3a47006b32778d3f7edfb"
+    },
+    {
+      "file": "source/repo/schemas/templates/B24_RL2.json",
+      "bytes": 2257,
+      "sha256": "a15f72d0a69c69a8c717da30a201a57d31062f4332b3eb837c15ef3b112e018a"
+    },
+    {
+      "file": "source/repo/schemas/templates/B81.json",
+      "bytes": 1449,
+      "sha256": "6c87ba4dc7d8908458ef68df2ec5597650e93961c458e711947f1daf04870736"
+    },
+    {
+      "file": "source/repo/schemas/templates/B89.json",
+      "bytes": 2335,
+      "sha256": "1ae1f70561c75bbd4709f4094c8ff3f747ecc957d336e253851c4f144248c7f0"
+    },
+    {
+      "file": "source/repo/schemas/templates/B90.json",
+      "bytes": 2077,
+      "sha256": "9993700a661bc6b203f3a350c96be0808fdb769c97f1c1a35d1716137d38a9e3"
+    },
+    {
+      "file": "source/repo/schemas/templates/Cover_Page.json",
+      "bytes": 1895,
+      "sha256": "a9fb54bca9bc3eaed882831548b1cbf2e8c16f1d3695236bff201a47b888bf64"
+    },
+    {
+      "file": "source/repo/scripts/benchmark_autonomous.py",
+      "bytes": 1192,
+      "sha256": "ee51860d2e6ad8e4e7822c6c1fa96ac679982726bdb373361d1abf2fbe7d67f0"
+    },
+    {
+      "file": "source/repo/scripts/dedupe_redundant_pdfs_vs_combined.py",
+      "bytes": 4692,
+      "sha256": "f294a717f0f77607edc4623ed7b07a0fc1f1e3a014cd8d80276fc5ee37518e48"
+    },
+    {
+      "file": "source/repo/scripts/discover_template_tables.py",
+      "bytes": 459,
+      "sha256": "74d9f5d251a91442caa1ea2544890cb576b1c0e4c8bb8841219a963903c264da"
+    },
+    {
+      "file": "source/repo/scripts/install_chatgpt_vscode_extension.sh",
+      "bytes": 672,
+      "sha256": "e12047dee69d11fd712ee1d802944bcdc10b441b6c8a18457fd63bbd5a67a708"
+    },
+    {
+      "file": "source/repo/scripts/make_release_zip.ps1",
+      "bytes": 1467,
+      "sha256": "f68e31965e33c3ed482ce3a9f15e969cacf8b672e63dc8e8d84814c84ec1134b"
+    },
+    {
+      "file": "source/repo/scripts/run_local_inbox.bat",
+      "bytes": 110,
+      "sha256": "4d5f3681a90d8ab48ece85cad820b6b812515401f64fe3ca53741843269663e3"
+    },
+    {
+      "file": "source/repo/scripts/run_local_inbox.ps1",
+      "bytes": 606,
+      "sha256": "5024da60c8ce54b3a080093aaf145a7fc1cbf3558c2ca7fcb6acc37ee9633b7e"
+    },
+    {
+      "file": "source/repo/scripts/setup-autonomous-audit-pipeline.ps1",
+      "bytes": 1553,
+      "sha256": "5d346f9a44f40ca37656d57654082da8eb996b90d321d5299ea313d6b73cb4d3"
+    },
+    {
+      "file": "source/repo/src/b2_automation/__init__.py",
+      "bytes": 85,
+      "sha256": "6ee03d4ee1b9869ed6f71086e66fe34d13909c08703a45eb91a1de80ceeb55d5"
+    },
+    {
+      "file": "source/repo/src/b2_automation/analyst_agent.py",
+      "bytes": 10263,
+      "sha256": "49cb6f221c8bbe679bca906d62bc554d3900b06d01a135a1656d516a41819f5d"
+    },
+    {
+      "file": "source/repo/src/b2_automation/approval_maps.py",
+      "bytes": 9442,
+      "sha256": "5375463c0fed335a153bfd0d00e82ca51692bfe1773c982d32db10abb424c724"
+    },
+    {
+      "file": "source/repo/src/b2_automation/audit_text_safety.py",
+      "bytes": 4925,
+      "sha256": "e7b0cfe58ca4b9d02056fc3662df720bfd216a0bc71ef46343029b3d638b999c"
+    },
+    {
+      "file": "source/repo/src/b2_automation/audit_validation.py",
+      "bytes": 15707,
+      "sha256": "63fa95a3795835b54aa43aa52dfe933efeda76237bb3530840980c0da3c865bd"
+    },
+    {
+      "file": "source/repo/src/b2_automation/autonomous_contracts.py",
+      "bytes": 11303,
+      "sha256": "67fa842393674d36eaaf8949256f2921ff131e605def7ffb2f209495985f5e1e"
+    },
+    {
+      "file": "source/repo/src/b2_automation/autonomous_pipeline.py",
+      "bytes": 8734,
+      "sha256": "ac079da1502477e8e37e3b7439adaf6340971c80aa43f32bdb84beeaf3eafc90"
+    },
+    {
+      "file": "source/repo/src/b2_automation/cell_boundary_validation.py",
+      "bytes": 7345,
+      "sha256": "befe363921a3731fe16e66ccf2093ee5a05ba495cc341942f3acda388fe15354"
+    },
+    {
+      "file": "source/repo/src/b2_automation/cell_evidence.py",
+      "bytes": 3349,
+      "sha256": "34909006fd1586b79af214ddf9b0e4c58c3ee7da501deebfd5d2dab4575cecde"
+    },
+    {
+      "file": "source/repo/src/b2_automation/cli.py",
+      "bytes": 11527,
+      "sha256": "f99a3e9702d7753ee61a7f053c3256d273f8f0150a2944f92cc85e95d6ff0477"
+    },
+    {
+      "file": "source/repo/src/b2_automation/decision_engine.py",
+      "bytes": 5473,
+      "sha256": "af8f0acda109dd1b2dd2f1720bcdee3a48f67fc3718ee5a9445d8ff97e039122"
+    },
+    {
+      "file": "source/repo/src/b2_automation/demo.py",
+      "bytes": 1761,
+      "sha256": "4b933505ba100d74b6b48cc54d6b3dd53bd9853e3e3e079b732725d6b268f240"
+    },
+    {
+      "file": "source/repo/src/b2_automation/discover.py",
+      "bytes": 1411,
+      "sha256": "e371a6e7e53f5ffe3c4715416ff7305d053dbd9f46d61f34e957b45e56873808"
+    },
+    {
+      "file": "source/repo/src/b2_automation/docupipe_client.py",
+      "bytes": 8199,
+      "sha256": "eb5b3adaeec57a60798a4a765c3b52f24695446f57311ca09e473ec4e03bc369"
+    },
+    {
+      "file": "source/repo/src/b2_automation/docx_structure.py",
+      "bytes": 4313,
+      "sha256": "b84454c08a2a1990bfd63add7476e9689baea64f03bf8210b2429b2638ef8408"
+    },
+    {
+      "file": "source/repo/src/b2_automation/evidence_assistant.py",
+      "bytes": 6325,
+      "sha256": "13656f832db0d85faa82127d491d5192368d8a9a2191cf5516f61a3f0b278004"
+    },
+    {
+      "file": "source/repo/src/b2_automation/evidence_outputs.py",
+      "bytes": 12609,
+      "sha256": "a1be01efe4eafa8b82c2ebdb0eceb4e97bcbfdfdc2910a066770318e93b72fab"
+    },
+    {
+      "file": "source/repo/src/b2_automation/form_writer.py",
+      "bytes": 4047,
+      "sha256": "32d19203a08a5b3bf6f9022331f904c1cc933f645eed66890426648686202416"
+    },
+    {
+      "file": "source/repo/src/b2_automation/inbox_pipeline.py",
+      "bytes": 72533,
+      "sha256": "8623e43f4d21e2428746c725a660a7e9b17d45ed32adc4eb0208454851c53523"
+    },
+    {
+      "file": "source/repo/src/b2_automation/investigator_agent.py",
+      "bytes": 5388,
+      "sha256": "372b10a48fcea630b1beec7f6790f6b825b19a468c6b21f0f2e6040781a11eaa"
+    },
+    {
+      "file": "source/repo/src/b2_automation/llm_client.py",
+      "bytes": 2561,
+      "sha256": "ac43c15f5daa3d1945209b7c9aa3be4997fba86f80bea8d3dec3a6076a2314b9"
+    },
+    {
+      "file": "source/repo/src/b2_automation/local_extraction.py",
+      "bytes": 64736,
+      "sha256": "47998b53c986b07ccb7b4016a3d93fdb0bfc5bececebb4dfce2ce242efbc1abc"
+    },
+    {
+      "file": "source/repo/src/b2_automation/local_retrieval_constants.py",
+      "bytes": 810,
+      "sha256": "b115228452e8279690fffa1ff0d5f56be814094828b581264fec641ac2535310"
+    },
+    {
+      "file": "source/repo/src/b2_automation/local_semantic_retrieval.py",
+      "bytes": 7703,
+      "sha256": "77fb8d0d6c3184a188bd0f48ca4e22f142e02ef5754dd1d4c143a3274dfa57a4"
+    },
+    {
+      "file": "source/repo/src/b2_automation/normalizer.py",
+      "bytes": 1027,
+      "sha256": "dfbb9f876f34877bc29e6ca4f333184560b7cc3bd8320c020e80bfc5cc9c0040"
+    },
+    {
+      "file": "source/repo/src/b2_automation/ooxml_writer.py",
+      "bytes": 20485,
+      "sha256": "c0ec1e2296838b27936b19d2512a969e52eee4f2755284c671a0e3839880fe17"
+    },
+    {
+      "file": "source/repo/src/b2_automation/paths.py",
+      "bytes": 859,
+      "sha256": "7820ff4a9f57edcac7c69dcb4fb9bbbb31f9b4930cde9042ead2fcc99c8e0da4"
+    },
+    {
+      "file": "source/repo/src/b2_automation/run_store.py",
+      "bytes": 7277,
+      "sha256": "66b31617b7b3e93a09cbf48dff8db46f6f0a2926b2d37a869a2754e12383d3a2"
+    },
+    {
+      "file": "source/repo/src/b2_automation/sample_pipeline.py",
+      "bytes": 1401,
+      "sha256": "b89103ba30c4fb7cf07a37d8d5eebc0504ab67f295cab19c031b9cd3811b3b4e"
+    },
+    {
+      "file": "source/repo/src/b2_automation/schema_catalog.py",
+      "bytes": 3955,
+      "sha256": "2186c7046ce6816dbb4e3f7d4f319a49eb293ebe3e2b2c35844244e202bd7a00"
+    },
+    {
+      "file": "source/repo/src/b2_automation/table_fingerprint.py",
+      "bytes": 7825,
+      "sha256": "56aee5c04fd936db91996e6dbfefc50d23d623b730b0f8b296a0fb69d946a4e7"
+    },
+    {
+      "file": "source/repo/src/b2_automation/validation_gate.py",
+      "bytes": 4336,
+      "sha256": "7d609df75fad9605b27c8fd80c43732e0f6561cd6350bbefa1dcf0362b67e380"
+    },
+    {
+      "file": "source/repo/src/b2_automation/writer_agent.py",
+      "bytes": 5701,
+      "sha256": "1706c39ab8f90e80c75d3e7104af11dcb0439b4f7737728cf36faa222bfa1456"
+    },
+    {
+      "file": "source/repo/templates/B24 (RL2).docx",
+      "bytes": 88767,
+      "sha256": "8847e9f05af7ac8297793b46f05870f15fd81640aadada827dec34381562be4d"
+    },
+    {
+      "file": "source/repo/templates/B24_RL2.docx",
+      "bytes": 88767,
+      "sha256": "8847e9f05af7ac8297793b46f05870f15fd81640aadada827dec34381562be4d"
+    },
+    {
+      "file": "source/repo/templates/B81.docx",
+      "bytes": 82559,
+      "sha256": "91388d674c91b8b61413fca3c35b13e724ae9288421a2697bc49d5147aec6160"
+    },
+    {
+      "file": "source/repo/templates/B81_B24_ONLY.docx",
+      "bytes": 82559,
+      "sha256": "91388d674c91b8b61413fca3c35b13e724ae9288421a2697bc49d5147aec6160"
+    },
+    {
+      "file": "source/repo/templates/B89 (Insulation Inspection on Test Plate).docx",
+      "bytes": 87075,
+      "sha256": "1ceae9852390dc3e4df1f2dc45d5b8d290acaa352d25d08cd3d55cf1cb22085c"
+    },
+    {
+      "file": "source/repo/templates/B89_INSULATION_TEST_PLATE.docx",
+      "bytes": 87075,
+      "sha256": "1ceae9852390dc3e4df1f2dc45d5b8d290acaa352d25d08cd3d55cf1cb22085c"
+    },
+    {
+      "file": "source/repo/templates/B90 (RLS)..docx",
+      "bytes": 83851,
+      "sha256": "ca477c55a0653e83e55bab412b4b10b8e5f626245d25d51cddb31c4ff069e331"
+    },
+    {
+      "file": "source/repo/templates/B90_RLS.docx",
+      "bytes": 83851,
+      "sha256": "ca477c55a0653e83e55bab412b4b10b8e5f626245d25d51cddb31c4ff069e331"
+    },
+    {
+      "file": "source/repo/templates/Cover Sheet..docx",
+      "bytes": 86077,
+      "sha256": "5bef95030965b636f230cacb82ae5c7fe49acb68b0e0f4ef41b9d0164917fd2d"
+    },
+    {
+      "file": "source/repo/templates/Cover_Page.docx",
+      "bytes": 86077,
+      "sha256": "5bef95030965b636f230cacb82ae5c7fe49acb68b0e0f4ef41b9d0164917fd2d"
+    },
+    {
+      "file": "source/repo/templates/M-1002 B-2 Cover Sheet - (5-1-2026).docx",
+      "bytes": 86077,
+      "sha256": "5bef95030965b636f230cacb82ae5c7fe49acb68b0e0f4ef41b9d0164917fd2d"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code A19 - (5-1-2026).docx",
+      "bytes": 147014,
+      "sha256": "214f761c789ed59790ece3b0cacd28ee755127f1741419119377baaafec2f69d"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code A19c - (5-1-2026).docx",
+      "bytes": 121547,
+      "sha256": "bf3f6504fc8eeeb6dfeec6dd0197aebc3b449d96f5dbc54c436267774304e49c"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code B24 (RL1) - (5-1-2026).docx",
+      "bytes": 95987,
+      "sha256": "9b64cf729b18b177cf89afdb56a33c14771c09b488bb0db03ba6b538f3809f5b"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code B24 (RL2) - (5-1-2026).docx",
+      "bytes": 92652,
+      "sha256": "4ae7e69acd66f051f52c356074bd58b384478ee09f823f4e3ee09becb972614e"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code B24 (RLC) - (5-1-2026).docx",
+      "bytes": 99647,
+      "sha256": "d2a83e2a4c6fc89964c084ec3a86f6a832824adb72f2bba526dbaba183d8937b"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code B78 - (5-1-2026).docx",
+      "bytes": 102621,
+      "sha256": "dcf0f8b88654fc7c7e0a3df379c1eb6da2457b90dd9d7b7e3d78d4f8ce796976"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code B81 (A19, B78, B82, & B24) - (5-1-2026).docx",
+      "bytes": 90434,
+      "sha256": "05d2ed8fab95c2970b9172acca9f04817724c18c6438aa79b0723018269d0fee"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code B81 (B24 only) - (5-1-2026).docx",
+      "bytes": 82559,
+      "sha256": "91388d674c91b8b61413fca3c35b13e724ae9288421a2697bc49d5147aec6160"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code B82 - (5-1-2026).docx",
+      "bytes": 132641,
+      "sha256": "08c56276947725b9d29deda7c8feb797ea4f7e101fd744f2a94fba9a347fcb34"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code B85 - (5-1-2026).docx",
+      "bytes": 72693,
+      "sha256": "aaf8c1dbf96c5e93ed89a5ef41c1772210228928c57f4ff39b06100c7fff537f"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code B89 (Insulation Inspection on Test Plate) - (5-1-2026).docx",
+      "bytes": 89401,
+      "sha256": "0370b04196904e3066a09eb07807b966a2e40a40627c36c110c0532d7b247112"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code B89 (On Tank Car) - (5-1-2026).docx",
+      "bytes": 85784,
+      "sha256": "a8986c253c73f27d318fb46bf34f4e12ccdd91e149586201ffd3beca8490b172"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code B90 (RLS) - (5-1-2026).docx",
+      "bytes": 86383,
+      "sha256": "8ff328ef726834f252789fabd011cecfe67e18551cd3b5ceaef3fc968698843d"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code C10 (Repair of Interior Coatings) - (5-1-2026).docx",
+      "bytes": 95031,
+      "sha256": "9f3fff11272b8596c447a959b1735f833b4d7d8e5966c08db189d46f54c59abe"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code C10 (Repair of Interior Linings) - (5-1-2026).docx",
+      "bytes": 95515,
+      "sha256": "504400af6aea5b7447ea31c3bd1a557ddac02567e808486b993c5dd324b460a3"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code C4a(C) (Closures) - (5-1-2026).docx",
+      "bytes": 84621,
+      "sha256": "22c2176b8be4f600dbfaad625ab5e18597eaa9339db0e33480be79388293a8de"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code C4a(F) (Fittings) - (5-1-2026).docx",
+      "bytes": 84208,
+      "sha256": "54bdf58db70278816a36b007680599f5122ececeb8ba7116f5a440a451cdbc9d"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code C4a(I) (Instruments) - (5-1-2026).docx",
+      "bytes": 89385,
+      "sha256": "1eee34fde2d4730fbdb534c0d57d33293792dadc5adf076004c4d16da724bcbd"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code C4a(S) (Safety Relief Devices) - (5-1-2026).docx",
+      "bytes": 90456,
+      "sha256": "7861f9b18cb4e24aba7dd798c6f577ed27458c98d3e1fb10f16fbebc592704e1"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code C4a(V) (Valves) - (5-1-2026).docx",
+      "bytes": 88079,
+      "sha256": "64d2b720d6babe4d9ec3c6ade69cb7ac399c9edaf444539a5db08c064a3b3858"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code C4m(C) (Closures) - (5-1-2026).docx",
+      "bytes": 94223,
+      "sha256": "677ec981ac000c6acaa45d6eb2ea04f9fa160d09d3019ac1d870b55b3917b5b5"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code C4m(F) (Fittings) - (5-1-2026).docx",
+      "bytes": 94120,
+      "sha256": "bbac29be0f5e1121f9d98fc77b6d3247500f2511152927d6661255506aa1e7b9"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code C4m(H) (Heater Systems) (Test Fixture) - (5-1-2026).docx",
+      "bytes": 91745,
+      "sha256": "14e6afd67388ab6a1be9c5bf3fd597109dadeef66c54dabb4d84807fb4a705d1"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code C4m(I) (Instruments) - (5-1-2026).docx",
+      "bytes": 95992,
+      "sha256": "cc65562e50764ae450b1b47b91af060fe89acecc2620bb9356aef7b1f0bbdd18"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code C4m(S) (Safety Relief Devices) - (5-1-2026).docx",
+      "bytes": 98191,
+      "sha256": "9035bd24166f187ffa686bd0bfe82b7bfd1822acc0d5db84a6c0d242b788bf26"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code C4m(V) (Valves) - (5-1-2026).docx",
+      "bytes": 95120,
+      "sha256": "6517ba260882165d475a2bdc620800ce5631d2438da7f5f50be6cd65aa5f6c1c"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code C5(C) (Closures) - (5-1-2026).docx",
+      "bytes": 95147,
+      "sha256": "5552a5d15a5220533b7739b5ac0abf7f314908e214244c03e6468470cb047778"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code C5(F) (Fittings) - (5-1-2026).docx",
+      "bytes": 95036,
+      "sha256": "ad61a280fd0c8d579602f68dbc32af8aed8fd47e038ef5b3fded24a5b98d57ec"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code C5(H) (Heater Systems) (Test Fixture) - (5-1-2026).docx",
+      "bytes": 96449,
+      "sha256": "ca3dd4d4b921033ef56654817fd23bee3e3cbb54343727c34f97b24158a47a30"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code C5(I) (Instruments) - (5-1-2026).docx",
+      "bytes": 94677,
+      "sha256": "a48e526b07ef05d08edf882f15e3e69739794e2926bb80b592f20768b3244986"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code C5(S) (Safety Relief Devices) (5-1-2026).docx",
+      "bytes": 100604,
+      "sha256": "6341a9aa6612ef3265221e3f870a324056a21317ba9211f7ad4a138e3e7d282a"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code C5(V) (Valves) (5-1-2026).docx",
+      "bytes": 95363,
+      "sha256": "e0429f0368af4381f1cf4ef8a279ed13578b1eac91f34a411a431f7328973a25"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code C6i (Installation of Service Equipment) (5-1-2026).docx",
+      "bytes": 87023,
+      "sha256": "cd0fe9f5806a8cc20a741dcfbf91ea3d21137d9dea2ac7bb5c010b22ae332dfe"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code C6r (R&R Service Equipment with Modification) (5-1-2026).docx",
+      "bytes": 97733,
+      "sha256": "e403a4cf3e5ccc9d01b3c46aab2a9850901a05a197467c8b1cf456b8d20be260"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code C7 & C10 (Combination) (Coatings) - (5-1-2026).docx",
+      "bytes": 97591,
+      "sha256": "b1db3bb66b7b5a2f5d12394433febdb9c1624c35b7c086a5f9ec46ca3efef666"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code C7 & C10 (Combination) (Linings) - (5-1-2026).docx",
+      "bytes": 101315,
+      "sha256": "b52f266a308259ea9e54524f252c8945a0345256e4c06d70a38dbf5c2ae2938f"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code C7 & C8 (Combination) (Coatings) - (5-1-2026).docx",
+      "bytes": 99194,
+      "sha256": "3ac371b3d221dd799148cb9f17ea4274c9125cbe96a2c3df7cea439d4d172e16"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code C7 & C8 (Combination) (Linings) - (5-1-2026).docx",
+      "bytes": 101481,
+      "sha256": "ab7e071cce21382d2b1d70adf7ad8af3ccb50310da70991c76f65156aadece22"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code C7 (Removal Coatings-Linings) - (5-1-2026).docx",
+      "bytes": 84692,
+      "sha256": "86bfb44687a1419ca0dc32ed7ace9a224fa934da8bcb7dbf0db432cee0dce586"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code C7, C8, C10 (Combination) (Coatings) - (5-1-2026).docx",
+      "bytes": 110182,
+      "sha256": "351ebfaf7571bbb3f12e49919ae3b53c0b7b7277e5d005a3a34b61499bd022ff"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code C7, C8, C10 (Combination) (Linings) - (5-1-2026).docx",
+      "bytes": 112360,
+      "sha256": "11867963decd4fd35b35289834f389f2a1be96fec22fd2cc6068b5d3e789834a"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code C8 (Application of Interior Coatings) - (5-1-2026).docx",
+      "bytes": 99905,
+      "sha256": "b223b8a05fc9fd66ae8da1bd4817acbebebcc4a12373478a5e4c1df2a8f23294"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code C8 (Application of Interior Linings) - (5-1-2026).docx",
+      "bytes": 102001,
+      "sha256": "3d1cdc56874aa5a3a7acf0442157525c11cdf8306c35003ee96660b82d5626a0"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code C9 (Qualification of Interior Coatings) - (5-1-2026).docx",
+      "bytes": 86183,
+      "sha256": "5b4d0ad47dde20c1cd8bd6c79304266f68e4c437a4abb0a7082ef022c558ed3b"
+    },
+    {
+      "file": "source/repo/templates/M-1002 Exhibit B-2 Activity Code C9 (Qualification of Interior Linings) - (5-1-2026).docx",
+      "bytes": 90420,
+      "sha256": "76a9d20a6c5a64e22a767108e11a0bbd821b61c56a0a6a7b351e71d92b133bdc"
+    },
+    {
+      "file": "source/repo/tests/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "source/repo/tests/conftest.py",
+      "bytes": 328,
+      "sha256": "594b69c810a03fdeb8ad9de377536686fc3165d6f5ed709af2a3150c1435c7ad"
+    },
+    {
+      "file": "source/repo/tests/test_approval_maps_and_guard.py",
+      "bytes": 16526,
+      "sha256": "523e86c39db166371c619d1907d1f7fbf07685f325a24380a55c59fc2dca578e"
+    },
+    {
+      "file": "source/repo/tests/test_audit_validation.py",
+      "bytes": 2564,
+      "sha256": "cb4186056a293f67330b459b1af1e1579491ac0609709391276ab96b18b01378"
+    },
+    {
+      "file": "source/repo/tests/test_autonomous_pipeline.py",
+      "bytes": 4286,
+      "sha256": "128be7e66f744101fe5e555359d8642711a97b2f29db6698d3e51c51b10d7071"
+    },
+    {
+      "file": "source/repo/tests/test_b24_gold_fixture.py",
+      "bytes": 3926,
+      "sha256": "cbc7970406d9cb1e3a7415418fad91b846b78ff2e230f1c707145468f1d2c633"
+    },
+    {
+      "file": "source/repo/tests/test_cli.py",
+      "bytes": 6323,
+      "sha256": "96fd4fe24282054ea554bfed5dac813acf84a1af33edba944802e7cc201da69e"
+    },
+    {
+      "file": "source/repo/tests/test_decision_states.py",
+      "bytes": 6607,
+      "sha256": "5b228058287d84ad2c748279ddb7e4780f69de1f8811e3c06aeedd7c05c6212b"
+    },
+    {
+      "file": "source/repo/tests/test_evidence_artifacts.py",
+      "bytes": 8479,
+      "sha256": "2ebe7e3d1833ffcd2cf94a8245fad590ebe99b6f084b1e02ebf8d2cb69d57811"
+    },
+    {
+      "file": "source/repo/tests/test_inbox_pipeline.py",
+      "bytes": 53423,
+      "sha256": "8fc8dabeb52088c18b2eec18aac5497c88113327d3528853b985ee659b426cf0"
+    },
+    {
+      "file": "source/repo/tests/test_ooxml_writer_regression.py",
+      "bytes": 4053,
+      "sha256": "87636299be0c1fca96ae71a8ad263aef8e2df1cb8a7cd58b5f856a09016fb396"
+    },
+    {
+      "file": "source/repo/tests/test_sample_pipeline.py",
+      "bytes": 930,
+      "sha256": "711e540d2551df8e596e82c4e91b3d78fe98df7016be7250ee5d2d20abd74709"
+    },
+    {
+      "file": "source/repo/tests/test_smoke.py",
+      "bytes": 713,
+      "sha256": "2972d52f72f277c0d0aea67d1f10ba29bee50faa99cc7b97e0cd7cde47863650"
+    },
+    {
+      "file": "source/repo/tests/test_structure_guard_local.py",
+      "bytes": 2135,
+      "sha256": "007b2ebbaebb682938c8b39b6b0533c000a9d073b850f798971340deb9eaced6"
+    },
+    {
+      "file": "source/repo/tests/test_tco_permission_date_strict.py",
+      "bytes": 5863,
+      "sha256": "fcfe931bcc56273233a478d5a6792daa2c4e2337dd75f723930c10806371d971"
+    },
+    {
+      "file": "source/repo/tools/autonomous-audit-pipeline/README.md",
+      "bytes": 1655,
+      "sha256": "1356ccf745a9892cb6608b16145ac94db110e19067e630c2a9789cf922d3cdeb"
+    },
+    {
+      "file": "source/repo/tools/autonomous-audit-pipeline/package-lock.json",
+      "bytes": 45213,
+      "sha256": "004d44d2ba55d8ff8ea146dee615e46e5c41be6d8d104cf7786a8c4e75371cda"
+    },
+    {
+      "file": "source/repo/tools/autonomous-audit-pipeline/package.json",
+      "bytes": 498,
+      "sha256": "6a7a55724aabec242cb2fdae13f11eb5b5ba89e42e2894b43be26f5f7462c9d1"
+    },
+    {
+      "file": "source/repo/tools/autonomous-audit-pipeline/scripts/create-blank-form-docx.py",
+      "bytes": 789,
+      "sha256": "3504161ff5b22e74b91bb43e7e005d3993106466e3e8ff03e873a9a64f05ecc6"
+    },
+    {
+      "file": "source/repo/tools/autonomous-audit-pipeline/src/analystAgent.ts",
+      "bytes": 4036,
+      "sha256": "f88a89a1e38ddbef1ca5ad27dcd913fae296fe227c5f057a20b99683dbddbb98"
+    },
+    {
+      "file": "source/repo/tools/autonomous-audit-pipeline/src/config.ts",
+      "bytes": 288,
+      "sha256": "9703981f4142b793a72b64c589a7abb6c48c753d4ffd0325e7766e832c2d8d81"
+    },
+    {
+      "file": "source/repo/tools/autonomous-audit-pipeline/src/docxFormExtractor.ts",
+      "bytes": 509,
+      "sha256": "fb088f820702b3a65562646a09b72aeb2cb6189562b03172a2ea6db44f3ed6d8"
+    },
+    {
+      "file": "source/repo/tools/autonomous-audit-pipeline/src/formWriter.ts",
+      "bytes": 2089,
+      "sha256": "d513e7cfa1bca300761148ce84c790b9f1ef3a53f5ab4b5a354ee24338eae33a"
+    },
+    {
+      "file": "source/repo/tools/autonomous-audit-pipeline/src/investigatorAgent.ts",
+      "bytes": 2000,
+      "sha256": "b0838c9e978bc4146ea415612166427946e6eab23fa212d0b1512a81f5566c11"
+    },
+    {
+      "file": "source/repo/tools/autonomous-audit-pipeline/src/llmClient.ts",
+      "bytes": 947,
+      "sha256": "5949e80be7905591408e2899cc04aaea32bd086811a87d9f5106a488b121b457"
+    },
+    {
+      "file": "source/repo/tools/autonomous-audit-pipeline/src/mainPipeline.ts",
+      "bytes": 5449,
+      "sha256": "3a1921249a1a1dc5e94ec8db34d5f4daa47523dd5af53f9dc3797107db391075"
+    },
+    {
+      "file": "source/repo/tools/autonomous-audit-pipeline/src/mockAgents.ts",
+      "bytes": 3740,
+      "sha256": "8b7abe1556af5b6142a6118490e232d8aae6835e4442f9c869cb005ffd0dfc06"
+    },
+    {
+      "file": "source/repo/tools/autonomous-audit-pipeline/src/schemas.ts",
+      "bytes": 2783,
+      "sha256": "ee3cf3ebc3219edd6e26eee5e4e1c8bbe77fe0a751241828f6881915d1e3ce19"
+    },
+    {
+      "file": "source/repo/tools/autonomous-audit-pipeline/src/sourceLoader.ts",
+      "bytes": 1107,
+      "sha256": "6fed72a7561c3e33651c7095682c31a6e0675686e9e0df3e8e5ce68777b41d7e"
+    },
+    {
+      "file": "source/repo/tools/autonomous-audit-pipeline/src/types.ts",
+      "bytes": 227,
+      "sha256": "11c44d000b1f42525ee8bc97e04e916ba736353733c3e9ad2b4551c9e47450d8"
+    },
+    {
+      "file": "source/repo/tools/autonomous-audit-pipeline/src/validationGate.ts",
+      "bytes": 1836,
+      "sha256": "d51a884d1ce83e4a2205e80c637d28fe881ae1275d707a529bf3698b8bce3967"
+    },
+    {
+      "file": "source/repo/tools/autonomous-audit-pipeline/src/writerAgent.ts",
+      "bytes": 1300,
+      "sha256": "14bc4abbd3653effb11b9c2b284329441f48a8edb282b49b80f7623e067cf8ce"
+    },
+    {
+      "file": "source/repo/tools/autonomous-audit-pipeline/test-data/available-schemas.json",
+      "bytes": 185,
+      "sha256": "160c34fd7714b124005fdb54829e9613363be8bb35ab611616ac71169fd8b656"
+    },
+    {
+      "file": "source/repo/tools/autonomous-audit-pipeline/test-data/blank-form.docx",
+      "bytes": 36837,
+      "sha256": "bd1bc4383733b381730dce9ddfbed5d38df17933efb6e2e62e4deee91b1368f6"
+    },
+    {
+      "file": "source/repo/tools/autonomous-audit-pipeline/tsconfig.json",
+      "bytes": 265,
+      "sha256": "4459d2b3faae9a86ba4b4b110c9bd157bde60ee8a34faa6dfe2835d803f9afe8"
+    },
+    {
+      "file": "tools/build_knowlage_archive.py",
+      "bytes": 14306,
+      "sha256": "6deef924fd2dc1e737b292dfba109827516b337ef60362a848798a2824e582c7"
+    }
+  ]
+}
