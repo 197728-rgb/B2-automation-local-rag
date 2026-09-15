@@ -1,0 +1,42 @@
+{
+  "version": "2026-09-15",
+  "name": "b2-automation-local-rag",
+  "description": "Local RAG-powered AAR audit automation for evidence extraction, synthesis, and B-2/QAPE form completion with autonomous pipeline",
+  "repository": "https://github.com/197728-rgb/B2-automation-local-rag",
+  "main_module": "docs/SPEC-1-LOCAL-MVP.md",
+  "capabilities": [
+    "Local RAG evidence retrieval from PDFs and text",
+    "Schema-guided evidence extraction",
+    "Autonomous form completion pipeline",
+    "Deterministic validation and fallback",
+    "DOCX OOXML patching with approval maps",
+    "Multi-form batch processing",
+    "Optional SQLite audit storage"
+  ],
+  "pipelines": [
+    {
+      "name": "Local Inbox Pipeline",
+      "description": "Interactive review pipeline with human approval gates",
+      "entry_point": "b2 inbox",
+      "output_format": "review_json, review_markdown, filled_docx"
+    },
+    {
+      "name": "Autonomous Pipeline",
+      "description": "Fully autonomous form completion without review gates",
+      "entry_point": "b2 run-autonomous",
+      "output_format": "audit_trail_json, completed_docx, run_manifest"
+    }
+  ],
+  "default_forms": [
+    "B24_RL2",
+    "B81",
+    "B89",
+    "B90",
+    "Cover_Page"
+  ],
+  "knowledge_package": {
+    "name": "KNOWLAGE1.3",
+    "path": "knowledge/KNOWLAGE1.3/",
+    "purpose": "AAR B-2/QAPE audit method knowledge, project source snapshots, and methodology"
+  }
+}
